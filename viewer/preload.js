@@ -1,0 +1,2 @@
+require("./ipc");
+require("./screenshot");
