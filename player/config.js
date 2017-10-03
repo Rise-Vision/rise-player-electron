@@ -1,7 +1,8 @@
-let commonConfig = require("common-display-module").config,
-  cacheVersion = require(path.join(path.dirname(require.resolve("rise-cache-v2")), "package.json")).version,
-  platform = require("rise-common-electron").platform,
-  serialNumber;
+const commonConfig = require("common-display-module").config;
+const {join: pathJoin, dirname} = require("path");
+const cacheVersion = require(pathJoin(dirname(require.resolve("rise-cache-v2")), "package.json")).version;
+const platform = require("rise-common-electron").platform;
+let serialNumber;
 
 const SERIAL_FILE = "/bookpc/serial-number";
 
@@ -9,7 +10,7 @@ function getSerialFileName(app) {
   let name;
 
   try {
-    name = path.join(app.getPath("appData"), SERIAL_FILE);
+    name = pathJoin(app.getPath("appData"), SERIAL_FILE);
     return name;
   }
   catch (err) {

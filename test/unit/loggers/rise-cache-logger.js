@@ -3,7 +3,7 @@ const assert = require("assert"),
   path = require("path"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
-  config = requireRoot("installer/config.js"),
+  config = require("../../../config.js"),
   message = {
     event: "info",
     event_details: "test info",

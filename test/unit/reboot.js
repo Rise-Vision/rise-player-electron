@@ -3,9 +3,9 @@ const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 const platform = require("rise-common-electron").platform;
-const config = requireRoot("installer/config.js");
-const reboot = requireRoot("installer/reboot.js");
-const messaging = requireRoot("installer/messaging.js");
+const config = require("../../player/config.js");
+const reboot = require("../../player/reboot.js");
+const messaging = require("../../player/messaging.js");
 const message = { msg: "reboot-request" };
 
 describe("Reboot", ()=>{

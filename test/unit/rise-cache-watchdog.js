@@ -1,6 +1,6 @@
 const network = require("rise-common-electron").network;
 const childProcess = require("child_process");
-const riseCacheWatchdog = requireRoot("installer/rise-cache-watchdog.js");
+const riseCacheWatchdog = require("../../player/rise-cache-watchdog.js");
 const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;

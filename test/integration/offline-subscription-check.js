@@ -1,10 +1,10 @@
 const assert = require("assert");
-const config = requireRoot("installer/config.js");
-const onlineDetection = requireRoot("installer/online-detection.js");
+const config = require("../../player/config.js");
+const onlineDetection = require("../../player/online-detection.js");
 const {network} = require("rise-common-electron");
-const checker = requireRoot("installer/offline-subscription-check.js");
+const checker = require("../../player/offline-subscription-check.js");
 const simple = require("simple-mock");
-const version = requireRoot("version.json");
+const version = require("../../version.json");
 
 describe("Offline Subscription Check", function() {
   this.timeout(3000);

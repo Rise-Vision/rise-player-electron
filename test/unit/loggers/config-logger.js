@@ -3,8 +3,8 @@ simpleMock = require("simple-mock"),
 mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
 network = require("rise-common-electron").network,
-config = requireRoot("installer/config.js"),
-configLogger = requireRoot("installer/loggers/config-logger.js"),
+config = require("../../../player/config.js"),
+configLogger = require("../../../loggers/config-logger.js"),
 message = { message: "viewer-config", viewerVersion: "viewerVersion", width: 1280, height: 1024 },
 offlineSubscriptionCheck = requireRoot("installer/offline-subscription-check.js");
 

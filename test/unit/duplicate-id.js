@@ -1,7 +1,7 @@
-const duplicate = requireRoot("installer/duplicate-id.js"),
-messaging = requireRoot("installer/messaging.js"),
-viewerController = requireRoot("viewer/controller.js"),
-watchdog = requireRoot("installer/watchdog.js"),
+const duplicate = require("../../player/duplicate-id.js"),
+messaging = require("../../player/messaging.js"),
+viewerController = require("../../viewer/controller.js"),
+watchdog = require("../../player/watchdog.js"),
 simple = require("simple-mock"),
 assert = require("assert");
 

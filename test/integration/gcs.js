@@ -2,9 +2,9 @@ global.log = global.log || {file() {}, external() {}, debug: console.log};
 
 const assert = require("assert");
 const path = require("path");
-const gcs = requireRoot("installer/gcs.js");
+const gcs = require("../../player/gcs.js");
 const simple = require("simple-mock");
-const config = requireRoot("installer/config.js");
+const config = require("../../player/config.js");
 const localGCSFilePath = path.join(config.getInstallDir(), gcs.localGCSDataFileName);
 const network = require("rise-common-electron").network;
 const platform = require("rise-common-electron").platform;

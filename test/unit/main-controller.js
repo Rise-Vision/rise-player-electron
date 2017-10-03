@@ -1,16 +1,13 @@
 var platform = require("rise-common-electron").platform;
 var network = require("rise-common-electron").network;
-var mainController = requireRoot("installer/main-controller.js");
-var displayRegistration = requireRoot("installer/display-registration.js");
+var mainController = require("../../player/main-controller.js");
+var display= ../../player/display-registration.js");
 var proxy = require("rise-common-electron").proxy;
-var config = requireRoot("installer/config.js");
-var installer = requireRoot("installer/installer");
-var networkCheck = requireRoot("installer/network-check.js");
-var onlineDetection = requireRoot("installer/online-detection");
-var launcher = requireRoot("installer/launcher");
-var riseCacheWatchdog = requireRoot("installer/rise-cache-watchdog.js");
-var prereqs = requireRoot("installer/prereqs.js");
-var telemetry = requireRoot("installer/telemetry.js");
+var config = require("../../player/config.js");
+var networkCheck = require("../../player/network-check.js");
+var onlineDetection = require("../../player/online-detection");
+var launcher = require("../../player/launcher");
+var riseCacheWatchdog = require("../../player/rise-cache-watchdog.js");
 var assert = require("assert");
 var simple = require("simple-mock");
 var mocks = {};
@@ -161,7 +158,6 @@ describe("mainController", ()=>{
 
   describe("ready", ()=>{
     beforeEach(()=>{
-      simple.mock(telemetry, "init").returnWith();
       simple.mock(config, "setSerialNumber").returnWith();
       simple.mock(mainController, "bindQuitAccelerator");
       simple.mock(log, "external");
@@ -197,10 +193,6 @@ describe("mainController", ()=>{
       var call = mocks.ipc.on.calls.filter((call)=> call.args[0] === "attended-ready")[0];
       var handler = call.args[1];
       assert(handler = mainController.attendedReadyHook);
-    });
-
-    it("calls telemetry.init", ()=>{
-      assert(telemetry.init.called);
     });
 
     it("calls config.setSerialNumber", ()=>{
@@ -468,7 +460,6 @@ describe("mainController", ()=>{
       simple.mock(mainController, "prereqCheck").resolveWith(true);
       simple.mock(installer, "tryUpgrade").resolveWith(true);
       simple.mock(launcher, "launch").resolveWith();
-      simple.mock(telemetry, "init").returnWith();
       simple.mock(config, "setSerialNumber").returnWith();
       simple.mock(mainController, "postInstall").resolveWith(true);
 

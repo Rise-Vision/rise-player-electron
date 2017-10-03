@@ -2,7 +2,7 @@ var assert = require("assert"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
   platform = require("rise-common-electron").platform,
-  config = requireRoot("installer/config.js"),
+  config = require("../../../player/config.js"),
   installerLogger, bqClient;
 
 describe("Installer logger", () => {

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const scheduledReboot = requireRoot("installer/scheduled-reboot.js");
+const scheduledReboot = require("../../player/scheduled-reboot.js");
 const simple = require("simple-mock");
 global.log = global.log || {debug(msg){console.log(msg);}, external(msg){console.log(msg);}};
 

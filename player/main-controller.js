@@ -1,35 +1,20 @@
-var path = require("path"),
-platform = require("rise-common-electron").platform,
+const platform = require("rise-common-electron").platform,
 proxy = require("rise-common-electron").proxy,
-viewerWindowBindings = requireRoot("viewer/window-bindings.js"),
 launcher = requireRoot("installer/launcher.js"),
-autostart = requireRoot("installer/autostart/autostart.js"),
 config = requireRoot("installer/config.js"),
-cli = requireRoot("installer/cli-options.js"),
-optimization = requireRoot("installer/os-optimization.js"),
-installer = requireRoot("installer/installer.js"),
-displayRegistration = requireRoot("installer/display-registration.js"),
-prereqs = requireRoot("installer/prereqs.js"),
-uninstall = requireRoot("installer/uninstall.js"),
-stop = requireRoot("installer/stop-start.js"),
-telemetry = requireRoot("installer/telemetry.js"),
 version = requireRoot("version.json"),
-cleanup = requireRoot("installer/cleanup.js"),
 onlineDetection = requireRoot("installer/online-detection.js"),
 flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
-flashPluginPath = require("path").join(config.getInstallDir(), flashPluginFileName),
-riseCacheWatchdog = requireRoot("installer/rise-cache-watchdog.js"),
-app,
+flashPluginPath = require("path").join(config.getInstallDir(), flashPluginFileName);
+
+let app,
 displaySettings,
 ipc,
 globalShortcut,
 ui,
 mainWindow,
 BrowserWindow,
-protocol,
-explorerKilled,
-isSecondInstance,
-registeredQuitAccelerator = null;
+protocol;
 
 function schemeHandler(request, callback) {
   let redirect = {

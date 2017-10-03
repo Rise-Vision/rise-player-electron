@@ -7,7 +7,9 @@
   "license": "GPLv3",
   "devDependencies": {
     "electron": "1.6.6",
-    "electron-mocha": "^4.0.0"
+    "electron-mocha": "^4.0.0",
+    "jshint": "^2.9.5",
+    "simple-mock": "^0.8.0"
   },
   "dependencies": {
     "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#chore/initial-files",
@@ -19,10 +21,10 @@
     "ws": "^1.1.1"
   },
   "scripts": {
-    "test": "jshint . && istanbul cover node_modules/mocha/bin/_mocha -r ./init.js -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/unit",
-    "test-no-coverage": "jshint . && ./node_modules/mocha/bin/mocha -r ./init.js --recursive test/unit",
-    "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -r ./init.js -t 10000 test/integration",
-    "ci-integration": "xvfb-run node_modules/.bin/electron-mocha -r init.js -t 10000 test/integration",
+    "test": "jshint . && istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/unit",
+    "test-no-coverage": "jshint . && ./node_modules/mocha/bin/mocha --recursive test/unit",
+    "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 10000 test/integration",
+    "ci-integration": "xvfb-run node_modules/.bin/electron-mocha -t 10000 test/integration",
     "start": "./node_modules/.bin/electron ."
   },
   "useElectron": true

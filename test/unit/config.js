@@ -6,7 +6,7 @@ proxy = require("rise-common-electron").proxy,
 mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
 network = require("rise-common-electron").network,
-config = requireRoot("installer/config.js");
+config = require("../../player/config.js");
 
 mock(network, "registerProxyUpdatedObserver");
 

@@ -3,8 +3,8 @@ const assert = require("assert"),
   path = require("path"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
-  config = requireRoot("installer/config.js"),
-  widgetLogger = requireRoot("installer/loggers/widget-logger.js"),
+  config = require("../../../player/config.js"),
+  widgetLogger = requireRoot("../../../loggers/widget-logger.js"),
   message = { message: "widget-log", table: "testTable", params: JSON.stringify({event: "Test"}), suffix: "20170612"},
   bqClient = widgetLogger.getBQClient();
 

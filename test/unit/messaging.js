@@ -1,7 +1,7 @@
 const assert = require("assert");
 const simple = require("simple-mock");
 const Primus = require("primus");
-const config = requireRoot("installer/config.js");
+const config = require("../../player/config.js");
 
 let socketInstance, messaging;
 

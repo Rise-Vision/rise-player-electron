@@ -1,3 +1,4 @@
+# cat date to version.json
 # remove node_modules
 # sudo npm install -g asar
 # npm install production

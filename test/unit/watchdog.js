@@ -1,7 +1,7 @@
 var assert = require("assert");
 var simple = require("simple-mock");
 var childProcess = require("child_process");
-var watchdog = requireRoot("installer/watchdog.js");
+var watchdog = require("../../player/watchdog.js");
 var mocks = {};
 
 mocks.watchdog = {
