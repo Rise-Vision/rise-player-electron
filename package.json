@@ -6,14 +6,6 @@
   "author": "Rise Vision",
   "license": "GPLv3",
   "devDependencies": {
-    "electron-ipc-mock": "^0.0.2",
-    "istanbul": "^0.4.0",
-    "jshint": "^2.9.5",
-    "mocha": "^3.4.2",
-    "mocha-junit-reporter": "^1.9.1",
-    "simple-mock": "^0.6.0"
-  },
-  "devDependencies": {
     "electron": "1.6.6",
     "electron-mocha": "^4.0.0"
   },
@@ -32,5 +24,6 @@
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -r ./init.js -t 10000 test/integration",
     "ci-integration": "xvfb-run node_modules/.bin/electron-mocha -r init.js -t 10000 test/integration",
     "start": "./node_modules/.bin/electron ."
-  }
+  },
+  "useElectron": true
 }
