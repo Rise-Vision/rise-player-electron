@@ -7,8 +7,8 @@ const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 
-let messaging = requireRoot("installer/messaging.js");
-let gcsPolling = requireRoot("installer/gcs-polling.js");
+let messaging = require("../../player/messaging.js");
+let gcsPolling = require("../../player/gcs-polling.js");
 let socket;
 
 function Socket(url) {
@@ -38,8 +38,8 @@ describe("GCS polling", ()=>{
     mock(log, "external").returnWith();
     mock(config, "getDisplaySettingsSync").returnWith({ displayid: "xyz" });
 
-    messaging = requireRoot("installer/messaging.js");
-    gcsPolling = requireRoot("installer/gcs-polling.js");
+    messaging = require("../../player/messaging.js");
+    gcsPolling = require("../../player/gcs-polling.js");
     messaging.init("test");
   });
 

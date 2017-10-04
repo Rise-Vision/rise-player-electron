@@ -2,7 +2,7 @@ const commonConfig = require("common-display-module").config;
 const messaging = require("common-display-module").messaging;
 const platform = require("rise-common-electron").platform;
 const request = require("request");
-const viewerWindowBindings = requireRoot("viewer/window-bindings.js");
+const viewerWindowBindings = require("../viewer/window-bindings.js");
 
 const RETRIES_TIMEOUT_DELAY = [3, 10000, 1000];
 const JPEGQUALITY = 15;

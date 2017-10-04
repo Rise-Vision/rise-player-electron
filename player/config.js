@@ -1,4 +1,4 @@
-const commonConfig = require("common-display-module").config;
+const moduleCommon = require("common-display-module").config;
 const {join: pathJoin, dirname} = require("path");
 const cacheVersion = require(pathJoin(dirname(require.resolve("rise-cache-v2")), "package.json")).version;
 const platform = require("rise-common-electron").platform;
@@ -27,7 +27,7 @@ module.exports = {
   },
   noNetworkCountdownSeconds: 60,
   setGracefulShutdownFlag() {
-    commonConfig.writeFile("graceful_shutdown_flag", "");
+    moduleCommon.writeFile("graceful_shutdown_flag", "");
   },
   setSerialNumber(app) {
     if (!app) {

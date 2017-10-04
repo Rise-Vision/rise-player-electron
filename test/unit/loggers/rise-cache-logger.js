@@ -22,7 +22,7 @@ describe("Rise Cache logger", ()=>{
     mock(config, "getInstallDir").returnWith("test_dir");
     mock(log, "file").returnWith();
 
-    riseCacheLogger = requireRoot("installer/loggers/rise-cache-logger.js");
+    riseCacheLogger = require("../../loggers/rise-cache-logger.js");
     bqClient = riseCacheLogger.getBQClient();
   });
 

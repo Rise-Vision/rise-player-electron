@@ -1,7 +1,3 @@
-global.requireRoot = function(name) {
-  return require(__dirname + "/../" + name);
-};
-
 const ipc = require("electron").ipcRenderer;
 const commonConfig = require("common-display-module").config;
 const displaySettings = commonConfig.getDisplaySettingsSync();
@@ -41,5 +37,3 @@ window.enableRiseCacheScheme = true;
 ipc.on("viewer-message-received", (evt, message)=>{
   messageHandlers.forEach((handler)=>handler(message));
 });
-
-global.requireRoot = null;

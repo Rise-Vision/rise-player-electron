@@ -13,7 +13,7 @@ describe("Installer logger", () => {
     mock(platform, "getOSDescription").returnWith("os desc");
     mock(log, "file").returnWith();
 
-    installerLogger = requireRoot("installer/loggers/installer-logger.js");
+    installerLogger = require("../../loggers/installer-logger.js");
     installerLogger.setDisplaySettings(config.getDisplaySettingsSync());
 
     bqClient = installerLogger.getBQClient();

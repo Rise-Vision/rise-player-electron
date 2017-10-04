@@ -1,19 +1,19 @@
 const messaging = require("common-display-module").messaging,
-screenshot = requireRoot("installer/screenshot.js"),
-dupeId = requireRoot("installer/duplicate-id.js"),
-restart = requireRoot("installer/restart.js"),
-reboot = requireRoot("installer/reboot.js"),
-scheduledReboot = requireRoot("installer/scheduled-reboot.js"),
+screenshot = require("./screenshot.js"),
+dupeId = require("./duplicate-id.js"),
+restart = require("./restart.js"),
+reboot = require("./reboot.js"),
+scheduledReboot= require("./scheduled-reboot.js"),
 platform = require("rise-common-electron").platform,
-watchdog = requireRoot("installer/watchdog.js"),
-riseCacheWatchdog = requireRoot("installer/rise-cache-watchdog.js"),
-gcsPolling = requireRoot("installer/gcs-polling.js"),
-gcs = requireRoot("installer/gcs.js"),
-viewerWindowBindings = requireRoot("viewer/window-bindings.js"),
-viewer = requireRoot("viewer"),
-onlineDetection = requireRoot("installer/online-detection.js"),
-offlineSubscriptionCheck = requireRoot("installer/offline-subscription-check.js"),
-viewerContentLoader = requireRoot("viewer/content-loader.js");
+watchdog = require("./watchdog.js"),
+riseCacheWatchdog = require("../player/rise-cache-watchdog.js"),
+gcsPolling = require("./gcs-polling.js"),
+gcs = require("./gcs.js"),
+viewerWindowBindings = require("../viewer/window-bindings.js"),
+viewer = require("../viewer"),
+onlineDetection = require("./online-detection.js"),
+offlineSubscriptionCheck = require("./offline-subscription-check.js"),
+viewerContentLoader = require("../viewer/content-loader.js");
 
 module.exports = {
   launch(uiController) {

@@ -1,7 +1,7 @@
 const PROJECT_NAME = "client-side-events",
   DATASET_NAME = "Widget_Events",
   FAILED_ENTRY_FILE = ".failed-widget-log-entries.json",
-  config = requireRoot("installer/config.js"),
+  config = require("../player/config.js"),
   bqController = require("rise-common-electron")
     .bqController(PROJECT_NAME, DATASET_NAME, FAILED_ENTRY_FILE, config.getInstallDir());
 

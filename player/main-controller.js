@@ -1,9 +1,9 @@
 const platform = require("rise-common-electron").platform,
+moduleVersion = require("common-display-module").config.getModuleVersion,
 proxy = require("rise-common-electron").proxy,
-launcher = requireRoot("installer/launcher.js"),
-config = requireRoot("installer/config.js"),
-version = requireRoot("version.json"),
-onlineDetection = requireRoot("installer/online-detection.js"),
+launcher = require("../player/launcher.js"),
+config = require("../player/config.js"),
+onlineDetection = require("../player/online-detection.js"),
 flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
 flashPluginPath = require("path").join(config.getInstallDir(), flashPluginFileName);
 
@@ -33,7 +33,7 @@ function schemeHandler(request, callback) {
 }
 
 function readyHandler() {
-  log.file("started", `player version: ${version} - Display id: ${displaySettings.displayid || displaySettings.tempdisplayid}`);
+  log.file("started", `player version: ${moduleVersion()} - Display id: ${displaySettings.displayid || displaySettings.tempdisplayid}`);
   log.debug("Electron " + process.versions.electron);
   log.debug("Chromium " + process.versions.chrome);
   log.debug("App Path " + app.getAppPath());
@@ -49,7 +49,7 @@ function readyHandler() {
     log.setUIWindow(event.sender);
     config.setUIWindow(event.sender);
     config.setIPCMain(ipc);
-    event.sender.send("version", version);
+    event.sender.send("version", moduleVersion());
 
     proxy.setEndpoint(displaySettings.proxy)
     .then(launcher.launch.bind(null, ui));

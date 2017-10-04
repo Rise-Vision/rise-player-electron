@@ -1,6 +1,6 @@
 const platform = require("rise-common-electron").platform;
 const childProcess = require("child_process");
-const config = requireRoot("installer/config.js");
+const config = require("../player/config.js");
 const messaging = require("common-display-module").messaging;
 
 module.exports = {

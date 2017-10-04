@@ -6,19 +6,15 @@ platform = require("rise-common-electron").platform,
 network = require("rise-common-electron").network,
 nativeImage = require('electron').nativeImage,
 proxy = require("rise-common-electron").proxy,
-mainController = requireRoot("installer/main-controller.js"),
-screenshot = requireRoot("installer/screenshot.js"),
-config = requireRoot("installer/config.js"),
+mainController = require("./player/main-controller.js"),
+screenshot = require("./player/screenshot.js"),
+config = require("./player/config.js"),
 preventBQLog = process.env.RISE_PREVENT_BQ_LOG,
-ui = requireRoot("installer/ui/controller.js"),
-viewerController = requireRoot("viewer/controller.js"),
+ui = require("./player/ui/controller.js"),
+viewerController = require("./viewer/controller.js"),
 ElectronProxyAgent = require("electron-proxy-agent"),
-externalLogger = requireRoot("installer/loggers/installer-logger.js"),
+externalLogger = require("./loggers/installer-logger.js"),
 displaySettings;
-
-global.requireRoot = function(name) {
-  return require(__dirname + "/" + name);
-};
 
 global.secondMillis = 1000;
 

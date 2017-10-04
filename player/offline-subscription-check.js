@@ -1,5 +1,5 @@
 const {network} = require("rise-common-electron");
-const onlineDetection = requireRoot("installer/online-detection.js");
+const onlineDetection = require("../player/online-detection.js");
 const authHost = "store-dot-rvaserver2.appspot.com";
 const commonConfig = require("common-display-module").config;
 const productCode = "c4b368be86245bf9501baaa6e0b00df9719869fd";

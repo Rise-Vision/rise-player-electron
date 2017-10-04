@@ -1,10 +1,10 @@
 const bucketName = "risevision-display-notifications";
 const commonConfig = require("common-display-module").config;
-const gcs = requireRoot("installer/gcs.js");
+const gcs = require("../player//gcs.js");
 const messaging = require("common-display-module").messaging;
-const onlineDetection = requireRoot("installer/online-detection.js");
-const scheduledReboot = requireRoot("installer/scheduled-reboot.js");
-const viewerWindowBindings = requireRoot("viewer/window-bindings.js");
+const onlineDetection = require("../player/online-detection.js");
+const scheduledReboot = require("../player/scheduled-reboot.js");
+const viewerWindowBindings = require("./window-bindings.js");
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {

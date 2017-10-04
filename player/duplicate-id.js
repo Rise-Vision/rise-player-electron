@@ -1,8 +1,8 @@
 const machineId = require("common-display-module").machineId;
 const messaging = require("common-display-module").messaging;
 const platform = require("rise-common-electron").platform;
-const viewerController = requireRoot("viewer/controller.js");
-const watchdog = requireRoot("installer/watchdog.js");
+const viewerController = require("../viewer/controller.js");
+const watchdog = require("installer/watchdog.js");
 
 module.exports = {
   attachMessagingHandlers() {

@@ -1,6 +1,6 @@
 const commonConfig = require("common-display-module").config;
-const contentLoader = requireRoot("viewer/content-loader.js");
-const gcs = requireRoot("installer/gcs.js");
+const contentLoader = require("../viewer/content-loader.js");
+const gcs = require("../player/gcs.js");
 const inspect = require("util").inspect;
 const messaging = require("common-display-module").messaging;
 

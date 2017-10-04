@@ -3,9 +3,9 @@ const network = require("rise-common-electron").network;
 const bqClient = require("rise-common-electron")
         .bqClient("client-side-events", "Player_Data");
 const commonConfig = require("common-display-module").config;
-const config = requireRoot("installer/config.js");
+const config = require("../player/config.js");
 const machineId = require("common-display-module").machineId;
-const offlineSubscriptionCheck = requireRoot("installer/offline-subscription-check.js");
+const offlineSubscriptionCheck = require("../player/offline-subscription-check.js");
 
 
 module.exports = {

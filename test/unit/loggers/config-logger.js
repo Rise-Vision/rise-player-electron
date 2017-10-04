@@ -6,7 +6,7 @@ network = require("rise-common-electron").network,
 config = require("../../../player/config.js"),
 configLogger = require("../../../loggers/config-logger.js"),
 message = { message: "viewer-config", viewerVersion: "viewerVersion", width: 1280, height: 1024 },
-offlineSubscriptionCheck = requireRoot("installer/offline-subscription-check.js");
+offlineSubscriptionCheck = require("../../player/offline-subscription-check.js");
 
 mock(network, "registerProxyUpdatedObserver");
 

@@ -1,4 +1,4 @@
-const reboot = requireRoot("installer/reboot.js").reboot;
+const reboot = require("../player/reboot.js").reboot;
 
 module.exports = {
   scheduleRebootFromViewerContents(content) {
