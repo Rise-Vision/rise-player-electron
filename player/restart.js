@@ -1,18 +1,16 @@
 const childProcess = require("child_process");
-const commonConfig = require("common-display-module").config;
 const config = require("../player/config.js");
-const messaging = require("common-display-module").messaging;
+const messaging = require("./messaging.js");
 const platform = require("rise-common-electron").platform;
 const path = require("path");
-const version = commonConfig.getModuleVersion("player-electron");
 
 function restartPlatform(extraParameters) {
   const commonArgs = [ "--unattended", "--skip-countdown" ];
   const command = platform.isWindows() ?
           "cmd.exe" :
-          path.join(commonConfig.getScriptsDir(version), "start.sh");
+          path.join("../scripts", "start.sh");
   const args = platform.isWindows() ?
-          ["/c", path.join(commonConfig.getScriptsDir(version), "background.jse"), "start.bat"].concat(commonArgs) :
+          ["/c", path.join("../scripts", "background.jse"), "start.bat"].concat(commonArgs) :
           commonArgs;
 
   if(extraParameters) {

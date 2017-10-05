@@ -1,8 +1,8 @@
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const contentLoader = require("../viewer/content-loader.js");
 const gcs = require("../player/gcs.js");
 const inspect = require("util").inspect;
-const messaging = require("common-display-module").messaging;
+const messaging = require("./messaging.js");
 
 const bucketName = "risevision-display-notifications";
 

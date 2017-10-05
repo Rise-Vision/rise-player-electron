@@ -1,5 +1,5 @@
 const ipc = require("electron").ipcRenderer;
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const displaySettings = commonConfig.getDisplaySettingsSync();
 const webFrame = require("electron").webFrame;
 let messageHandlers = [];

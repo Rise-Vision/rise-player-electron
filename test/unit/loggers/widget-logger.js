@@ -3,7 +3,7 @@ const assert = require("assert"),
   path = require("path"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
-  config = require("../../../player/config.js"),
+  commonConfig = require("common-display-module"),
   widgetLogger = require("../../../loggers/widget-logger.js"),
   message = { message: "widget-log", table: "testTable", params: JSON.stringify({event: "Test"}), suffix: "20170612"},
   bqClient = widgetLogger.getBQClient();
@@ -16,7 +16,7 @@ describe("Widget logger", ()=>{
   afterEach(()=>{
     simpleMock.restore();
 
-    let failedFilePath = path.join(config.getInstallDir(), widgetLogger.failedFileName());
+    let failedFilePath = path.join(commonConfig.getInstallDir(), widgetLogger.failedFileName());
     console.log("deleting " + failedFilePath);
     try {
       fs.unlinkSync(failedFilePath);

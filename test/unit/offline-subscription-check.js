@@ -1,7 +1,7 @@
-const checker = require("../../installer/offline-subscription-check.js");
+const checker = require("../../player/offline-subscription-check.js");
 const network = require("rise-common-electron").network;
-const onlineDetection = require("../../installer/online-detection.js");
-const config = require("../../installer/config.js");
+const onlineDetection = require("../../player/online-detection.js");
+const commonConfig = require("common-display-module");
 const simple = require("simple-mock");
 const assert = require("assert");
 global.log = global.log || {debug(){},all(){},external(){}};
@@ -12,10 +12,10 @@ describe("Offline Subscription Check", ()=>{
   beforeEach(()=>{
     simple.mock(network, "httpFetch").resolveWith({json: jsonStub});
     simple.mock(onlineDetection, "isOnline").returnWith(true);
-    simple.mock(config, "writeFile").resolveWith(true);
-    simple.mock(config, "deleteFile").resolveWith(true);
-    simple.mock(config, "fileExists").returnWith(true);
-    simple.mock(config, "getDisplaySettingsSync").returnWith({displayid: "testid"});
+    simple.mock(commonConfig, "writeFile").resolveWith(true);
+    simple.mock(commonConfig, "deleteFile").resolveWith(true);
+    simple.mock(commonConfig, "fileExists").returnWith(true);
+    simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({displayid: "testid"});
   });
 
   afterEach(()=>{
@@ -34,7 +34,7 @@ describe("Offline Subscription Check", ()=>{
   it("create the file when remote respose is true", ()=>{
     return checker.isSubscribed()
     .then(()=>{
-      assert.equal(config.writeFile.callCount, 1);
+      assert.equal(commonConfig.writeFile.callCount, 1);
     });
   });
 
@@ -44,13 +44,13 @@ describe("Offline Subscription Check", ()=>{
 
     return checker.isSubscribed()
       .then(()=>{
-      assert.equal(config.deleteFile.callCount, 1);
+      assert.equal(commonConfig.deleteFile.callCount, 1);
     });
   });
 
   it("uses local saved response if offline", ()=>{
     simple.mock(onlineDetection, "isOnline").returnWith(false);
-    simple.mock(config, "fileExists").resolveWith(false);
+    simple.mock(commonConfig, "fileExists").resolveWith(false);
 
     return checker.isSubscribed()
     .then((status)=>{

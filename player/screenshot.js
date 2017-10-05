@@ -1,11 +1,11 @@
-const commonConfig = require("common-display-module").config;
-const messaging = require("common-display-module").messaging;
+const commonConfig = require("common-display-module");
+const messaging = require("./messaging.js");
 const platform = require("rise-common-electron").platform;
 const request = require("request");
 const viewerWindowBindings = require("../viewer/window-bindings.js");
 
-const RETRIES_TIMEOUT_DELAY = [3, 10000, 1000];
 const JPEGQUALITY = 15;
+let RETRIES_TIMEOUT_DELAY;
 
 let ipcMain, nativeImage;
 
@@ -13,6 +13,7 @@ module.exports = {
   init(_ipcMain, _nativeImage) {
     ipcMain = _ipcMain;
     nativeImage = _nativeImage;
+    RETRIES_TIMEOUT_DELAY = [3, 10 * global.secondMillis, 1 * global.secondMillis];
   },
   startListener() {
     messaging.on("screenshot-request", (data)=>{

@@ -1,7 +1,7 @@
 const platform = require("rise-common-electron").platform;
 const childProcess = require("child_process");
 const config = require("../player/config.js");
-const messaging = require("common-display-module").messaging;
+const messaging = require("./messaging.js");
 
 module.exports = {
   startListener() {

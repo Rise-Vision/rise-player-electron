@@ -1,15 +1,13 @@
 const assert = require("assert");
 const config = require("../../player/config.js");
 const onlineDetection = require("../../player/online-detection.js");
+const commonConfig = require("common-display-module");
 const {network} = require("rise-common-electron");
 const checker = require("../../player/offline-subscription-check.js");
 const simple = require("simple-mock");
-const version = require("../../version.json");
 
 describe("Offline Subscription Check", function() {
   this.timeout(3000);
-
-  before(()=>{console.log("version: " + version);});
 
   afterEach(function() {
     simple.restore();
@@ -28,14 +26,14 @@ describe("Offline Subscription Check", function() {
     });
 
     let deleteFilePromise = new Promise((res)=>{
-      config.deleteFile(checker.fileFlag(), version, res);
+      commonConfig.deleteFile(checker.fileFlag(), null, res);
     });
 
     return deleteFilePromise
     .then(checker.isSubscribed)
     .then((result)=>{
       assert(result);
-      assert(config.fileExists(checker.fileFlag(), version));
+      assert(commonConfig.fileExists(checker.fileFlag()));
     });
   });
 
@@ -43,7 +41,7 @@ describe("Offline Subscription Check", function() {
     simple.mock(log, "all").callFn(console.log);
     simple.mock(onlineDetection, "isOnline").returnWith(false);
 
-    config.writeFile(checker.fileFlag(), "", version);
+    commonConfig.writeFile(checker.fileFlag(), "");
 
     return checker.isSubscribed();
   });

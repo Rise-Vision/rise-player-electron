@@ -6,16 +6,15 @@ screenshot = require("../../player/screenshot.js"),
 restart = require("../../player/restart.js"),
 reboot = require("../../player/reboot.js"),
 gcs = require("../../player/gcs.js"),
-networkCheck = require("../../player/network-check.js"),
 riseCacheWatchdog = require("../../player/rise-cache-watchdog.js"),
 assert = require("assert"),
 simpleMock = require("simple-mock"),
 mock = require("simple-mock").mock,
 viewerContentLoader = require("../../viewer/content-loader.js"),
 gcsPolling = require("../../player/gcs-polling"),
-viewerController = require("../../player/controller.js"),
+viewerController = require("../../viewer/controller.js"),
 onlineDetection = require("../../player/online-detection.js"),
-viewer = require("viewer"),
+viewer = require("../../viewer"),
 uiController;
 
 
@@ -25,8 +24,6 @@ describe("launcher", ()=>{
   beforeEach("setup mocks", ()=>{
     mock(platform, "writeTextFile").resolveWith();
     mock(platform, "writeTextFileSync").returnWith();
-    mock(networkCheck, "checkSitesWithJava").resolveWith(0);
-    mock(networkCheck, "checkSitesWithElectron").resolveWith();
     mock(screenshot, "startListener").returnWith();
     mock(restart, "startListener").returnWith();
     mock(reboot, "startListener").returnWith();

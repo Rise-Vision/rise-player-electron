@@ -1,4 +1,4 @@
-const messaging = require("common-display-module").messaging,
+const messaging = require("./messaging.js"),
 screenshot = require("./screenshot.js"),
 dupeId = require("./duplicate-id.js"),
 restart = require("./restart.js"),

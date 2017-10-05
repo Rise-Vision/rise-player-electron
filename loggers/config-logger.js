@@ -1,10 +1,9 @@
 const platform = require("rise-common-electron").platform;
 const network = require("rise-common-electron").network;
-const moduleVersion = require("common-display-module").config.getModuleVersion;
 const bqClient = require("rise-common-electron")
         .bqClient("client-side-events", "Player_Data");
+const commonConfig = require("common-display-module");
 const config = require("../player/config.js");
-const machineId = require("../player/machine-id.js");
 const offlineSubscriptionCheck = require("../player/offline-subscription-check.js");
 
 module.exports = {
@@ -17,13 +16,13 @@ module.exports = {
       let displaySettings = config.getDisplaySettingsSync();
       let nowDate = new Date();
       let playerConfig = {
-        machine_id: machineId(),
+        machine_id: commonConfig.getMachineId(),
         display_id: displaySettings.displayid,
         os_description: platform.getOSDescription(),
-        installer_version: moduleVersion("launcher"),
+        installer_version: commonConfig.getModuleVersion("launcher"),
         player_name: "RisePlayerElectron",
         java_version: "",
-        player_version: moduleVersion(),
+        player_version: commonConfig.getModuleVersion(config.moduleName),
         cache_version: config.cacheVersion,
         viewer_version: viewerConfig.viewerVersion,
         browser_name: "Chromium",

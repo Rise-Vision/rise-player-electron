@@ -1,6 +1,6 @@
 const Primus = require("primus");
 const Socket = Primus.createSocket({transformer: "websockets"});
-const config = require("./config.js");
+const commonConfig = require("common-display-module");
 const network = require("rise-common-electron").network;
 
 let handlers = [];
@@ -9,10 +9,10 @@ let connection;
 
 module.exports = {
   init() {
-    let settings = config.getDisplaySettingsSync(),
+    let settings = commonConfig.getDisplaySettingsSync(),
       displayId = settings.displayid,
       url = settings.messagingurl,
-      serverUrl = (url || "https://display-messaging.risevision.com") + "?displayId=" + displayId + "&machineId="+config.getMachineId();
+      serverUrl = (url || "https://display-messaging.risevision.com") + "?displayId=" + displayId + "&machineId="+commonConfig.getMachineId();
 
     module.exports.disconnect();
 

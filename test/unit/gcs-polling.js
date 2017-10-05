@@ -1,6 +1,6 @@
 const Primus = require("primus");
 const platform = require("rise-common-electron").platform;
-const config = require("../../player/config.js");
+const commonConfig = require("common-display-module");
 const contentLoader = require("../../viewer/content-loader.js");
 const gcs = require("../../player/gcs.js");
 const assert = require("assert");
@@ -30,13 +30,13 @@ function Socket(url) {
 describe("GCS polling", ()=>{
   beforeEach(()=>{
     Object.keys(require.cache)
-      .filter(key=>(key.includes("installer/messaging.js") || key.includes("installer/gcs-polling.js")))
+      .filter(key=>(key.includes("player/messaging.js") || key.includes("player/gcs-polling.js")))
       .forEach(el=>{delete require.cache[el];});
 
     mock(Primus, "createSocket").returnWith(Socket);
     mock(log, "file").returnWith();
     mock(log, "external").returnWith();
-    mock(config, "getDisplaySettingsSync").returnWith({ displayid: "xyz" });
+    mock(commonConfig, "getDisplaySettingsSync").returnWith({ displayid: "xyz" });
 
     messaging = require("../../player/messaging.js");
     gcsPolling = require("../../player/gcs-polling.js");

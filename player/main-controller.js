@@ -1,11 +1,11 @@
 const platform = require("rise-common-electron").platform,
-moduleVersion = require("common-display-module").config.getModuleVersion,
 proxy = require("rise-common-electron").proxy,
 launcher = require("../player/launcher.js"),
-config = require("../player/config.js"),
+config = require("./config.js"),
+commonConfig = require("common-display-module"),
 onlineDetection = require("../player/online-detection.js"),
 flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
-flashPluginPath = require("path").join(config.getInstallDir(), flashPluginFileName);
+flashPluginPath = require("path").join(commonConfig.getInstallDir(), flashPluginFileName);
 
 let app,
 displaySettings,
@@ -33,7 +33,8 @@ function schemeHandler(request, callback) {
 }
 
 function readyHandler() {
-  log.file("started", `player version: ${moduleVersion()} - Display id: ${displaySettings.displayid || displaySettings.tempdisplayid}`);
+  const moduleVersion = commonConfig.getModuleVersion(config.moduleName);
+  log.file("started", `player version: ${moduleVersion} - Display id: ${displaySettings.displayid || displaySettings.tempdisplayid}`);
   log.debug("Electron " + process.versions.electron);
   log.debug("Chromium " + process.versions.chrome);
   log.debug("App Path " + app.getAppPath());
@@ -43,6 +44,7 @@ function readyHandler() {
   protocol.registerHttpProtocol("rchttps", schemeHandler);
 
   onlineDetection.init(ipc, BrowserWindow);
+  config.setSerialNumber(app);
 
   ipc.on("ui-pong", (event)=>{
     log.debug("UI is ready");
@@ -51,6 +53,7 @@ function readyHandler() {
     config.setIPCMain(ipc);
     event.sender.send("version", moduleVersion());
 
+    proxy.setSaveDir(commonConfig.getInstallDir());
     proxy.setEndpoint(displaySettings.proxy)
     .then(launcher.launch.bind(null, ui));
   });

@@ -36,8 +36,7 @@ describe("Screenshot", function() {
   });
 
   it("fails to upload a screenshot", function() {
-    this.timeout(5000);
-
+    global.secondMillis = 5;
     var url = "test/file.jpg";
 
     mock(request, "put").callbackWith("err", { statusCode: 404 });

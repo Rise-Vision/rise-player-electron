@@ -1,8 +1,6 @@
 var platform = require("rise-common-electron").platform;
 var mainController = require("../../player/main-controller.js");
-var proxy = require("rise-common-electron").proxy;
 var config = require("../../player/config.js");
-var networkCheck = require("../../player/network-check.js");
 var riseCacheWatchdog = require("../../player/rise-cache-watchdog.js");
 var assert = require("assert");
 var simple = require("simple-mock");
@@ -11,8 +9,10 @@ var mocks = {};
 global.secondMillis = 5;
 global.log = require("rise-common-electron").logger();
 
+let readyHandler;
+
 mocks.app = {
-  on: simple.stub(),
+  on: simple.stub().callFn((evtName, handler)=>{if (evtName === "ready") {readyHandler = handler;}}),
   makeSingleInstance: simple.stub(),
   getAppPath: simple.stub().returnWith("/fake/app/path"),
   quit: simple.stub(),
@@ -72,12 +72,8 @@ describe("mainController", ()=>{
   };
 
   beforeEach(()=>{
-    simple.mock(config, "updateDisplaySettings").resolveWith();
     simple.mock(riseCacheWatchdog, "quitCache").resolveWith();
     mainController.init(imports);
-    simple.mock(networkCheck, "updateProxyConfig").resolveWith();
-    simple.mock(networkCheck, "checkSitesWithJava").resolveWith();
-    simple.mock(networkCheck, "checkSitesWithElectron").resolveWith(0);
   });
 
   afterEach(()=>{
@@ -103,16 +99,9 @@ describe("mainController", ()=>{
       assert.doesNotThrow(()=>mainController.init(imports));
     });
 
-    it("adds duplicate instance handler", ()=>{
-      assert(mocks.app.makeSingleInstance.called);
-      assert(mocks.app.makeSingleInstance.lastCall.args[0] === mainController.duplicateInstance);
-    });
-
     it("sets up app.on event handlers", ()=>{
       assert(mocks.app.on.calls[0].args[0] === "ready");
-      assert(mocks.app.on.calls[0].args[1] === mainController.ready);
       assert(mocks.app.on.calls[1].args[0] === "window-all-closed");
-      assert(mocks.app.on.calls[1].args[1] === mainController.allClosed);
     });
 
     it("registers 'rchttp' and 'rchttps' as standard schemes", ()=> {
@@ -125,24 +114,19 @@ describe("mainController", ()=>{
   });
 
   describe("allClosed", function() {
+    beforeEach(()=>{
+      simple.mock(log, "debug").callFn(console.log);
+      simple.mock(log, "external").callFn(console.log);
+    });
+    afterEach(()=>{
+      simple.restore();
+    });
     it("quits app after a delay", (done)=>{
       mainController.allClosed();
       setTimeout(()=>{
         assert(mocks.app.quit.called);
         done();
       }, 500);
-    });
-  });
-
-  describe("duplicateInstance", ()=>{
-    it("calls riseCacheWatchdog.quit", ()=> {
-      mainController.duplicateInstance();
-      assert(riseCacheWatchdog.quitCache.called);
-    });
-
-    it("calls app.quit", ()=>{
-      mainController.duplicateInstance();
-      assert(mocks.app.quit.called);
     });
   });
 
@@ -157,42 +141,11 @@ describe("mainController", ()=>{
       simple.mock(mainController, "bindQuitAccelerator");
       simple.mock(log, "external");
       simple.mock(platform, "getHomeDir").returnWith("homedir");
-      mainController.ready();
+      readyHandler();
     });
 
     afterEach(()=>{
       simple.restore();
-    });
-
-    it("binds quit hotkey", ()=>{
-      assert(mainController.bindQuitAccelerator.called);
-    });
-
-    it("registers set-proxy handler", ()=>{
-      var call = mocks.ipc.on.calls.filter((call)=> call.args[0] === "set-proxy")[0];
-      assert(call.args[1] === mainController.setProxy);
-    });
-
-    it("registers install handler", ()=>{
-      var call = mocks.ipc.on.calls.filter((call)=> call.args[0] === "install")[0];
-      assert(call.args[1] === mainController.install);
-    });
-
-    it("registers ui-pong handler", ()=>{
-      var call = mocks.ipc.on.calls.filter((call)=> call.args[0] === "ui-pong")[0];
-      var handler = call.args[1];
-      assert(handler instanceof Function);
-    });
-
-    it("registers attendedReadyHook handler", ()=>{
-      var call = mocks.ipc.on.calls.filter((call)=> call.args[0] === "attended-ready")[0];
-      var handler = call.args[1];
-      assert(handler = mainController.attendedReadyHook);
-    });
-
-    it("calls config.setSerialNumber", ()=>{
-      assert(config.setSerialNumber.called);
-      assert(config.setSerialNumber.lastCall.args[0] === mocks.app);
     });
 
     it("registers protocols 'rchttp' and 'rchttps'", ()=>{
@@ -287,13 +240,5 @@ describe("mainController", ()=>{
       });
     });
 
-  });
-
-  describe("setProxy", ()=>{
-    it("should set proxy endoint when saving", ()=>{
-      simple.mock(proxy, "setEndpoint").returnWith();
-      mainController.setProxy(null, {});
-      assert(proxy.setEndpoint.called);
-    });
   });
 });

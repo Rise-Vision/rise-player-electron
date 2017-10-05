@@ -1,4 +1,4 @@
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 
 const appsController = require("rise-common-electron")
 .bqController("client-side-events", "Apps_Events", ".failed-apps-entries.json", commonConfig.getInstallDir());

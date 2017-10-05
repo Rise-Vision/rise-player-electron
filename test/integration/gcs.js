@@ -1,17 +1,21 @@
 global.log = global.log || {file() {}, external() {}, debug: console.log};
-
 const assert = require("assert");
 const path = require("path");
 const gcs = require("../../player/gcs.js");
 const simple = require("simple-mock");
-const config = require("../../player/config.js");
-const localGCSFilePath = path.join(config.getInstallDir(), gcs.localGCSDataFileName);
+const commonConfig = require("common-display-module");
+const localGCSFilePath = path.join(commonConfig.getInstallDir(), gcs.localGCSDataFileName);
 const network = require("rise-common-electron").network;
 const platform = require("rise-common-electron").platform;
 
 describe("GCS", function() {
   this.timeout(10000);
   let remotePath = "risevision-display-notifications/xyz/command.json";
+
+  beforeEach(()=>{
+    simple.mock(log, "debug").callFn(console.log);
+    simple.mock(log, "external").callFn(console.log);
+  });
 
   afterEach(()=>{
     simple.restore();
@@ -56,9 +60,9 @@ describe("GCS", function() {
       });
     })
     .then(()=>{
-      assert(JSON.parse(config.readFile(gcs.localGCSDataFileName))[remotePath].generation !== "-1");
-      assert(JSON.parse(config.readFile(gcs.localGCSDataFileName))[remotePath].content.command);
-      assert(JSON.parse(config.readFile(gcs.localGCSDataFileName))[remotePath].lastFetch !== 0);
+      assert(JSON.parse(commonConfig.readFile(gcs.localGCSDataFileName))[remotePath].generation !== "-1");
+      assert(JSON.parse(commonConfig.readFile(gcs.localGCSDataFileName))[remotePath].content.command);
+      assert(JSON.parse(commonConfig.readFile(gcs.localGCSDataFileName))[remotePath].lastFetch !== 0);
     });
   });
 
@@ -122,7 +126,7 @@ describe("GCS", function() {
         });
       })
       .then(()=>{
-        let currentGeneration = JSON.parse(config.readFile(gcs.localGCSDataFileName))[remotePath].generation;
+        let currentGeneration = JSON.parse(commonConfig.readFile(gcs.localGCSDataFileName))[remotePath].generation;
         return currentGeneration;
       });
     }
@@ -154,7 +158,7 @@ describe("GCS", function() {
 
     return gcs.getFileContents(remotePath)
     .then(()=>{
-      return gcs.getFileContents(remotePath, { useLocalData: false })
+      return gcs.getFileContents(remotePath, { useLocalData: false, useThrottle: false })
       .then((data)=>{
         assert(!data);
       });

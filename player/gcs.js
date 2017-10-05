@@ -1,5 +1,5 @@
 const apiEndpoint ="https://www.googleapis.com/storage/v1";
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const localGCSDataFileName = ".gcs-local-data.json";
 const network= require("rise-common-electron").network;
 const {parse:urlParse} = require("url");

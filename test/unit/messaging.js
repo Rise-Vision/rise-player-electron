@@ -1,7 +1,7 @@
 const assert = require("assert");
 const simple = require("simple-mock");
 const Primus = require("primus");
-const config = require("../../player/config.js");
+const commonConfig = require("common-display-module");
 
 let socketInstance, messaging;
 
@@ -21,12 +21,12 @@ function Socket(url) {
 describe("Messaging", ()=>{
   beforeEach(()=>{
     Object.keys(require.cache)
-    .filter(key=>key.includes("installer/messaging.js"))
+    .filter(key=>key.includes("player/messaging.js"))
     .forEach((el)=>{delete require.cache[el];});
 
     socketInstance = createSocketInstance();
     simple.mock(Primus, "createSocket").returnWith(Socket);
-    messaging = require("../../installer/messaging.js");
+    messaging = require("../../player/messaging.js");
   });
 
   afterEach(()=>{
@@ -65,7 +65,7 @@ describe("Messaging", ()=>{
     });
 
     it("uses default url", ()=>{
-      simple.mock(config, "getDisplaySettingsSync").returnWith({displayid: "12345", messagingurl: "TEST"});
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({displayid: "12345", messagingurl: "TEST"});
       messaging.init();
       assert(socketInstance.url.startsWith("TEST"));
     });

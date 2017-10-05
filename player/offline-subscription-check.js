@@ -1,12 +1,11 @@
 const {network} = require("rise-common-electron");
 const onlineDetection = require("../player/online-detection.js");
+const config = require("./config.js");
 const authHost = "store-dot-rvaserver2.appspot.com";
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const productCode = "c4b368be86245bf9501baaa6e0b00df9719869fd";
 const authorizationUrl = `https://${authHost}/v1/widget/auth?id=DID&pc=${productCode}&startTrial=false`;
 const OFFLINE_SUBSCRIPTION_FILE = "../8f0bfd16129083c1ad67370c916be014";
-const version = commonConfig.getModuleVersion("player-electron");
-
 
 function remoteSubscriptionStatus() {
   const displayId = commonConfig.getDisplaySettingsSync().displayid;
@@ -19,10 +18,14 @@ function remoteSubscriptionStatus() {
 }
 
 function localSubscriptionStatus() {
+  const version = commonConfig.getModuleVersion(config.moduleName);
+
   return Promise.resolve(commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE, version));
 }
 
 function saveStatus(status) {
+  const version = commonConfig.getModuleVersion(config.moduleName);
+
   if(status.authorized){
     try {
       commonConfig.writeFile(OFFLINE_SUBSCRIPTION_FILE, "", version);

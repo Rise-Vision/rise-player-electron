@@ -6,11 +6,8 @@ let watchdogPingInterval;
 let watchdogResponseTimeout;
 
 module.exports = {
-  init(delay) {
-    const args = delay ?
-            ["--delay", delay] :
-            [];
-    watchdog = childProcess.fork(path.join(__dirname, "..", "watchdog", "index.js"), args, {
+  init(overrideArgs = []) {
+    watchdog = childProcess.fork(path.join(__dirname, "..", "watchdog", "index.js"), overrideArgs, {
       stdio: "inherit", detached: true
     });
     watchdog.unref();
@@ -29,21 +26,24 @@ module.exports = {
 
   // Set up mainProcess-watchdog communication
   initializeCommunication() {
-    // Send a ping every 5 seconds, wait 3 seconds for pong
-    watchdogPingInterval = setInterval(()=>{
+    // Send a ping every 20 seconds, wait 15 seconds for pong
+
+    watchdogPingInterval = watchdogPingInterval || setInterval(()=>{
+      watchdogResponseTimeout = watchdogResponseTimeout || setTimeout(()=>{
+        log.external("watchdog pong timeout");
+      }, 15 * global.secondMillis);
+
       module.exports.send({
         message: "ping",
         from: "mainProcess"
       });
 
-      watchdogResponseTimeout = setTimeout(()=>{
-        log.external("watchdog pong timeout");
-      }, 3 * global.secondMillis);
-    }, 5 * global.secondMillis);
+    }, 20 * global.secondMillis);
 
     watchdog.on("message", (contents)=>{
       if (contents.message === "pong" && contents.to === "mainProcess") {
         clearTimeout(watchdogResponseTimeout);
+        watchdogResponseTimeout = null;
       }
     });
   },
@@ -51,6 +51,8 @@ module.exports = {
   quit() {
     clearInterval(watchdogPingInterval);
     clearTimeout(watchdogResponseTimeout);
+    watchdogResponseTimeout = null;
+    watchdogPingInterval = null;
     if (watchdog) {watchdog.kill();}
   }
 };

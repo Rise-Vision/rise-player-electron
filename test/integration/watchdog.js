@@ -4,12 +4,8 @@ var path = require("path");
 var fs = require("fs-extra");
 global.log = require("rise-common-electron").logger();
 var platform = require("rise-common-electron").platform;
-var config = require("../../player/config.js");
+var os = require("os");
 var watchdog = require("../../player/watchdog.js");
-var version = require("../../version.json");
-var installDir = config.getInstallDir(version);
-var scriptDir = path.join(installDir, "Installer", "scripts");
-var startScriptPath = path.join(scriptDir, "start.sh");
 var port = 9876;
 var startScript = `#!/bin/bash
                    curl -s localhost:${port}`;
@@ -25,14 +21,18 @@ server = http.createServer((request, response)=>{
   server.close();
 });
 
+server.on("error", console.error);
 server.listen(port);
 
 describe("watchdog", function () {
   this.timeout(6000);
   it("starts installer if it doesn't receive a ping within its delay  period", (done)=>{
+    var scriptDir = path.join(os.tmpdir(), "watchdog-int-test");
+    var startScriptPath = path.join(scriptDir, "start.sh");
+
     platform.writeTextFile(startScriptPath, startScript).then(()=>{
       fs.chmod(startScriptPath, "755");
-      watchdog.init(1000);
+      watchdog.init(["--delay", "1000", "--scriptDir", scriptDir]);
       setTimeout(()=>{
         assert(endpointCalled);
         done();

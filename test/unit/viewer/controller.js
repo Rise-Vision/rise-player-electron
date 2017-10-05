@@ -1,7 +1,7 @@
 var assert = require("assert");
 var simple = require("simple-mock");
 var viewerController = require("../../../viewer/controller.js");
-var config = require("../../../player/config.js");
+var commonConfig = require("common-display-module");
 var network = require("rise-common-electron").network;
 var onlineDetection = require("../../../player/online-detection");
 var gcs = require("../../../player/gcs.js");
@@ -90,7 +90,7 @@ describe("viewerController", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
 
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
-      simple.mock(config, "getDisplaySettingsSync").returnWith({viewerurl});
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
       return viewerController.launch()
       .then(()=>{
@@ -103,7 +103,7 @@ describe("viewerController", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
 
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html";
-      simple.mock(config, "getDisplaySettingsSync").returnWith({viewerurl});
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
       return viewerController.launch()
       .then(()=>{
@@ -114,7 +114,7 @@ describe("viewerController", ()=>{
     it("creates a presentation window with correct URL", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
 
-      simple.mock(config, "getDisplaySettingsSync").returnWith({
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay"
       });
 
@@ -128,7 +128,7 @@ describe("viewerController", ()=>{
     });
 
     it("launches Viewer on automatic fullscreen mode", ()=>{
-      simple.mock(config, "getDisplaySettingsSync").returnWith({
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay",
         claimid: "fakeclaim"
       });
@@ -149,7 +149,7 @@ describe("viewerController", ()=>{
     });
 
     it("launches Viewer on user provided resolution mode", ()=>{
-      simple.mock(config, "getDisplaySettingsSync").returnWith({
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay",
         claimid: "fakeclaim",
         screenwidth: "2000",
@@ -256,7 +256,7 @@ describe("viewerController", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
       simple.mock(gcs, "getFileContents").resolveWith({display: {test: "test"}});
 
-      simple.mock(config, "getDisplaySettingsSync").returnWith({
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay"
       });
 
@@ -271,7 +271,7 @@ describe("viewerController", ()=>{
 
     it("launches Viewer", ()=>{
       simple.mock(gcs, "getFileContents").resolveWith({display: {test: "test"}});
-      simple.mock(config, "getDisplaySettingsSync").returnWith({
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay",
         claimid: "fakeclaim"
       });

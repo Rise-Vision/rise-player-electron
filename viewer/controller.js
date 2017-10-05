@@ -1,7 +1,7 @@
 const path = require("path");
 const platform = require("rise-common-electron").platform;
 const proxy = require("rise-common-electron").proxy;
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const configLogger = require("../loggers/config-logger.js");
 const widgetLogger = require("../loggers/widget-logger");
 const watchdog = require("../player/watchdog.js");
@@ -167,7 +167,7 @@ module.exports = {
     .then((url)=>{
       if (proxy.configuration().hostname) {
         viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
-        log.debug("using pac" + proxy.pacScriptURL());
+        log.debug("using pac: " + proxy.pacScriptURL());
       }
 
       if (overrideUrl) {

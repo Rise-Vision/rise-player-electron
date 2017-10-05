@@ -2,7 +2,7 @@ const platform = require("rise-common-electron").platform;
 const network = require("rise-common-electron").network;
 const bqClient = require("rise-common-electron")
         .bqClient("client-side-events", "Player_Data");
-const commonConfig = require("common-display-module").config;
+const commonConfig = require("common-display-module");
 const config = require("../player/config.js");
 const machineId = require("common-display-module").machineId;
 const offlineSubscriptionCheck = require("../player/offline-subscription-check.js");

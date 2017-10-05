@@ -1,4 +1,5 @@
 const ElectronProxyAgent = require('electron-proxy-agent');
+const commonConfig = require("common-display-module");
 const network = require("rise-common-electron").network;
 const simple = require("simple-mock");
 const {ipcMain, session} = require("electron");
@@ -8,7 +9,7 @@ const assert = require("assert"),
 httpFetch = require("rise-common-electron").network.httpFetch,
 proxy = require("rise-common-electron").proxy,
 viewerController = require("../../viewer/controller.js"),
-onlineDetection = require("../../installer/online-detection.js"),
+onlineDetection = require("../../player/online-detection.js"),
 http = require("http"),
 directPort = 8080,
 proxyPort = 9090,
@@ -21,6 +22,13 @@ describe("Proxy Integration", function() {
   let proxies = [], proxied = [], proxyCallback = ()=>{}, electronAuthSuppliedCallback = ()=>{}, win;
 
   this.timeout(5000);
+
+  beforeEach(()=>{
+    simple.mock(log, "debug").callFn(console.log);
+  });
+  afterEach(()=>{
+    simple.restore();
+  });
 
   before(()=>{
     let directServer = http.createServer((req, resp)=>{
@@ -119,6 +127,7 @@ describe("Proxy Integration", function() {
 
     it("uses a proxy with proxy configuration", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
+      proxy.setSaveDir(commonConfig.getInstallDir());
       proxy.setEndpoint({hostname: "localhost", port: 9090});
 
       viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
