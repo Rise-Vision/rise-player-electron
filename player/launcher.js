@@ -5,6 +5,7 @@ restart = require("./restart.js"),
 reboot = require("./reboot.js"),
 scheduledReboot= require("./scheduled-reboot.js"),
 platform = require("rise-common-electron").platform,
+installer = require("./installer.js"),
 watchdog = require("./watchdog.js"),
 riseCacheWatchdog = require("../player/rise-cache-watchdog.js"),
 gcsPolling = require("./gcs-polling.js"),
@@ -83,10 +84,10 @@ module.exports = {
         log.all("no viewer content");
         if (gcs.hasNetworkFailure()) {
           log.debug("SHOWING FAILED PROXY");
-          uiController.showFailedProxy(gcs.apiEndpointHost());
+          installer.showFailedProxy(gcs.apiEndpointHost());
         } else {
           log.debug("SHOWING INvALID DISPLAY");
-          uiController.showInvalidDisplayId();
+          installer.showInvalidDisplayId();
         }
         return Promise.reject(Error("no content"));
       }
