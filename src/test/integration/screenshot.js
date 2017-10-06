@@ -1,9 +1,9 @@
 const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("electron");
 const childProc = require("child_process");
-const screenshot = require("../../player/screenshot.js");
-const messaging = require("../../player/messaging.js");
-const viewerWindowBindings = require("../../viewer/window-bindings.js");
-const viewerController = require("../../viewer/controller.js");
+const screenshot = require("../../main/player/screenshot.js");
+const messaging = require("../../main/player/messaging.js");
+const viewerWindowBindings = require("../../main/viewer/window-bindings.js");
+const viewerController = require("../../main/viewer/controller.js");
 const simple = require("simple-mock");
 const assert = require("assert");
 const random = Math.random();

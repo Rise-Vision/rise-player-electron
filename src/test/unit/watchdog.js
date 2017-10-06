@@ -1,7 +1,7 @@
 var assert = require("assert");
 var simple = require("simple-mock");
 var childProcess = require("child_process");
-var watchdog = require("../../player/watchdog.js");
+var watchdog = require("../../main/player/watchdog.js");
 var mocks = {};
 
 global.log = global.log || {external: console.log, debug: console.log, error:  console.log};

@@ -1,11 +1,11 @@
 const assert = require("assert");
 const simple = require("simple-mock");
-const viewerWindowBindings = require("../../../viewer/window-bindings.js");
-const gcs = require("../../../player/gcs.js");
-const config = require("../../../player/config.js");
-const contentLoader = require("../../../viewer/content-loader.js");
-const onlineDetection = require("../../../player/online-detection.js");
-const messaging = require("../../../player/messaging.js");
+const viewerWindowBindings = require("../../../main/viewer/window-bindings.js");
+const gcs = require("../../../main/player/gcs.js");
+const config = require("../../../main/player/config.js");
+const contentLoader = require("../../../main/viewer/content-loader.js");
+const onlineDetection = require("../../../main/player/online-detection.js");
+const messaging = require("../../../main/player/messaging.js");
 global.log = global.log || require("rise-common-electron").logger();
 
 describe("Viewer Content Loader", ()=>{

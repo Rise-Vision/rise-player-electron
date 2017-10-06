@@ -1,9 +1,9 @@
 const assert = require("assert");
-const config = require("../../player/config.js");
-const onlineDetection = require("../../player/online-detection.js");
+const config = require("../../main/player/config.js");
+const onlineDetection = require("../../main/player/online-detection.js");
 const commonConfig = require("common-display-module");
 const {network} = require("rise-common-electron");
-const checker = require("../../player/offline-subscription-check.js");
+const checker = require("../../main/player/offline-subscription-check.js");
 const simple = require("simple-mock");
 
 describe("Offline Subscription Check", function() {

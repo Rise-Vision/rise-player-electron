@@ -1,14 +1,14 @@
 const Primus = require("primus");
 const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
-const contentLoader = require("../../viewer/content-loader.js");
-const gcs = require("../../player/gcs.js");
+const contentLoader = require("../../main/viewer/content-loader.js");
+const gcs = require("../../main/player/gcs.js");
 const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 
-let messaging = require("../../player/messaging.js");
-let gcsPolling = require("../../player/gcs-polling.js");
+let messaging = require("../../main/player/messaging.js");
+let gcsPolling = require("../../main/player/gcs-polling.js");
 let socket;
 
 function Socket(url) {
@@ -38,8 +38,8 @@ describe("GCS polling", ()=>{
     mock(log, "external").returnWith();
     mock(commonConfig, "getDisplaySettingsSync").returnWith({ displayid: "xyz" });
 
-    messaging = require("../../player/messaging.js");
-    gcsPolling = require("../../player/gcs-polling.js");
+    messaging = require("../../main/player/messaging.js");
+    gcsPolling = require("../../main/player/gcs-polling.js");
     messaging.init("test");
   });
 

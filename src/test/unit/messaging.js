@@ -26,7 +26,7 @@ describe("Messaging", ()=>{
 
     socketInstance = createSocketInstance();
     simple.mock(Primus, "createSocket").returnWith(Socket);
-    messaging = require("../../player/messaging.js");
+    messaging = require("../../main/player/messaging.js");
   });
 
   afterEach(()=>{

@@ -3,10 +3,10 @@ simpleMock = require("simple-mock"),
 mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
 network = require("rise-common-electron").network,
-config = require("../../../player/config.js"),
-configLogger = require("../../../loggers/config-logger.js"),
+config = require("../../../main/player/config.js"),
+configLogger = require("../../../main/loggers/config-logger.js"),
 message = { message: "viewer-config", viewerVersion: "viewerVersion", width: 1280, height: 1024 },
-offlineSubscriptionCheck = require("../../../player/offline-subscription-check.js");
+offlineSubscriptionCheck = require("../../../main/player/offline-subscription-check.js");
 
 mock(network, "registerProxyUpdatedObserver");
 

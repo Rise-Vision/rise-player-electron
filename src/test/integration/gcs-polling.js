@@ -1,10 +1,10 @@
 global.log = global.log || {file() {}, external() {}, debug: console.log, error: {}};
 
 const assert = require("assert");
-const gcsPolling = require("../../player/gcs-polling.js");
+const gcsPolling = require("../../main/player/gcs-polling.js");
 const simple = require("simple-mock");
 const platform = require("rise-common-electron").platform;
-const config = require("../../player/config.js");
+const config = require("../../main/player/config.js");
 
 describe("GCS Polling", function() {
   this.timeout(5000);

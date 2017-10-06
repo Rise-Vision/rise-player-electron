@@ -1,5 +1,5 @@
 const {ipcMain, BrowserWindow} = require("electron");
-const onlineDetection = require("../../player/online-detection.js");
+const onlineDetection = require("../../main/player/online-detection.js");
 const assert = require("assert");
 
 describe("Online Detection", ()=>{

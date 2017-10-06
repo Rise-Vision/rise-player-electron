@@ -1,7 +1,7 @@
 const {BrowserWindow, app, globalShortcut} = require("electron");
 const assert = require("assert");
 const simple = require("simple-mock");
-const viewerController = require("../../viewer/controller.js");
+const viewerController = require("../../main/viewer/controller.js");
 const { ipcRenderer, ipcMain } = require('electron-ipc-mock')();
 global.log = require("rise-common-electron").logger();
 

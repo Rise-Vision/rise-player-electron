@@ -4,7 +4,7 @@ mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
 commonConfig = require("common-display-module"),
 network = require("rise-common-electron").network,
-config = require("../../player/config.js");
+config = require("../../main/player/config.js");
 
 mock(network, "registerProxyUpdatedObserver");
 

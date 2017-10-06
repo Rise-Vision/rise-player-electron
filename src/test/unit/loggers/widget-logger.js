@@ -4,7 +4,7 @@ const assert = require("assert"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
   commonConfig = require("common-display-module"),
-  widgetLogger = require("../../../loggers/widget-logger.js"),
+  widgetLogger = require("../../../main/loggers/widget-logger.js"),
   message = { message: "widget-log", table: "testTable", params: JSON.stringify({event: "Test"}), suffix: "20170612"},
   bqClient = widgetLogger.getBQClient();
 

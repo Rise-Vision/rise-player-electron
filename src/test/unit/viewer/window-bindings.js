@@ -1,6 +1,6 @@
 var assert = require("assert");
 var simple = require("simple-mock");
-var viewerWindowBindings = require("../../../viewer/window-bindings.js");
+var viewerWindowBindings = require("../../../main/viewer/window-bindings.js");
 var mocks = {};
 
 mocks.webContents = {

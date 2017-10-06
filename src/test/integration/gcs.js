@@ -1,7 +1,7 @@
 global.log = global.log || {file() {}, external() {}, debug: console.log};
 const assert = require("assert");
 const path = require("path");
-const gcs = require("../../player/gcs.js");
+const gcs = require("../../main/player/gcs.js");
 const simple = require("simple-mock");
 const commonConfig = require("common-display-module");
 const localGCSFilePath = path.join(commonConfig.getInstallDir(), gcs.localGCSDataFileName);

@@ -1,7 +1,7 @@
-const duplicate = require("../../player/duplicate-id.js"),
-messaging = require("../../player/messaging.js"),
-viewerController = require("../../viewer/controller.js"),
-watchdog = require("../../player/watchdog.js"),
+const duplicate = require("../../main/player/duplicate-id.js"),
+messaging = require("../../main/player/messaging.js"),
+viewerController = require("../../main/viewer/controller.js"),
+watchdog = require("../../main/player/watchdog.js"),
 simple = require("simple-mock"),
 assert = require("assert");
 

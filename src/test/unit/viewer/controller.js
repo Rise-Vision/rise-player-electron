@@ -1,12 +1,12 @@
 var assert = require("assert");
 var simple = require("simple-mock");
-var viewerController = require("../../../viewer/controller.js");
+var viewerController = require("../../../main/viewer/controller.js");
 var commonConfig = require("common-display-module");
 var network = require("rise-common-electron").network;
-var onlineDetection = require("../../../player/online-detection");
-var gcs = require("../../../player/gcs.js");
-var viewerContentLoader = require("../../../viewer/content-loader.js");
-var messaging = require("../../../player/messaging.js");
+var onlineDetection = require("../../../main/player/online-detection");
+var gcs = require("../../../main/player/gcs.js");
+var viewerContentLoader = require("../../../main/viewer/content-loader.js");
+var messaging = require("../../../main/player/messaging.js");
 var mocks = {};
 
 mocks.app = {

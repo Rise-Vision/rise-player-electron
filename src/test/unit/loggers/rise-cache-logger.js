@@ -3,7 +3,7 @@ const assert = require("assert"),
   path = require("path"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
-  config = require("../../../player/config.js"),
+  config = require("../../../main/player/config.js"),
   message = {
     event: "info",
     event_details: "test info",
@@ -22,7 +22,7 @@ describe("Rise Cache logger", ()=>{
     mock(config, "getInstallDir").returnWith("test_dir");
     mock(log, "file").returnWith();
 
-    riseCacheLogger = require("../../../loggers/rise-cache-logger.js");
+    riseCacheLogger = require("../../../main/loggers/rise-cache-logger.js");
     bqClient = riseCacheLogger.getBQClient();
   });
 

@@ -5,7 +5,7 @@ var fs = require("fs-extra");
 global.log = require("rise-common-electron").logger();
 var platform = require("rise-common-electron").platform;
 var os = require("os");
-var watchdog = require("../../player/watchdog.js");
+var watchdog = require("../../main/player/watchdog.js");
 var port = 9876;
 var startScript = `#!/bin/bash
                    curl -s localhost:${port}`;
