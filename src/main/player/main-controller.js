@@ -1,5 +1,5 @@
 const platform = require("rise-common-electron").platform,
-proxy = require("rise-common-electron").proxy,
+{proxy} = require("rise-common-electron"),
 launcher = require("../player/launcher.js"),
 config = require("./config.js"),
 commonConfig = require("common-display-module"),
@@ -45,17 +45,9 @@ function readyHandler() {
   onlineDetection.init(ipc, BrowserWindow);
   config.setSerialNumber(app);
 
-  ipc.on("ui-pong", (event)=>{
-    log.debug("UI is ready");
-    log.setUIWindow(event.sender);
-    config.setUIWindow(event.sender);
-    config.setIPCMain(ipc);
-    event.sender.send("version", moduleVersion());
-
-    proxy.setSaveDir(commonConfig.getInstallDir());
-    proxy.setEndpoint(displaySettings.proxy)
-    .then(launcher.launch);
-  });
+  proxy.setSaveDir(commonConfig.getInstallDir());
+  proxy.setEndpoint(displaySettings.proxy);
+  launcher.launch();
 }
 
 module.exports = {

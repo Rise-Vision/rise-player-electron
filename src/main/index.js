@@ -1,11 +1,10 @@
 var {app, session, protocol} = require("electron"),
 ipc = require("electron").ipcMain,
 BrowserWindow = require("electron").BrowserWindow,
+commonConfig = require("common-display-module"),
 globalShortcut = require("electron").globalShortcut,
-platform = require("rise-common-electron").platform,
-network = require("rise-common-electron").network,
+{network, proxy, platform} = require("rise-common-electron"),
 nativeImage = require('electron').nativeImage,
-proxy = require("rise-common-electron").proxy,
 mainController = require("./player/main-controller.js"),
 screenshot = require("./player/screenshot.js"),
 config = require("./player/config.js"),
@@ -17,13 +16,13 @@ displaySettings;
 
 global.secondMillis = 1000;
 
-global.log = require("rise-common-electron").logger(preventBQLog ? null : externalLogger, config.getInstallDir());
+global.log = require("rise-common-electron").logger(preventBQLog ? null : externalLogger, commonConfig.getInstallDir());
 
 log.resetLogFiles(Math.pow(10,5));
 
 if(preventBQLog) { log.file("Environment variable RISE_PREVENT_BQ_LOG. Not logging to BQ."); }
 
-displaySettings = config.getDisplaySettingsSync();
+displaySettings = commonConfig.getDisplaySettingsSync();
 log.setDisplaySettings(displaySettings);
 
 process.on("uncaughtException", (err)=>{

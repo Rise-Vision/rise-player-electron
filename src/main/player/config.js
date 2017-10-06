@@ -1,4 +1,4 @@
-const commonConfig = require("common-display-module");
+const moduleCommon = require("common-display-module");
 const {join: pathJoin, dirname} = require("path");
 const cacheVersion = require(pathJoin(dirname(require.resolve("rise-cache-v2")), "package.json")).version;
 const platform = require("rise-common-electron").platform;
@@ -23,15 +23,18 @@ function getSerialFileName(app) {
 module.exports = {
   moduleName: "player-electron",
   cacheVersion,
+  getUncaughtErrorFileName() {
+    return pathJoin(moduleCommon.getInstallDir(), "uncaught-exception.json");
+  },
   getSerialNumber() {
     return serialNumber || "";
   },
   noNetworkCountdownSeconds: 60,
   getPlayerGracefulShutdownPath() {
-    return pathJoin(commonConfig.getInstallDir(), "graceful_shutdown_flag");
+    return pathJoin(moduleCommon.getInstallDir(), "graceful_shutdown_flag");
   },
   setGracefulShutdownFlag() {
-    commonConfig.writeFile("graceful_shutdown_flag", "");
+    moduleCommon.writeFile("graceful_shutdown_flag", "");
   },
   setSerialNumber(app) {
     if (!app) {
