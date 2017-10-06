@@ -1,5 +1,9 @@
 node_modules/
-builds/
+src/test/test-results.xml
+widgets/
+src/main/viewer/localviewer/
+private-keys/
+build/
 coverage/
 test/test-results.xml
 *.zip
