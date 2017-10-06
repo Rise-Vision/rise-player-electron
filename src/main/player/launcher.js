@@ -17,7 +17,7 @@ offlineSubscriptionCheck = require("./offline-subscription-check.js"),
 viewerContentLoader = require("../viewer/content-loader.js");
 
 module.exports = {
-  launch(uiController) {
+  launch() {
     log.all("messaging init", "", 5);
     dupeId.attachMessagingHandlers();
     messaging.init();
@@ -55,7 +55,7 @@ module.exports = {
       if (loadViewer) {return Promise.resolve();}
 
       log.all("offline notice", "", 100);
-      uiController.showOffline();
+      installer.showOffline();
       restart.startCountdown();
       return Promise.reject("not online");
     })

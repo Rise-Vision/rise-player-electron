@@ -10,7 +10,6 @@ mainController = require("./player/main-controller.js"),
 screenshot = require("./player/screenshot.js"),
 config = require("./player/config.js"),
 preventBQLog = process.env.RISE_PREVENT_BQ_LOG,
-ui = require("./player/ui/controller.js"),
 viewerController = require("./viewer/controller.js"),
 ElectronProxyAgent = require("electron-proxy-agent"),
 externalLogger = require("./loggers/installer-logger.js"),
@@ -52,6 +51,6 @@ network.registerProxyUpdatedObserver((fields)=>{
 
 viewerController.init(BrowserWindow, app, globalShortcut, ipc);
 
-mainController.init({ app, displaySettings, ipc, ui, globalShortcut, BrowserWindow, protocol });
+mainController.init({ app, displaySettings, ipc, globalShortcut, BrowserWindow, protocol });
 
 screenshot.init(ipc, nativeImage);

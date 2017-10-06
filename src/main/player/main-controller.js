@@ -11,7 +11,6 @@ let app,
 displaySettings,
 ipc,
 globalShortcut,
-ui,
 mainWindow,
 BrowserWindow,
 protocol;
@@ -55,13 +54,13 @@ function readyHandler() {
 
     proxy.setSaveDir(commonConfig.getInstallDir());
     proxy.setEndpoint(displaySettings.proxy)
-    .then(launcher.launch.bind(null, ui));
+    .then(launcher.launch);
   });
 }
 
 module.exports = {
   init(imports) {
-    var importKeys = ["app", "displaySettings", "ipc", "ui", "globalShortcut", "BrowserWindow", "protocol"];
+    var importKeys = ["app", "displaySettings", "ipc", "globalShortcut", "BrowserWindow", "protocol"];
 
     importKeys.forEach((key)=>{
       // Catches null and undefined
@@ -73,7 +72,6 @@ module.exports = {
     app = imports.app;
     displaySettings = imports.displaySettings;
     ipc = imports.ipc;
-    ui = imports.ui;
     globalShortcut = imports.globalShortcut;
     BrowserWindow = imports.BrowserWindow;
     protocol = imports.protocol;
