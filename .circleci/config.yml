@@ -1,0 +1,64 @@
+version: 2
+
+jobs:
+  "test_unit":
+    docker: &DOCKERIMAGE
+      - image: jenkinsrise/cci-v2-launcher-electron:0.0.4
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          command: npm run test
+          no_output_timeout: 1m
+
+  "test_integration":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          command: npm run ci-integration
+          no_output_timeout: 1m
+
+  "build_deploy":
+    docker: &DOCKERIMAGE
+      - image: jenkinsrise/cci-v2-launcher-electron:0.0.4
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: ./build.sh && deploy.sh
+
+workflows:
+  version: 2
+  workflow1:
+    jobs:
+      - "test_unit"
+      - "test_integration"
+      - "build_deploy":
+          requires:
+            - test_unit
+            - test_integration
+          filters:
+            branches:
+              only:
+                - master
+                - /^stage\/.*/
+                - /^staging\/.*/
