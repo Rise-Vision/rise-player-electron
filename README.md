@@ -26,7 +26,12 @@ npm run test-no-coverage
 npm run integration
 ```
 
-### Build it
+### Build
 ```
 ./build.sh
+```
+
+### Deploy
+```
+./deploy.sh
 ```
