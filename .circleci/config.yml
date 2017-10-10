@@ -3,7 +3,7 @@ version: 2
 jobs:
   "test_unit":
     docker: &DOCKERIMAGE
-      - image: jenkinsrise/cci-v2-launcher-electron:0.0.4
+      - image: jenkinsrise/cci-v2-launcher-electron:0.0.5
     steps:
       - checkout
       - restore_cache:
