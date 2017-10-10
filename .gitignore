@@ -1,4 +1,5 @@
 node_modules/
+build-temp/
 src/test/test-results.xml
 widgets/
 src/main/viewer/localviewer/
