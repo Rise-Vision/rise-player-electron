@@ -21,6 +21,6 @@ cd build && 7z a -mx4 player.7z player.asar package.json
 cat ../win-sfx/7zS.sfx ../win-sfx/sfx_config.txt player.7z >player.exe
 rm player.7z
 rm player.asar
+rm package.json
 cd ..
 rm -rf build-temp
-rm build/package.json

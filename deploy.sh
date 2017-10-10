@@ -1,14 +1,8 @@
 #!/bin/bash
 MODULENAME="player"
-VERSION=$(date +%Y.%m.%d.%H.%M)
+VERSION=$(cat version)
 echo "staging $VERSION"
 
-gsutil cp build/* gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/
-gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
-gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
-
-if [ $CIRCLE_BRANCH == "master" ]; then
-  echo "deploying to master"
   # gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/master
   # gsutil cp gs://install-versions.risevision.com/electron*.json .
   # for f in electron*.json; do sed -i "s/\"InstallerElectronVersion.*/\"InstallerElectronVersion\":\"$(cat /tmp/shared-work
@@ -28,4 +22,3 @@ if [ $CIRCLE_BRANCH == "master" ]; then
   # gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-version
   # gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-version
   # gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-version
-fi
