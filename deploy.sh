@@ -1,24 +1,23 @@
 #!/bin/bash
 MODULENAME="player"
 VERSION=$(cat version)
-echo "staging $VERSION"
+echo "deploying $VERSION"
 
-  # gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/master
-  # gsutil cp gs://install-versions.risevision.com/electron*.json .
-  # for f in electron*.json; do sed -i "s/\"InstallerElectronVersion.*/\"InstallerElectronVersion\":\"$(cat /tmp/shared-work
-  # space/version-string/version)\",/" $f;done
-  # for f in electron*.json; do sed -i 's/"LatestRolloutPercent.*/"LatestRolloutPercent":2,/' $f;done
-  # gsutil cp electron*.json gs://install-versions.risevision.com/master/
-  # gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/master/*.{sh,exe,json}
-  # gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/master/*.sh
-  # gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/master/*.{sh,exe,json}
-  # gsutil cp -p gs://install-versions.risevision.com/*.{exe,sh,json} gs://install-versions.risevision.com/backups/$(cat /tm
-  # p/shared-workspace/version-string/version)/
-  # gsutil -m cp -p gs://install-versions.risevision.com/master/* gs://install-versions.risevision.com/
-  # gsutil -m cp -p gs://install-versions.risevision.com/master/* gs://install-versions.risevision.com/releases/$(cat /tmp/s
-  # hared-workspace/version-string/version)/
-  # echo -n "RisePlayerElectron $(cat /tmp/shared-workspace/version-string/version)" > latest-version
-  # gsutil cp latest-version gs://install-versions.risevision.com
-  # gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-version
-  # gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-version
-  # gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-version
+gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* 
+mkdir -p manifests
+gsutil cp gs://install-versions.risevision.com/display-modules-*.json manifests
+
+find manifests -name "*.json" -exec node update-module-version.js '{}' $MODULENAME $VERSION 0
+gsutil cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
+gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
+gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*.sh
+gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
+gsutil cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/backups/$MODULENAME/$VERSION
+gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/
+gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/releases/$MODULENAME/$VERSION
+
+echo -n "$VERSION" > latest-version
+gsutil cp latest-version gs://install-versions.risevision.com
+gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-version
+gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-version
+gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-version
