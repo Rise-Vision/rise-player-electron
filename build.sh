@@ -1,3 +1,4 @@
+set -x
 rm -rf build-temp
 cp -r src/main build-temp
 mkdir -p build-temp/main/viewer/localviewer && mkdir -p build-temp/widgets
