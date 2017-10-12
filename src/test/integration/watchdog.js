@@ -12,31 +12,38 @@ var startScript = `#!/bin/bash
 var server;
 var endpointCalled;
 
-server = http.createServer((request, response)=>{
-  response.end("ok");
-  endpointCalled = true;
-  request.connection.end();
-  request.connection.destroy();
+before(()=>{
+  server = http.createServer((request, response)=>{
+    response.end("ok");
+    endpointCalled = true;
+    request.connection.end();
+    request.connection.destroy();
 
-  server.close();
+    server.close();
+  });
+
+  server.on("error", console.error);
+
+  return new Promise(res=>server.listen(port, res));
 });
 
-server.on("error", console.error);
-server.listen(port);
-
-describe("watchdog", function () {
+describe.only("watchdog", function () {
   this.timeout(6000);
-  it("starts installer if it doesn't receive a ping within its delay  period", (done)=>{
+  it("starts installer if it doesn't receive a ping within its delay  period", ()=>{
     var scriptDir = path.join(os.tmpdir(), "watchdog-int-test");
     var startScriptPath = path.join(scriptDir, "start.sh");
 
-    platform.writeTextFile(startScriptPath, startScript).then(()=>{
-      fs.chmod(startScriptPath, "755");
+    return platform.writeTextFile(startScriptPath, startScript)
+    .then(()=>{
+      return fs.chmod(startScriptPath, "755");
+    })
+    .then(()=>{
       watchdog.init(["--delay", "1000", "--scriptDir", scriptDir]);
-      setTimeout(()=>{
-        assert(endpointCalled);
-        done();
-      }, 1500);
+
+      return new Promise(res=>setTimeout(res, 1500));
+    })
+    .then(()=>{
+      assert(endpointCalled);
     });
   });
 });
