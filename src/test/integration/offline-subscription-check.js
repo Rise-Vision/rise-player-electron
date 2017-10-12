@@ -1,5 +1,4 @@
 const assert = require("assert");
-const config = require("../../main/player/config.js");
 const onlineDetection = require("../../main/player/online-detection.js");
 const commonConfig = require("common-display-module");
 const {network} = require("rise-common-electron");
@@ -16,7 +15,7 @@ describe("Offline Subscription Check", function() {
   it("saves the offline subscription flag file after remote subscription confirmation", ()=>{
     simple.mock(log, "all").callFn(console.log);
     simple.mock(onlineDetection, "isOnline").returnWith(true);
-    simple.mock(config, "getDisplaySettingsSync").returnWith({displayid:"testid"});
+    simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({displayid:"testid"});
     simple.mock(network, "httpFetch").resolveWith({
       json() {
         return {

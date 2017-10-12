@@ -1,6 +1,5 @@
 const {network} = require("rise-common-electron");
 const onlineDetection = require("../player/online-detection.js");
-const config = require("./config.js");
 const authHost = "store-dot-rvaserver2.appspot.com";
 const commonConfig = require("common-display-module");
 const productCode = "c4b368be86245bf9501baaa6e0b00df9719869fd";
@@ -18,23 +17,19 @@ function remoteSubscriptionStatus() {
 }
 
 function localSubscriptionStatus() {
-  const version = commonConfig.getModuleVersion(config.moduleName);
-
-  return Promise.resolve(commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE, version));
+  return Promise.resolve(commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE));
 }
 
 function saveStatus(status) {
-  const version = commonConfig.getModuleVersion(config.moduleName);
-
   if(status.authorized){
     try {
-      commonConfig.writeFile(OFFLINE_SUBSCRIPTION_FILE, "", version);
+      commonConfig.writeFile(OFFLINE_SUBSCRIPTION_FILE, "");
     } catch(e) {
       log.all(e);
     }
   } else {
-    commonConfig.deleteFile(OFFLINE_SUBSCRIPTION_FILE, version, (error)=>{
-      if(error)log.all(error);
+    commonConfig.deleteFile(OFFLINE_SUBSCRIPTION_FILE, null, (error)=>{
+      if (error) {log.all(error);}
     });
   }
 
