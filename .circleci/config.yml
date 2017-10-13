@@ -36,7 +36,13 @@ jobs:
     docker: *DOCKERIMAGE
     steps:
       - checkout
+      - restore_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
       - run: ./build.sh
+      - save_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
       - persist_to_workspace:
           root: .
           paths:
