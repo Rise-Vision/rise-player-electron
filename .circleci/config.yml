@@ -32,11 +32,23 @@ jobs:
           command: npm run ci-integration
           no_output_timeout: 1m
 
-  "build_stage":
+  "build":
     docker: *DOCKERIMAGE
     steps:
       - checkout
-      - run: ./build.sh && ./stage.sh
+      - run: ./build.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  "stage":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: ./stage.sh
       - persist_to_workspace:
           root: .
           paths:
@@ -66,10 +78,16 @@ workflows:
     jobs:
       - "test_unit"
       - "test_integration"
-      - "build_stage":
+      - "build":
+          filters:
+            branches:
+              only:
+                - master
+                - /^stage\/.*/
+                - /^staging\/.*/
+      - "stage":
           requires:
-            - test_unit
-            - test_integration
+            - build
           filters:
             branches:
               only:
@@ -78,7 +96,9 @@ workflows:
                 - /^staging\/.*/
       - "e2e":
           requires:
-            - build_stage
+            - test_unit
+            - test_integration
+            - stage
           filters:
             branches:
               only:
