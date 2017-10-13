@@ -27,7 +27,7 @@ before(()=>{
   return new Promise(res=>server.listen(port, res));
 });
 
-describe.only("watchdog", function () {
+describe("watchdog", function () {
   this.timeout(6000);
   it("starts installer if it doesn't receive a ping within its delay  period", ()=>{
     var scriptDir = path.join(os.tmpdir(), "watchdog-int-test");
@@ -40,7 +40,7 @@ describe.only("watchdog", function () {
     .then(()=>{
       watchdog.init(["--delay", "1000", "--scriptDir", scriptDir]);
 
-      return new Promise(res=>setTimeout(res, 1500));
+      return new Promise(res=>setTimeout(res, 3500));
     })
     .then(()=>{
       assert(endpointCalled);
