@@ -1,6 +1,7 @@
 delete process.env.ELECTRON_RUN_AS_NODE;
 
 const path = require("path");
+const moduleCommon = require("common-display-module");
 const spawn = require("child_process").spawn;
 
 function isWindows() {
@@ -23,7 +24,7 @@ if (process.argv[2] === "--delay") {
 if (process.argv[4] === "--scriptDir") {
   scriptDir = process.argv[5];
 } else {
-  scriptDir = path.join(__dirname, "..", "scripts");
+  scriptDir = moduleCommon.getScriptDir();
 }
 
 function restartPlatform(component) {

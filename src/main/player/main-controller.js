@@ -83,5 +83,24 @@ module.exports = {
     setTimeout(()=>app.quit(), 3 * global.secondMillis);
   },
 
+  quit() {
+    const scriptPath = path.join(moduleCommon.getScriptDir(),
+      platform.isWindows() ? "background.jse" : "stop.sh");
+    const processCmd = platform.isWindows() ? "cmd" : scriptPath;
+    const scriptArgs = platform.isWindows() ? ["/c", scriptPath, "stop.bat"] : [null];
+
+    platform.launchExplorer();
+    platform.startProcess(processCmd, scriptArgs);
+  },
+
+  bindQuitAccelerator() {
+    const possibleKeys = ["Q", "K", "F4"];
+    possibleKeys.some((key)=>{
+      const accelerator = `CommandOrControl+Shift+${key}`;
+      globalShortcut.register(accelerator, module.exports.quit);
+      return globalShortcut.isRegistered(accelerator);
+    }) || log.external("error", "could not register quit hotkey");
+  },
+
   mainWindow
 };
