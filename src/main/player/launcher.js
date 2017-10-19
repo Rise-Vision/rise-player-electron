@@ -86,7 +86,7 @@ module.exports = {
           log.debug("SHOWING FAILED PROXY");
           installer.showFailedProxy(gcs.apiEndpointHost());
         } else {
-          log.debug("SHOWING INvALID DISPLAY");
+          log.debug("SHOWING INVALID DISPLAY");
           installer.showInvalidDisplayId();
         }
         return Promise.reject(Error("no content"));
