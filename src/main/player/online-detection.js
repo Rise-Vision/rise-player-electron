@@ -1,5 +1,6 @@
 let onlineDetectionWindow;
 let onlineStatus;
+let dirnameUrl = __dirname.replace(/#/g, "%23");
 
 module.exports = {
   init(ipcMain, BrowserWindow) {
@@ -7,7 +8,7 @@ module.exports = {
 
     return new Promise((res)=>{
       onlineDetectionWindow = new BrowserWindow({ width: 0, height: 0, show: false });
-      onlineDetectionWindow.loadURL(`file://${__dirname}/online-detection.html`);
+      onlineDetectionWindow.loadURL(`file://${dirnameUrl}/online-detection.html`);
       ipcMain.on("online-status-changed", (evt, status)=>{
         onlineStatus = status;
         res();
