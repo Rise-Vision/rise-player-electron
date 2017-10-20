@@ -21,6 +21,7 @@ describe("Restart", ()=>{
 
   it("calls the correct restart command on Windows", ()=>{
     mock(platform, "isWindows").returnWith(true);
+    mock(platform, "getHomeDir").returnWith("Users/rv");
 
     restart.restart();
 

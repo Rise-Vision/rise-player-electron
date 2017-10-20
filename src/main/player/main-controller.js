@@ -5,7 +5,8 @@ config = require("./config.js"),
 commonConfig = require("common-display-module"),
 onlineDetection = require("../player/online-detection.js"),
 flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
-flashPluginPath = require("path").join(commonConfig.getInstallDir(), flashPluginFileName);
+flashPluginPath = require("path").join(commonConfig.getInstallDir(), flashPluginFileName),
+path = require("path");
 
 let app,
 displaySettings,
@@ -41,6 +42,8 @@ function readyHandler() {
 
   protocol.registerHttpProtocol("rchttp", schemeHandler);
   protocol.registerHttpProtocol("rchttps", schemeHandler);
+
+  module.exports.bindQuitAccelerator();
 
   onlineDetection.init(ipc, BrowserWindow);
   config.setSerialNumber(app);
@@ -84,11 +87,10 @@ module.exports = {
   },
 
   quit() {
-    const scriptPath = path.join(moduleCommon.getScriptDir(),
+    const scriptPath = path.join(commonConfig.getScriptDir(),
       platform.isWindows() ? "background.jse" : "stop.sh");
     const processCmd = platform.isWindows() ? "cmd" : scriptPath;
     const scriptArgs = platform.isWindows() ? ["/c", scriptPath, "stop.bat"] : [null];
-
     platform.launchExplorer();
     platform.startProcess(processCmd, scriptArgs);
   },
