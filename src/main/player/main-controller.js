@@ -6,7 +6,6 @@ commonConfig = require("common-display-module"),
 onlineDetection = require("../player/online-detection.js"),
 flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
 flashPluginPath = require("path").join(commonConfig.getInstallDir(), flashPluginFileName),
-installer = require("./installer.js"),
 path = require("path");
 
 let app,
@@ -94,7 +93,6 @@ module.exports = {
     const scriptArgs = platform.isWindows() ? ["/c", scriptPath, "stop.bat"] : [null];
     platform.launchExplorer();
     platform.startProcess(processCmd, scriptArgs);
-    installer.quit();
   },
 
   bindQuitAccelerator() {

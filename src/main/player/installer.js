@@ -1,39 +1,21 @@
 const moduleCommon = require("common-display-module");
 
-function broadcastMessage(message) {
-  moduleCommon.connect("player").then((lmsClient)=>{
-    lmsClient.broadcastMessage(message);
-  });
-}
-
 module.exports = {
   showFailedProxy(host) {
-    let message = {};
     log.debug(`restarting installer to show failed ${host}`);
-    message.from = "player";
-    message.topic = "unable_to_connect_to_GCS";
-    message.data = host;
-    broadcastMessage(message);
+    moduleCommon.broadcastMessage({from: "player", topic:"unable_to_connect_to_GCS", data: host});
+
   },
   showInvalidDisplayId() {
-    let message = {};
     log.debug("restarting installer to show invalid display id");
-    message.from = "player";
-    message.topic = "invalid_display";
-    broadcastMessage(message);
+    moduleCommon.broadcastMessage({from: "player", topic:"invalid_display"});
   },
   showOffline() {
-    let message = {};
     log.debug("restarting installer to show offline screen");
-    message.from = "player";
-    message.topic = "offline";
-    broadcastMessage(message);
+    moduleCommon.broadcastMessage({from: "player", topic:"offline"});
   },
-  quit() {
-    let message = {};
-    log.debug("Quitting intaller");
-    message.from = "player";
-    message.topic = "quit";
-    broadcastMessage(message);
+  playerLoadComplete() {
+    log.debug("Player load complete");
+    moduleCommon.broadcastMessage({from: "player", topic:"player_load_complete"});
   }
 };

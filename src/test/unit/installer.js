@@ -3,12 +3,10 @@ const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 const installer = require("../../main/player/installer.js");
 const assert = require("assert");
-let connectMock = null;
+let broadcastMessageMock = null;
 describe("installer", ()=>{
   beforeEach("setup mocks", ()=>{
-    connectMock = mock(moduleCommon, "connect").resolveWith({
-      broadcastMessage: mock()
-    });
+    broadcastMessageMock = mock(moduleCommon, "broadcastMessage");
   });
 
   afterEach("clean mocks", ()=>{
@@ -17,21 +15,21 @@ describe("installer", ()=>{
 
   it("should broadcastMessage when showFailedProxy is called", ()=>{
     installer.showFailedProxy("url");
-    assert(connectMock.called);
-  });
-
-  it("should broadcastMessage when showFailedProxy is called with player id", ()=>{
-    installer.showFailedProxy("url");
-    assert.equal(connectMock.lastCall.args[0], "player");
+    assert(broadcastMessageMock.lastCall.args[0], {from: "player", topic:"unable_to_connect_to_GCS", data: "url"});
   });
 
   it("should broadcastMessage when showInvalidDisplayId is called", ()=>{
-    installer.showInvalidDisplayId("url");
-    assert(connectMock.called);
+    installer.showInvalidDisplayId();
+    assert(broadcastMessageMock.lastCall.args[0], {from: "player", topic:"invalid_display"});
   });
 
   it("should broadcastMessage when showOffline is called", ()=>{
-    installer.showOffline("url");
-    assert(connectMock.called);
+    installer.showOffline();
+    assert(broadcastMessageMock.lastCall.args[0], {from: "player", topic:"offline"});
+  });
+
+  it("should broadcastMessage when playerLoadComplete is called", ()=>{
+    installer.playerLoadComplete();
+    assert(broadcastMessageMock.lastCall.args[0], {from: "player", topic:"player_load_complete"});
   });
 });

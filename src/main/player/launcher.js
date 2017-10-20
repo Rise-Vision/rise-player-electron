@@ -93,6 +93,7 @@ module.exports = {
       }
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
+      installer.playerLoadComplete();
     })
     .then(gcsPolling.init);
   }

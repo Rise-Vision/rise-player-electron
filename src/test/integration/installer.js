@@ -47,8 +47,8 @@ describe("Installer", ()=>{
     });
 
     it("should send the quit message", (done)=>{
-      installer.quit();
-      expectation = {from: "player", topic:"quit"};
+      installer.playerLoadComplete();
+      expectation = {from: "player", topic:"player_load_complete"};
       scenarioDone = done;
     });
   });
