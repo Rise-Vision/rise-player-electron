@@ -15,13 +15,13 @@ cp -r node_modules build-temp
 rm -rf build
 mkdir -p build
 echo '{"useElectron": true}' >build/package.json
-asar p build-temp build/player.asar
-makeself --notemp build player.sh "Rise Player"
-mv player.sh build
-cd build && 7z a -mx4 player.7z player.asar package.json
-cat ../win-sfx/7zS.sfx ../win-sfx/sfx_config.txt player.7z >player.exe
-rm player.7z
-rm player.asar
+asar p build-temp build/player-electron.asar
+makeself --notemp build player-electron.sh "Rise Player"
+mv player-electron.sh build
+cd build && 7z a -mx4 player-electron.7z player-electron.asar package.json
+cat ../win-sfx/7zS.sfx ../win-sfx/sfx_config.txt player-electron.7z >player-electron.exe
+rm player-electron.7z
+rm player-electron.asar
 rm package.json
 cd ..
 rm -rf build-temp

@@ -1,5 +1,5 @@
 #!/bin/bash
-MODULENAME="player"
+MODULENAME="player-electron"
 VERSION=$(cat version)
 echo "deploying $VERSION"
 
