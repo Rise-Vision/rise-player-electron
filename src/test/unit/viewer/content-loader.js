@@ -2,15 +2,15 @@ const assert = require("assert");
 const simple = require("simple-mock");
 const viewerWindowBindings = require("../../../main/viewer/window-bindings.js");
 const gcs = require("../../../main/player/gcs.js");
-const config = require("../../../main/player/config.js");
 const contentLoader = require("../../../main/viewer/content-loader.js");
+const commonConfig = require("common-display-module");
 const onlineDetection = require("../../../main/player/online-detection.js");
 const messaging = require("../../../main/player/messaging.js");
 global.log = global.log || require("rise-common-electron").logger();
 
 describe("Viewer Content Loader", ()=>{
   beforeEach(()=>{
-    simple.mock(config, "getDisplaySettingsSync").returnWith({displayid: "contentLoaderUT"});
+    simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({displayid: "contentLoaderUT"});
     simple.mock(messaging, "on").returnWith();
     contentLoader.init();
   });

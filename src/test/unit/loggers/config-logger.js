@@ -4,6 +4,7 @@ mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
 network = require("rise-common-electron").network,
 config = require("../../../main/player/config.js"),
+commonConfig = require("common-display-module"),
 configLogger = require("../../../main/loggers/config-logger.js"),
 message = { message: "viewer-config", viewerVersion: "viewerVersion", width: 1280, height: 1024 },
 offlineSubscriptionCheck = require("../../../main/player/offline-subscription-check.js");
@@ -13,7 +14,7 @@ mock(network, "registerProxyUpdatedObserver");
 describe("Config logger", ()=>{
   beforeEach(()=>{
     mock(network, "getLocalIP").resolveWith("192.168.0.1");
-    mock(config, "getDisplaySettingsSync").returnWith({ displayid: "test_display" });
+    mock(commonConfig, "getDisplaySettingsSync").returnWith({ displayid: "test_display" });
     mock(config, "getInstallDir").returnWith("test_dir");
     mock(config, "fileExists").returnWith(true);
     mock(config, "readFile").returnWith("test");

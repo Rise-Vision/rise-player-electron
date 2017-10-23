@@ -13,7 +13,7 @@ module.exports = {
   },
   logClientInfo(viewerConfig) {
     return network.getLocalIP().then((localIP)=>{
-      let displaySettings = config.getDisplaySettingsSync();
+      let displaySettings = commonConfig.getDisplaySettingsSync();
       let nowDate = new Date();
       let playerConfig = {
         machine_id: commonConfig.getMachineId(),
