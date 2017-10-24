@@ -16,9 +16,8 @@ describe("Config logger", ()=>{
     mock(network, "getLocalIP").resolveWith("192.168.0.1");
     mock(commonConfig, "getDisplaySettingsSync").returnWith({ displayid: "test_display" });
     mock(config, "getInstallDir").returnWith("test_dir");
-    mock(config, "fileExists").returnWith(true);
-    mock(config, "readFile").returnWith("test");
-    mock(config, "writeFile").returnWith();
+    mock(commonConfig, "fileExists").returnWith(true);
+    mock(commonConfig, "writeFile").returnWith(true);
     mock(platform, "getOSDescription").returnWith("os desc");
     mock(offlineSubscriptionCheck, "isSubscribed").resolveWith();
   });
@@ -36,7 +35,7 @@ describe("Config logger", ()=>{
     return configLogger.logClientInfo(message)
       .then(()=>{
         assert(bqClient.insert.called);
-        assert(config.writeFile.called);
+        assert(commonConfig.writeFile.called);
         assert.equal(bqClient.insert.lastCall.args[1].viewer_version, "viewerVersion");
       });
   });
@@ -50,7 +49,7 @@ describe("Config logger", ()=>{
     return configLogger.logClientInfo(message)
       .then(()=>{
         assert(!bqClient.insert.called);
-        assert(!config.writeFile.called);
+        assert(!commonConfig.writeFile.called);
       });
   });
 

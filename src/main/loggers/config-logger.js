@@ -38,12 +38,12 @@ module.exports = {
         playerConfig.offline_subscription = isSubscribed;
         let playerConfigStr = module.exports.stringify(playerConfig);
 
-        if(!config.fileExists("display_config.json") || config.readFile("display_config.json") !== playerConfigStr) {
+        if(!commonConfig.fileExists("display_config.json") || commonConfig.readFile("display_config.json") !== playerConfigStr) {
           playerConfig.ts = nowDate.toISOString();
 
           return bqClient.insert("configuration", playerConfig)
             .then(()=>{
-            config.writeFile("display_config.json", playerConfigStr);
+            commonConfig.writeFile("display_config.json", playerConfigStr);
           });
         }
         else {
