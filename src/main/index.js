@@ -16,7 +16,7 @@ displaySettings;
 
 global.secondMillis = 1000;
 
-global.log = require("rise-common-electron").logger(preventBQLog ? null : externalLogger, commonConfig.getInstallDir());
+global.log = require("rise-common-electron").logger(preventBQLog ? null : externalLogger, commonConfig.getModulePath(config.moduleName), `${config.moduleName}`);
 
 log.resetLogFiles(Math.pow(10,5));
 
