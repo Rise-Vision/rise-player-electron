@@ -43,6 +43,8 @@ describe("Config logger", ()=>{
   it("does not insert configuration data because it has not changed", ()=>{
     let bqClient = configLogger.getBQClient();
 
+    mock(commonConfig, "fileExists").returnWith(true);
+    mock(commonConfig, "readFile").returnWith("test");
     mock(configLogger, "stringify").returnWith("test");
     mock(bqClient, "insert").resolveWith();
 
