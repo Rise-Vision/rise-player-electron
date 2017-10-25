@@ -4,7 +4,7 @@ const cachePath = require.resolve("rise-cache-v2");
 const cacheUrl = "http://127.0.0.1:9494/";
 const checkInterval = 30 * 1000;
 const inspect = require("util").inspect;
-const riseCacheLogger = require("../player/loggers/rise-cache-logger");
+const riseCacheLogger = require("../loggers/rise-cache-logger");
 
 let cache = null;
 

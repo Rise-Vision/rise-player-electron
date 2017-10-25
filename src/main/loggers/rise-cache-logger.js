@@ -1,9 +1,9 @@
 const PROJECT_NAME = "client-side-events",
   DATASET_NAME = "Rise_Cache_V2",
   FAILED_ENTRY_FILE = ".failed-rise-cache-log-entries.json",
-  config = require("../player/config.js"),
+  commonConfig = require("common-display-module"),
   bqController = require("rise-common-electron")
-    .bqController(PROJECT_NAME, DATASET_NAME, FAILED_ENTRY_FILE, config.getInstallDir());
+    .bqController(PROJECT_NAME, DATASET_NAME, FAILED_ENTRY_FILE, commonConfig.getInstallDir());
 
 bqController.init();
 

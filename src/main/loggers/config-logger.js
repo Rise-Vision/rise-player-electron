@@ -19,7 +19,7 @@ module.exports = {
         machine_id: commonConfig.getMachineId(),
         display_id: displaySettings.displayid,
         os_description: platform.getOSDescription(),
-        installer_version: commonConfig.getModuleVersion("launcher"),
+        installer_version: commonConfig.getModuleVersion(config.moduleName),
         player_name: "RisePlayerElectron",
         java_version: "",
         player_version: commonConfig.getModuleVersion(config.moduleName),

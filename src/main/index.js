@@ -11,7 +11,7 @@ config = require("./player/config.js"),
 preventBQLog = process.env.RISE_PREVENT_BQ_LOG,
 viewerController = require("./viewer/controller.js"),
 ElectronProxyAgent = require("electron-proxy-agent"),
-externalLogger = require("./loggers/installer-logger.js"),
+externalLogger = require("./loggers/external-logger.js"),
 displaySettings;
 
 global.secondMillis = 1000;
