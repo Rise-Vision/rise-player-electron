@@ -45,12 +45,14 @@ function readyHandler() {
 
   module.exports.bindQuitAccelerator();
 
-  onlineDetection.init(ipc, BrowserWindow);
-  config.setSerialNumber(app);
+  onlineDetection.init(ipc, BrowserWindow)
+    .then(()=>{
+      config.setSerialNumber(app);
 
-  proxy.setSaveDir(commonConfig.getInstallDir());
-  proxy.setEndpoint(displaySettings.proxy);
-  launcher.launch();
+      proxy.setSaveDir(commonConfig.getInstallDir());
+      proxy.setEndpoint(displaySettings.proxy);
+      launcher.launch();
+    });
 }
 
 module.exports = {
