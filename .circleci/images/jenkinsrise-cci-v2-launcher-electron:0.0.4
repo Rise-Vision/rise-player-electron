@@ -1,0 +1,37 @@
+FROM circleci/node:7.10
+
+# gcloud
+RUN sudo curl -O "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-171.0.0-linux-x86_64.tar.gz"
+RUN sudo tar xzf ./google-cloud-sdk-171.0.0-linux-x86_64.tar.gz
+RUN sudo mv google-cloud-sdk /opt
+RUN sudo rm google-cloud-sdk-171.0.0-linux-x86_64.tar.gz
+RUN sudo chmod -R a+r /opt/google-cloud-sdk
+RUN sudo chmod -R a+x /opt/google-cloud-sdk/bin
+RUN sudo ln -s /opt/google-cloud-sdk/bin/* /usr/bin
+
+# windows deps
+RUN sudo apt-get install software-properties-common
+RUN sudo add-apt-repository ppa:ubuntu-wine/ppa -y
+RUN sudo dpkg --add-architecture i386
+RUN sudo apt-get update || true
+RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+RUN sudo apt-get install wine -y || true
+RUN sudo apt-get install p7zip-full
+
+# linux deps
+RUN sudo wget http://cdn.megastep.org/makeself/makeself-2.2.0.run
+RUN sudo chmod a+x makeself-2.2.0.run
+RUN sudo ./makeself-2.2.0.run
+RUN sudo cp makeself-2.2.0/makeself.sh /usr/bin/makeself
+RUN sudo cp makeself-2.2.0/makeself-header.sh /usr/bin
+RUN sudo chmod a+xr /usr/bin/makeself
+RUN sudo chmod a+xr /usr/bin/makeself-header.sh
+RUN sudo rm -rf makeself*
+
+# faster crc checks for gsutil
+RUN sudo apt-get install gcc python-dev python-setuptools
+RUN sudo easy_install -U pip
+RUN sudo pip install -U crcmod
+
+# electron-mocha deps
+RUN sudo apt-get install -y libgtk2.0-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3

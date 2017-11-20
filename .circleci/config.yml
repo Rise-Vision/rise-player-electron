@@ -1,0 +1,118 @@
+version: 2
+
+jobs:
+  "test_unit":
+    docker: &DOCKERIMAGE
+      - image: jenkinsrise/cci-v2-launcher-electron:0.0.5
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          command: npm run test
+          no_output_timeout: 1m
+
+  "test_integration":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          command: npm run ci-integration
+          no_output_timeout: 1m
+
+  "build":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - restore_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
+      - run: ./build.sh
+      - save_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  "stage":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: ./stage.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - version
+
+  "e2e":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: echo "version $(cat version)"
+      - run: echo "no e2e yet"
+      - run: false
+
+  "deploy":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: ./deploy.sh
+
+workflows:
+  version: 2
+  workflow1:
+    jobs:
+      - "test_unit"
+      - "test_integration"
+      - "build":
+          filters:
+            branches:
+              only:
+                - master
+                - /^stage\/.*/
+                - /^staging\/.*/
+      - "stage":
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - /^stage\/.*/
+                - /^staging\/.*/
+      - "e2e":
+          requires:
+            - test_unit
+            - test_integration
+            - stage
+          filters:
+            branches:
+              only:
+                - master
+      - "deploy":
+          requires:
+            - e2e
+          filters:
+            branches:
+              only:
+                - master

@@ -1,0 +1,15 @@
+node_modules/
+build-temp/
+src/test/test-results.xml
+widgets/
+src/main/viewer/localviewer/
+private-keys/
+build/
+coverage/
+test/test-results.xml
+*.zip
+*.jar
+external-deps/java-network-test/target/
+!external-deps/shortcut.exe
+/version.txt
+npm-debug.log
