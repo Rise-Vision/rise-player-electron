@@ -18,7 +18,7 @@ gsutil -m cp -p gs://install-versions.risevision.com/*.json gs://install-version
 gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/
 gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/releases/$MODULENAME/$VERSION
 
-echo -n "$VERSION" > latest-version
+echo -n "RisePlayerElectron $VERSION" > latest-version
 gsutil cp latest-version gs://install-versions.risevision.com
 gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-version
 gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-version
