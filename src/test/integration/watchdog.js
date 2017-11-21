@@ -16,13 +16,14 @@ before(()=>{
   server = http.createServer((request, response)=>{
     response.end("ok");
     endpointCalled = true;
+    request.socket.unref();
     request.connection.end();
     request.connection.destroy();
-
     server.close();
   });
 
   server.on("error", console.error);
+  server.unref();
 
   return new Promise(res=>server.listen(port, res));
 });
