@@ -22,7 +22,7 @@ module.exports = {
         installer_version: commonConfig.getModuleVersion("launcher"),
         player_name: "RisePlayerElectron",
         java_version: "",
-        player_version: commonConfig.getModuleVersion(config.moduleName),
+        player_version: commonConfig.getLatestVersionInManifest(),
         cache_version: config.cacheVersion,
         viewer_version: viewerConfig.viewerVersion,
         browser_name: "Chromium",
