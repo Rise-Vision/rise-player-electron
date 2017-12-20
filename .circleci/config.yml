@@ -75,6 +75,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - restore_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
       - run: ./deploy.sh
 
 workflows:
