@@ -8,7 +8,7 @@ gcloud auth activate-service-account 452091732215@developer.gserviceaccount.com 
 
 mkdir -p manifests
 gsutil -m cp gs://install-versions.risevision.com/display-modules-beta-*.json manifests
-find manifests -name "*.json" -exec node update-module-version.js '{}' $MODULENAME $VERSION 0 \;
+find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION 0 \;
 
 gsutil -m cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
 gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
