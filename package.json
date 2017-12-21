@@ -8,7 +8,7 @@
   "devDependencies": {
     "electron": "1.6.6",
     "electron-ipc-mock": "0.0.3",
-    "electron-mocha": "^4.0.0",
+    "electron-mocha": "^5.0.0",
     "istanbul": "^0.4.5",
     "jshint": "^2.9.5",
     "mocha-junit-reporter": "^1.15.0",
