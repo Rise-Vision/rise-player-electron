@@ -55,10 +55,10 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-        name: Stage
-        command: node_modules/common-display-module/stage.sh
-        environment:
-          MODULENAME: player-electron
+          name: Stage
+          command: node_modules/common-display-module/stage.sh
+          environment:
+            MODULENAME: player-electron
       - persist_to_workspace:
           root: .
           paths:
@@ -82,10 +82,10 @@ jobs:
       - restore_cache:
           key: node-cache-prod-{{ checksum "package.json" }}
       - run:
-        name: Deploy to beta
-        command: node_modules/common-display-module/deploy.sh
-        environment:
-          MODULENAME: player-electron
+          name: Deploy to beta
+          command: node_modules/common-display-module/deploy.sh
+          environment:
+            MODULENAME: player-electron
 
   "deploy-stable":
     docker: *DOCKERIMAGE
@@ -96,11 +96,11 @@ jobs:
       - restore_cache:
           key: node-cache-prod-{{ checksum "package.json" }}
       - run:
-        name: Deploy to stable
-        command: node_modules/common-display-module/deploy.sh
-        environment:
-          BRANCH: STABLE
-          MODULENAME: player-electron
+          name: Deploy to stable
+          command: node_modules/common-display-module/deploy.sh
+          environment:
+            BRANCH: STABLE
+            MODULENAME: player-electron
 
 workflows:
   version: 2
