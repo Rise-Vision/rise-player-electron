@@ -54,6 +54,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run: npm install common-display-module
       - run:
           name: Stage
           command: node_modules/common-display-module/stage.sh
@@ -79,6 +80,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run: npm install common-display-module
       - restore_cache:
           key: node-cache-prod-{{ checksum "package.json" }}
       - run:
@@ -95,6 +97,7 @@ jobs:
           at: .
       - restore_cache:
           key: node-cache-prod-{{ checksum "package.json" }}
+      - run: npm install common-display-module
       - run:
           name: Deploy to stable
           command: node_modules/common-display-module/deploy.sh
