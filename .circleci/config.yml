@@ -54,7 +54,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: ./stage.sh
+      - run:
+        name: Stage
+        command: node_modules/common-display-module/stage.sh
+        environment:
+          MODULENAME: player-electron
       - persist_to_workspace:
           root: .
           paths:
@@ -69,7 +73,7 @@ jobs:
       - run: echo "version $(cat version)"
       - run: echo "no e2e yet"
 
-  "deploy":
+  "deploy-beta":
     docker: *DOCKERIMAGE
     steps:
       - checkout
@@ -77,7 +81,26 @@ jobs:
           at: .
       - restore_cache:
           key: node-cache-prod-{{ checksum "package.json" }}
-      - run: ./deploy.sh
+      - run:
+        name: Deploy to beta
+        command: node_modules/common-display-module/deploy.sh
+        environment:
+          MODULENAME: player-electron
+
+  "deploy-stable":
+    docker: *DOCKERIMAGE
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          key: node-cache-prod-{{ checksum "package.json" }}
+      - run:
+        name: Deploy to stable
+        command: node_modules/common-display-module/deploy.sh
+        environment:
+          BRANCH: STABLE
+          MODULENAME: player-electron
 
 workflows:
   version: 2
@@ -110,7 +133,16 @@ workflows:
             branches:
               only:
                 - master
-      - "deploy":
+                - build/stable
+      - "deploy-stable":
+          requires:
+            - e2e
+          filters:
+            branches:
+              only:
+                - build/stable
+
+      - "deploy-beta":
           requires:
             - e2e
           filters:
