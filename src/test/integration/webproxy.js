@@ -34,6 +34,8 @@ describe("Proxy Integration", function() {
     let directServer = http.createServer((req, resp)=>{
       resp.end("direct");
     });
+    directServer = require("http-shutdown")(directServer);
+    directServer.on("connection", skt=>skt.unref());
     directServer.listen(directPort);
     proxies.push(directServer);
 
@@ -42,6 +44,8 @@ describe("Proxy Integration", function() {
       proxyCallback();
       resp.end(req.headers["proxy-authorization"] ? "proxy-with-auth" : "proxy");
     });
+    proxyServer = require("http-shutdown")(proxyServer);
+    proxyServer.on("connection", skt=>skt.unref());
     proxyServer.listen(proxyPort);
     proxies.push(proxyServer);
 
@@ -52,12 +56,14 @@ describe("Proxy Integration", function() {
       if (req.headers["proxy-authorization"]) {electronAuthSuppliedCallback();}
       resp.end("auth-required-proxy");
     });
+    authServer = require("http-shutdown")(authServer);
+    authServer.on("connection", skt=>skt.unref());
     authServer.listen(proxyPortWithChallenge);
     proxies.push(authServer);
   });
 
   after(()=>{
-    proxies.forEach(server=>server.close());
+    proxies.forEach(server=>{server.unref(); server.shutdown();});
     win && !win.isDestroyed() && win.close();
   });
 
