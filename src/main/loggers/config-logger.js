@@ -14,13 +14,15 @@ module.exports = {
   logClientInfo(viewerConfig) {
     return network.getLocalIP().then((localIP)=>{
       let displaySettings = commonConfig.getDisplaySettingsSync();
+      let isBeta = commonConfig.isBetaLauncher();
+      let playerName = "RisePlayerElectron";
       let nowDate = new Date();
       let playerConfig = {
         machine_id: commonConfig.getMachineId(),
         display_id: displaySettings.displayid,
         os_description: platform.getOSDescription(),
         installer_version: commonConfig.getModuleVersion("launcher"),
-        player_name: "RisePlayerElectron",
+        player_name: (isBeta) ? `(Beta) ${playerName}` : playerName,
         java_version: "",
         player_version: commonConfig.getLatestVersionInManifest(),
         cache_version: config.cacheVersion,
