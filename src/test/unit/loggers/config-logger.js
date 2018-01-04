@@ -18,6 +18,7 @@ describe("Config logger", ()=>{
     mock(config, "getInstallDir").returnWith("test_dir");
     mock(commonConfig, "fileExists").returnWith(true);
     mock(commonConfig, "writeFile").returnWith(true);
+    mock(commonConfig, "getModuleVersion").returnWith("test");
     mock(platform, "getOSDescription").returnWith("os desc");
     mock(offlineSubscriptionCheck, "isSubscribed").resolveWith();
   });
@@ -37,6 +38,20 @@ describe("Config logger", ()=>{
         assert(bqClient.insert.called);
         assert(commonConfig.writeFile.called);
         assert.equal(bqClient.insert.lastCall.args[1].viewer_version, "viewerVersion");
+        assert.equal(bqClient.insert.lastCall.args[1].player_name, "RisePlayerElectron");
+      });
+  });
+
+  it("should prefix player name with (Beta)", ()=>{
+    let bqClient = configLogger.getBQClient();
+
+    mock(configLogger, "stringify").returnWith("{}");
+    mock(bqClient, "insert").resolveWith();
+    mock(commonConfig, "isBetaLauncher").returnWith(true);
+
+    return configLogger.logClientInfo(message)
+      .then(()=>{
+        assert.equal(bqClient.insert.lastCall.args[1].player_name, "(Beta) RisePlayerElectron");
       });
   });
 
