@@ -1,22 +1,23 @@
-var platform = require("rise-common-electron").platform,
-network = require("rise-common-electron").network,
-launcher = require("../../main/player/launcher.js"),
-messaging = require("../../main/player/messaging.js"),
-screenshot = require("../../main/player/screenshot.js"),
-restart = require("../../main/player/restart.js"),
-reboot = require("../../main/player/reboot.js"),
-gcs = require("../../main/player/gcs.js"),
-riseCacheWatchdog = require("../../main/player/rise-cache-watchdog.js"),
-assert = require("assert"),
-simpleMock = require("simple-mock"),
-mock = require("simple-mock").mock,
-viewerContentLoader = require("../../main/viewer/content-loader.js"),
-gcsPolling = require("../../main/player/gcs-polling"),
-viewerController = require("../../main/viewer/controller.js"),
-onlineDetection = require("../../main/player/online-detection.js"),
-viewer = require("../../main/viewer"),
-uiController;
+const platform = require("rise-common-electron").platform;
+const network = require("rise-common-electron").network;
+const launcher = require("../../main/player/launcher.js");
+const messaging = require("../../main/player/messaging.js");
+const screenshot = require("../../main/player/screenshot.js");
+const restart = require("../../main/player/restart.js");
+const reboot = require("../../main/player/reboot.js");
+const gcs = require("../../main/player/gcs.js");
+const riseCacheWatchdog = require("../../main/player/rise-cache-watchdog.js");
+const assert = require("assert");
+const simpleMock = require("simple-mock");
+const mock = require("simple-mock").mock;
+const viewerContentLoader = require("../../main/viewer/content-loader.js");
+const gcsPolling = require("../../main/player/gcs-polling");
+const viewerController = require("../../main/viewer/controller.js");
+const onlineDetection = require("../../main/player/online-detection.js");
+const viewer = require("../../main/viewer");
+const heartbeat = require("common-display-module/heartbeat");
 
+let uiController = null;
 
 global.log = require("rise-common-electron").logger();
 
@@ -41,6 +42,7 @@ describe("launcher", ()=>{
 
   afterEach("clean mocks", ()=>{
     simpleMock.restore();
+    heartbeat.stop();
   });
 
   it("launches Cache and presentation", ()=>{

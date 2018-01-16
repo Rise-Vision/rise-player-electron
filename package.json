@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "Electron Player",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rise-Vision/rise-player-electron.git"
+  },
   "author": "Rise Vision",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "devDependencies": {
     "electron": "1.6.6",
     "electron-ipc-mock": "0.0.3",
@@ -17,7 +21,7 @@
     "wtfnode": "^0.5.6"
   },
   "dependencies": {
-    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v2.2.0",
+    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v2.4.2",
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#8d66",
     "primus": "^6.0.1",
     "request": "2.73.0",
@@ -27,7 +31,7 @@
   },
   "scripts": {
     "test": "jshint src && istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive src/test/unit",
-    "test-no-coverage": "jshint src && mocha --recursive src/test/unit",
+    "test-no-coverage": "jshint src && mocha -t 10000 --recursive src/test/unit",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 10000 src/test/integration",
     "ci-integration": "xvfb-run node_modules/.bin/electron-mocha -t 20000 src/test/integration",
     "start": "./node_modules/.bin/electron ./src/main/index.js"
