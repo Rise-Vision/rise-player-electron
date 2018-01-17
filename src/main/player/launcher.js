@@ -1,20 +1,22 @@
-const messaging = require("./messaging.js"),
-screenshot = require("./screenshot.js"),
-dupeId = require("./duplicate-id.js"),
-restart = require("./restart.js"),
-reboot = require("./reboot.js"),
-scheduledReboot= require("./scheduled-reboot.js"),
-platform = require("rise-common-electron").platform,
-installer = require("./installer.js"),
-watchdog = require("./watchdog.js"),
-riseCacheWatchdog = require("../player/rise-cache-watchdog.js"),
-gcsPolling = require("./gcs-polling.js"),
-gcs = require("./gcs.js"),
-viewerWindowBindings = require("../viewer/window-bindings.js"),
-viewer = require("../viewer"),
-onlineDetection = require("./online-detection.js"),
-offlineSubscriptionCheck = require("./offline-subscription-check.js"),
-viewerContentLoader = require("../viewer/content-loader.js");
+const config = require("./config");
+const messaging = require("./messaging.js");
+const screenshot = require("./screenshot.js");
+const dupeId = require("./duplicate-id.js");
+const restart = require("./restart.js");
+const reboot = require("./reboot.js");
+const scheduledReboot= require("./scheduled-reboot.js");
+const platform = require("rise-common-electron").platform;
+const installer = require("./installer.js");
+const watchdog = require("./watchdog.js");
+const riseCacheWatchdog = require("../player/rise-cache-watchdog.js");
+const gcsPolling = require("./gcs-polling.js");
+const gcs = require("./gcs.js");
+const viewerWindowBindings = require("../viewer/window-bindings.js");
+const viewer = require("../viewer");
+const onlineDetection = require("./online-detection.js");
+const offlineSubscriptionCheck = require("./offline-subscription-check.js");
+const viewerContentLoader = require("../viewer/content-loader.js");
+const heartbeat = require("common-display-module/heartbeat");
 
 module.exports = {
   launch() {
@@ -95,6 +97,7 @@ module.exports = {
       scheduledReboot.scheduleRebootFromViewerContents(content);
       installer.playerLoadComplete();
     })
-    .then(gcsPolling.init);
+    .then(gcsPolling.init)
+    .then(() => heartbeat.startHearbeatInterval(config.moduleName));
   }
 };
