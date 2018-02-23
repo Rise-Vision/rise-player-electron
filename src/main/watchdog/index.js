@@ -1,4 +1,5 @@
 delete process.env.ELECTRON_RUN_AS_NODE;
+delete process.env.LOAD_MODULE_IN_ELECTRON;
 
 const path = require("path");
 const moduleCommon = require("common-display-module");
