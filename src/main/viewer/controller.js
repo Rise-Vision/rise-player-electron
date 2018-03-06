@@ -5,7 +5,7 @@ const commonConfig = require("common-display-module");
 const configLogger = require("../loggers/config-logger.js");
 const widgetLogger = require("../loggers/widget-logger");
 const watchdog = require("../player/watchdog.js");
-const onlineDetection = require("../player/online-detection.js");
+const offlineCheck = require("../player/offline-restart-check.js");
 const viewerContentLoader = require("./content-loader.js");
 const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings.js");
@@ -97,7 +97,7 @@ function createPresentationUrl() {
 
   let url = overrideUrl || "https://rvashow2.appspot.com/Viewer.html?";
 
-  if (!onlineDetection.isOnline()) {
+  if (offlineCheck.shouldBeConsideredOffline()) {
     url = "file://" + __dirname + "/localviewer/main/Viewer.html?";
   }
 

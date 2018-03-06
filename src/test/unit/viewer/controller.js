@@ -3,7 +3,7 @@ var simple = require("simple-mock");
 var viewerController = require("../../../main/viewer/controller.js");
 var commonConfig = require("common-display-module");
 var network = require("rise-common-electron").network;
-var onlineDetection = require("../../../main/player/online-detection");
+var offlineCheck = require("../../../main/player/offline-restart-check");
 var gcs = require("../../../main/player/gcs.js");
 var viewerContentLoader = require("../../../main/viewer/content-loader.js");
 var messaging = require("../../../main/player/messaging.js");
@@ -87,8 +87,6 @@ describe("viewerController", ()=>{
     });
 
     it("uses the url from the config file", ()=>{
-      simple.mock(onlineDetection, "isOnline").returnWith(true);
-
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
@@ -100,8 +98,6 @@ describe("viewerController", ()=>{
     });
 
     it("uses the url from the config file correctly when it doesn't end with a question mark", ()=>{
-      simple.mock(onlineDetection, "isOnline").returnWith(true);
-
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html";
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
@@ -112,8 +108,6 @@ describe("viewerController", ()=>{
     });
 
     it("creates a presentation window with correct URL", ()=>{
-      simple.mock(onlineDetection, "isOnline").returnWith(true);
-
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay"
       });
@@ -225,6 +219,8 @@ describe("viewerController", ()=>{
 
     it("launches the no-network screen when not connected", ()=>{
       simple.mock(mocks.webContents, "executeJavaScript").callbackWith(false);
+      simple.mock(offlineCheck, "shouldBeConsideredOffline").returnWith(true);
+
       return viewerController.launch()
       .then(()=>{
         assert.ok(mocks.viewerWindow.loadURL.lastCall.args[0].includes("file://"));
@@ -253,7 +249,6 @@ describe("viewerController", ()=>{
     });
 
     it("creates a presentation window with correct URL", ()=>{
-      simple.mock(onlineDetection, "isOnline").returnWith(true);
       simple.mock(gcs, "getFileContents").resolveWith({display: {test: "test"}});
 
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
