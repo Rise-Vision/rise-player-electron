@@ -20,6 +20,8 @@ function restartPlatform(extraParameters) {
     });
   }
 
+  log.all('restarting', `${command} ${args.join(' ')}`);
+
   config.setGracefulShutdownFlag();
 
   childProcess.spawn(command, args, {
