@@ -14,7 +14,10 @@ module.exports = {
         res();
       });
 
-      onlineDetectionWindow.on("closed", ()=>{log.debug("online detection window closed");});
+      // CircleCI tests sometimes complains that onlineDetectionWindow.on is not a valid function
+      onlineDetectionWindow.on && onlineDetectionWindow.on("closed", ()=>{
+        log.debug("online detection window closed");
+      });
     });
   },
   isOnline() {
