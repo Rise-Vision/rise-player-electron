@@ -1,7 +1,8 @@
 const {BrowserWindow, app, globalShortcut} = require("electron");
 const assert = require("assert");
 const simple = require("simple-mock");
-const viewerController = require("../../main/viewer/controller.js");
+const offlineCheck = require("../../main/player/offline-restart-check");
+const viewerController = require("../../main/viewer/controller");
 const { ipcRenderer, ipcMain } = require('electron-ipc-mock')();
 global.log = require("rise-common-electron").logger();
 
@@ -9,6 +10,8 @@ describe("Viewer logging",()=>{
   let win;
 
   before(()=>{
+    simple.mock(offlineCheck, "startOfflineTimeoutIfRpp").resolveWith();
+
     viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
     viewerController.launch().then((viewerWindow)=>{win = viewerWindow;});
   });
@@ -19,10 +22,11 @@ describe("Viewer logging",()=>{
 
   beforeEach(() => {
     simple.mock(log,"debug").returnWith(true);
+    simple.mock(offlineCheck, "startOfflineTimeoutIfRpp").resolveWith();
   });
 
   afterEach(()=>{
-    simple.restore(log,"debug");
+    simple.restore();
   });
 
   it("should log to apps events", (done)=>{
