@@ -13,7 +13,7 @@ function remoteSubscriptionStatus() {
   return network.httpFetch(authorizationUrl.replace("DID", displayId))
   .then(resp=>resp.json())
   .then(saveStatus)
-  .catch(e=>log.all(e) && false);
+  .catch(e=>log.all(e) && localSubscriptionStatus());
 }
 
 function localSubscriptionStatus() {
