@@ -22,10 +22,10 @@ function shouldBeConsideredOffline(args = process.argv.slice(1)) {
   return getCount(args) >= 3;
 }
 
-function startRestartTimeoutIfRpp(schedule = setTimeout) {
+function startOfflineTimeoutIfRpp(schedule = setTimeout) {
   resetTimer();
 
-  if( shouldBeConsideredOffline() ) {
+  if (shouldBeConsideredOffline()) {
     // if already in offline, no more restarts
     return Promise.resolve();
   }
@@ -62,7 +62,7 @@ function reset() {
 module.exports = {
   getCount,
   shouldBeConsideredOffline,
-  startRestartTimeoutIfRpp,
+  startOfflineTimeoutIfRpp,
   markViewerAsStarted,
   reset
 };

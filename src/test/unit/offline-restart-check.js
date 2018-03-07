@@ -55,7 +55,7 @@ describe("Offline Restart Check / Unit", () => {
   it("should not restart if it's already considered offline", () => {
     check.shouldBeConsideredOffline(['--offline-restart-count=3']);
 
-    return check.startRestartTimeoutIfRpp(action => action()).then(() => {
+    return check.startOfflineTimeoutIfRpp(action => action()).then(() => {
       assert(!restart.restart.called);
     });
   });
@@ -64,7 +64,7 @@ describe("Offline Restart Check / Unit", () => {
     simple.mock(subscriptionCheck, "isSubscribed").resolveWith(false);
     check.shouldBeConsideredOffline([]);
 
-    return check.startRestartTimeoutIfRpp(action => action()).then(() => {
+    return check.startOfflineTimeoutIfRpp(action => action()).then(() => {
       assert(!restart.restart.called);
     });
   });
@@ -73,7 +73,7 @@ describe("Offline Restart Check / Unit", () => {
     simple.mock(subscriptionCheck, "isSubscribed").resolveWith(true);
     check.shouldBeConsideredOffline([]);
 
-    return check.startRestartTimeoutIfRpp(action => action()).then(() => {
+    return check.startOfflineTimeoutIfRpp(action => action()).then(() => {
       assert(restart.restart.called);
       assert.deepEqual(restart.restart.lastCall.args[0], ["--offline-restart-count=1"]);
     });
@@ -83,7 +83,7 @@ describe("Offline Restart Check / Unit", () => {
     simple.mock(subscriptionCheck, "isSubscribed").resolveWith(true);
     check.shouldBeConsideredOffline([]);
 
-    return check.startRestartTimeoutIfRpp(action => {
+    return check.startOfflineTimeoutIfRpp(action => {
       check.markViewerAsStarted();
       action();
     })
@@ -96,7 +96,7 @@ describe("Offline Restart Check / Unit", () => {
     simple.mock(subscriptionCheck, "isSubscribed").resolveWith(true);
     check.shouldBeConsideredOffline(['--offline-restart-count=2']);
 
-    return check.startRestartTimeoutIfRpp(action => action()).then(() => {
+    return check.startOfflineTimeoutIfRpp(action => action()).then(() => {
       assert(restart.restart.called);
       assert.deepEqual(restart.restart.lastCall.args[0], ["--offline-restart-count=3"]);
     });

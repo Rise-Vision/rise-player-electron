@@ -1,9 +1,10 @@
 const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("electron");
 const childProc = require("child_process");
-const screenshot = require("../../main/player/screenshot.js");
-const messaging = require("../../main/player/messaging.js");
-const viewerWindowBindings = require("../../main/viewer/window-bindings.js");
-const viewerController = require("../../main/viewer/controller.js");
+const offlineCheck = require("../../main/player/offline-restart-check");
+const screenshot = require("../../main/player/screenshot");
+const messaging = require("../../main/player/messaging");
+const viewerWindowBindings = require("../../main/viewer/window-bindings");
+const viewerController = require("../../main/viewer/controller");
 const simple = require("simple-mock");
 const assert = require("assert");
 const random = Math.random();
@@ -25,6 +26,8 @@ describe("Screenshot", ()=>{
     simple.mock(messaging, "write").callFn(console.log);
     simple.mock(log, "debug").callFn(console.log);
     simple.mock(log, "error").callFn(console.error);
+    simple.mock(offlineCheck, "startOfflineTimeoutIfRpp").resolveWith();
+
     screenshot.init(ipcMain, nativeImage);
     viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
 

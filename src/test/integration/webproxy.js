@@ -5,16 +5,16 @@ const simple = require("simple-mock");
 const {ipcMain, session} = require("electron");
 network.registerProxyUpdatedObserver = ()=>{};
 
-const assert = require("assert"),
-httpFetch = require("rise-common-electron").network.httpFetch,
-proxy = require("rise-common-electron").proxy,
-viewerController = require("../../main/viewer/controller.js"),
-onlineDetection = require("../../main/player/online-detection.js"),
-http = require("http"),
-directPort = 8080,
-proxyPort = 9090,
-proxyPortWithChallenge = 9595,
-directUrl = `http://localhost:${directPort}`;
+const assert = require("assert");
+const httpFetch = require("rise-common-electron").network.httpFetch;
+const proxy = require("rise-common-electron").proxy;
+const viewerController = require("../../main/viewer/controller");
+const offlineCheck = require("../../main/player/offline-restart-check");
+const http = require("http");
+const directPort = 8080;
+const proxyPort = 9090;
+const proxyPortWithChallenge = 9595;
+const directUrl = `http://localhost:${directPort}`;
 
 global.log = require("rise-common-electron").logger();
 
@@ -75,7 +75,7 @@ describe("Proxy Integration", function() {
 
   beforeEach(()=>{
     simple.mock(log, "debug").callFn(console.log);
-    simple.mock(onlineDetection, "isOnline").returnWith(true);
+    simple.mock(offlineCheck, "startOfflineTimeoutIfRpp").resolveWith();
     simple.mock(ipcMain, "on", (evt, handler)=>{
       handler("test", {message: "data-handler-registered"});
     });

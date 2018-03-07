@@ -58,6 +58,8 @@ function registerEvents(window) {
           log.file(require("util").inspect(err, { depth: null }));
         });
     } else if(data.message === "data-handler-registered") {
+      offlineCheck.markViewerAsStarted();
+
       if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
         dataHandlerRegistered();
       }
@@ -163,7 +165,8 @@ module.exports = {
       }
     });
 
-    return createPresentationUrl()
+    return offlineCheck.startOfflineTimeoutIfRpp()
+    .then(createPresentationUrl)
     .then((url)=>{
       if (proxy.configuration().hostname) {
         viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
