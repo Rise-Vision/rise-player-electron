@@ -98,6 +98,6 @@ module.exports = {
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)
-    .then(() => heartbeat.startHearbeatInterval(config.moduleName));
+    .then(() => heartbeat.startHeartbeatInterval(config.moduleName));
   }
 };

@@ -1,46 +1,25 @@
-const Primus = require("primus");
 const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
 const contentLoader = require("../../main/viewer/content-loader.js");
+const messaging = require("../../main/player/messaging.js");
 const gcs = require("../../main/player/gcs.js");
 const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 
-let messaging = require("../../main/player/messaging.js");
 let gcsPolling = require("../../main/player/gcs-polling.js");
-let socket;
-
-function Socket(url) {
-  var listeners = {};
-
-  socket = {
-    url,
-    listeners,
-    end: mock(),
-    on: simpleMock.spy((event, handler)=>{
-      listeners[event] = handler;
-    }),
-    write: mock()
-  };
-
-  return socket;
-}
 
 describe("GCS polling", ()=>{
   beforeEach(()=>{
     Object.keys(require.cache)
-      .filter(key=>(key.includes("player/messaging.js") || key.includes("player/gcs-polling.js")))
+      .filter(key=>(key.includes("player/gcs-polling.js")))
       .forEach(el=>{delete require.cache[el];});
 
-    mock(Primus, "createSocket").returnWith(Socket);
     mock(log, "file").returnWith();
     mock(log, "external").returnWith();
     mock(commonConfig, "getDisplaySettingsSync").returnWith({ displayid: "xyz" });
 
-    messaging = require("../../main/player/messaging.js");
     gcsPolling = require("../../main/player/gcs-polling.js");
-    messaging.init("test");
   });
 
   afterEach(()=>{
@@ -65,13 +44,13 @@ describe("GCS polling", ()=>{
 
     gcsPolling.init();
 
-    socket.listeners.end();
+    messaging.injectEvent("ms-disconnected");
 
     return platform.waitForMillis(120)
-      .then(()=>{
-        assert.equal(gcsPolling.pollGCS.callCount, 2);
-        socket.listeners.open();
-      });
+    .then(()=>{
+      assert.equal(gcsPolling.pollGCS.callCount, 2);
+      messaging.injectEvent("ms-connected");
+    });
   });
 
   it("stops polling when messaging service reconnects", ()=>{
@@ -80,13 +59,12 @@ describe("GCS polling", ()=>{
 
     gcsPolling.init();
 
-    socket.listeners.end();
-
+    messaging.injectEvent("ms-disconnected");
     return platform.waitForMillis(60)
       .then(()=>{
         assert.equal(gcsPolling.pollGCS.callCount, 1);
 
-        socket.listeners.open();
+        messaging.injectEvent("ms-connected");
         return platform.waitForMillis(100);
       })
       .then(()=>{

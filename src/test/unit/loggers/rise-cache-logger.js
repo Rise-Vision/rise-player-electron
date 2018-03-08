@@ -3,7 +3,7 @@ const assert = require("assert"),
   path = require("path"),
   simpleMock = require("simple-mock"),
   mock = simpleMock.mock,
-  config = require("../../../main/player/config.js"),
+  commonConfig = require("common-display-module"),
   message = {
     event: "info",
     event_details: "test info",
@@ -19,7 +19,7 @@ let bqClient, riseCacheLogger;
 
 describe("Rise Cache logger", ()=>{
   beforeEach(()=>{
-    mock(config, "getInstallDir").returnWith("test_dir");
+    mock(commonConfig, "getInstallDir").returnWith("test_dir");
     mock(log, "file").returnWith();
 
     riseCacheLogger = require("../../../main/loggers/rise-cache-logger.js");
@@ -45,13 +45,13 @@ describe("Rise Cache logger", ()=>{
   it("adds failed log entries on insert failure", ()=>{
     before(()=>{
       try {
-        fs.unlinkSync(path.join(config.getInstallDir(), riseCacheLogger.failedFileName()));
+        fs.unlinkSync(path.join(commonConfig.getInstallDir(), riseCacheLogger.failedFileName()));
       } catch(e){}
     });
 
     after(()=>{
       try {
-        fs.unlinkSync(path.join(config.getInstallDir(), riseCacheLogger.failedFileName()));
+        fs.unlinkSync(path.join(commonConfig.getInstallDir(), riseCacheLogger.failedFileName()));
       } catch(e){}
     });
 
