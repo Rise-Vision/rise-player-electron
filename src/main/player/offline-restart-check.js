@@ -19,6 +19,7 @@ function getCount(args = process.argv.slice(1)) {
 }
 
 function shouldBeConsideredOffline(args = process.argv.slice(1)) {
+  log.all(`should be considered offline: ${getCount(args) >= 3}`);
   return getCount(args) >= 3;
 }
 
@@ -33,6 +34,7 @@ function startOfflineTimeoutIfRpp(schedule = setTimeout) {
   return subscriptionCheck.isSubscribed().then(subscribed => {
     if (subscribed) {
       timerId = schedule(() => {
+        log.all(`offline timer triggered, viewerHasStarted: ${viewerHasStarted}`);
         viewerHasStarted || restart.restart([`--offline-restart-count=${count + 1}`]);
       }, WAIT_FOR_VIEWER_IN_MILLIS);
     }
@@ -40,6 +42,8 @@ function startOfflineTimeoutIfRpp(schedule = setTimeout) {
 }
 
 function markViewerAsStarted() {
+  log.all("marking viewer as started");
+
   viewerHasStarted = true;
 }
 

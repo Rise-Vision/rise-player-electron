@@ -20,6 +20,7 @@ function restartPlatform(extraParameters) {
     });
   }
 
+log.all(`restarting: ${command} ${args.join(' ')}`);
   log.all('restarting', `${command} ${args.join(' ')}`);
 
   config.setGracefulShutdownFlag();
