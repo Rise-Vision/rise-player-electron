@@ -2,15 +2,16 @@ const path = require("path");
 const platform = require("rise-common-electron").platform;
 const proxy = require("rise-common-electron").proxy;
 const commonConfig = require("common-display-module");
-const configLogger = require("../loggers/config-logger.js");
+const configLogger = require("../loggers/config-logger");
 const widgetLogger = require("../loggers/widget-logger");
-const watchdog = require("../player/watchdog.js");
-const offlineCheck = require("../player/offline-restart-check.js");
-const viewerContentLoader = require("./content-loader.js");
-const viewerLogger = require("./ext-logger.js");
-const viewerWindowBindings = require("./window-bindings.js");
-const gcs = require("../player/gcs.js");
-const scheduledReboot = require("../player/scheduled-reboot.js");
+const watchdog = require("../player/watchdog");
+const offlineCheck = require("../player/offline-restart-check");
+const subscriptionCheck = require("../player/offline-subscription-check");
+const viewerContentLoader = require("./content-loader");
+const viewerLogger = require("./ext-logger");
+const viewerWindowBindings = require("./window-bindings");
+const gcs = require("../player/gcs");
+const scheduledReboot = require("../player/scheduled-reboot");
 let BrowserWindow;
 let app;
 let globalShortcut;
@@ -108,6 +109,17 @@ function createPresentationUrl() {
   return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
+function loadURL(viewerWindow, url) {
+  log.debug(`Loading presentation at ${url}`);
+
+  const dontUseCache =
+    ! offlineCheck.shouldBeConsideredOffline() && subscriptionCheck.isSubscribedCached();
+
+  const options = dontUseCache ? {extraHeaders: "pragma: no-cache\n"} : {};
+
+  viewerWindow.loadURL(url, options);
+}
+
 module.exports = {
   init(_BrowserWindow, _app, _globalShortcut, _ipc) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
@@ -179,8 +191,7 @@ module.exports = {
         return viewerWindow;
       }
 
-      log.debug(`Loading presentation at ${url}`);
-      viewerWindow.loadURL(url);
+      loadURL(viewerWindow, url);
     })
     .then(()=>{
       return new Promise((res)=>{

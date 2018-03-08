@@ -6,6 +6,8 @@ const productCode = "c4b368be86245bf9501baaa6e0b00df9719869fd";
 const authorizationUrl = `https://${authHost}/v1/widget/auth?id=DID&pc=${productCode}&startTrial=false`;
 const OFFLINE_SUBSCRIPTION_FILE = "../8f0bfd16129083c1ad67370c916be014";
 
+let authorized;
+
 function remoteSubscriptionStatus() {
   const displayId = commonConfig.getDisplaySettingsSync().displayid;
   if (!displayId) {return false;}
@@ -17,7 +19,10 @@ function remoteSubscriptionStatus() {
 }
 
 function localSubscriptionStatus() {
-  return Promise.resolve(commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE));
+  authorized = commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE);
+  log.file(`${authorized ? '' : 'not '}subscribed to RPP`);
+
+  return Promise.resolve(authorized);
 }
 
 function saveStatus(status) {
@@ -33,6 +38,9 @@ function saveStatus(status) {
     });
   }
 
+  authorized = status.authorized;
+  log.file(`${authorized ? '' : 'not '}subscribed to RPP`);
+
   return status.authorized;
 }
 
@@ -43,6 +51,9 @@ module.exports = {
     } else {
       return localSubscriptionStatus();
     }
+  },
+  isSubscribedCached() {
+    return authorized;
   },
   fileFlag() {return OFFLINE_SUBSCRIPTION_FILE;}
 };
