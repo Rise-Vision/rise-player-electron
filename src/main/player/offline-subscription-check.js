@@ -20,7 +20,7 @@ function remoteSubscriptionStatus() {
 
 function localSubscriptionStatus() {
   authorized = commonConfig.fileExists(OFFLINE_SUBSCRIPTION_FILE);
-  log.file(`${authorized ? '' : 'not '}subscribed to RPP`);
+  log.all(`${authorized ? '' : 'not '}subscribed to RPP`);
 
   return Promise.resolve(authorized);
 }
@@ -39,7 +39,7 @@ function saveStatus(status) {
   }
 
   authorized = status.authorized;
-  log.file(`${authorized ? '' : 'not '}subscribed to RPP`);
+  log.all(`${authorized ? '' : 'not '}subscribed to RPP`);
 
   return status.authorized;
 }
