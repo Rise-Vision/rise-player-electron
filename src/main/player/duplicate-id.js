@@ -12,12 +12,10 @@ module.exports = {
       module.exports.quitWatchdog();
       module.exports.quitPlayer();
       module.exports.updateViewer();
-      module.exports.disconnectFromMessaging();
     });
   },
   logToBQ() {log.external("duplicate display");},
   updateViewer() {viewerController.showDuplicateIdError();},
   quitWatchdog() {watchdog.quit();},
-  quitPlayer() {platform.killJava();},
-  disconnectFromMessaging() {messaging.disconnect();}
+  quitPlayer() {platform.killJava();}
 };

@@ -15,8 +15,8 @@ module.exports = {
     displayId = commonConfig.getDisplaySettingsSync().displayid || "";
     gcsCommandsPath = `${bucketName}/${displayId}/command.json`;
 
-    messaging.onEvent("connected", module.exports.onConnected);
-    messaging.onEvent("disconnected", module.exports.onDisconnected);
+    messaging.onEvent("ms-connected", module.exports.onConnected);
+    messaging.onEvent("ms-disconnected", module.exports.onDisconnected);
 
     module.exports.refreshCommandsFileGeneration();
   },
