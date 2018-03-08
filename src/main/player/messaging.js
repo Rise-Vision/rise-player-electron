@@ -1,63 +1,27 @@
-const Primus = require("primus");
-const Socket = Primus.createSocket({transformer: "websockets"});
-const commonConfig = require("common-display-module");
-const network = require("rise-common-electron").network;
+const config = require("./config");
+const commonMessaging = require("common-display-module/messaging");
 
 let handlers = [];
 let eventHandlers = {};
-let connection;
 
 module.exports = {
   init() {
-    let settings = commonConfig.getDisplaySettingsSync(),
-      displayId = settings.displayid,
-      url = settings.messagingurl,
-      serverUrl = (url || "https://display-messaging.risevision.com") + "?displayId=" + displayId + "&machineId="+commonConfig.getMachineId();
+    commonMessaging.receiveMessages(config.moduleName)
+    .then(receiver=>{
+      receiver.on("message", (message)=>{
+        console.log("handling message ", message);
+        if (!message) {return;}
+        if (!message.topic && !message.msg) {return;}
 
-    module.exports.disconnect();
+        if (eventHandlers[message.topic]) {
+          return eventHandlers[message.topic]();
+        }
 
-    log.debug("messaging connecting to " + serverUrl + " via " + JSON.stringify(network.getProxyAgents()));
-    connection = new Socket(serverUrl, {
-      transport: {
-        agent: network.getProxyAgents().httpsAgent
-      },
-      reconnect: {
-        max: 1800000,
-        min: 5000,
-        retries: Infinity
-      }
-    });
-
-    connection.on("open", ()=>{
-      log.external("messaging service connected");
-      if(eventHandlers.connected) {
-        eventHandlers.connected();
-      }
-    });
-
-    connection.on("close", ()=>{
-      log.external("messaging service connection closed");
-      if(eventHandlers.disconnected) {
-        eventHandlers.disconnected();
-      }
-    });
-
-    connection.on("end", ()=>{
-      log.external("messaging service disconnected");
-      if(eventHandlers.disconnected) {
-        eventHandlers.disconnected();
-      }
-    });
-
-    connection.on("data", (data)=>{
-      log.external("message received", JSON.stringify(data));
-      handlers.forEach((handler)=>{
-        handler(data);
+        log.external("message received", JSON.stringify(message));
+        handlers.forEach((handler)=>{
+          handler(message);
+        });
       });
-    });
-
-    connection.on("error", (error)=>{
-      log.external("messaging error", error.stack);
     });
   },
   onEvent(event, action) {
@@ -69,14 +33,14 @@ module.exports = {
     });
   },
   write(message) {
-    return connection.write(message);
-  },
-  disconnect() {
-    if (connection) {connection.end();}
+    commonMessaging.sendToMessagingService(message);
   },
   injectMessage(data) {
     handlers.forEach((handler)=>{
       handler(data);
     });
+  },
+  injectEvent(event) {
+    eventHandlers[event]();
   }
 };

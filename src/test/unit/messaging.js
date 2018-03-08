@@ -1,111 +1,59 @@
 const assert = require("assert");
 const simple = require("simple-mock");
-const Primus = require("primus");
-const commonConfig = require("common-display-module");
+const commonMessaging = require("common-display-module/messaging");
+const messaging = require("../../main/player/messaging");
 
-let socketInstance, messaging;
-
-function createSocketInstance() {
-  return {
-    end: simple.mock(),
-    on: simple.mock(),
-    write: simple.mock()
+describe("Messaging : Unit", ()=>{
+  const receiver = {
+    on(evt, handler) {
+      console.log("Intercepting message handler");
+      if (evt === "message") {receiver.simulateIncomingLM = handler;}
+    }
   };
-}
 
-function Socket(url) {
-  socketInstance.url = url;
-  return socketInstance;
-}
+  before(()=>{
+    simple.mock(commonMessaging, "sendToMessagingService").returnWith();
+    simple.mock(commonMessaging, "receiveMessages").callFn(()=>{
+      return Promise.resolve(receiver);
+    });
 
-describe("Messaging", ()=>{
-  beforeEach(()=>{
-    Object.keys(require.cache)
-    .filter(key=>key.includes("player/messaging.js"))
-    .forEach((el)=>{delete require.cache[el];});
-
-    socketInstance = createSocketInstance();
-    simple.mock(Primus, "createSocket").returnWith(Socket);
-    messaging = require("../../main/player/messaging.js");
+    messaging.init();
   });
 
-  afterEach(()=>{
+  after(()=>{
     simple.restore();
-    messaging.disconnect();
   });
 
-  describe("init", ()=>{
-    it("connects", ()=>{
-      messaging.init("TEST");
-      assert(socketInstance.on.called);
-    });
-
-    it("closes existing connection", ()=>{
-      messaging.init("TEST");
-      messaging.init("TEST");
-      assert(socketInstance.end.called);
-    });
-
-    it("registers error handler", ()=>{
-      simple.mock(log, "external");
-      messaging.init("TEST");
-      let call = socketInstance.on.calls.filter((call)=> call.args[0] === "error")[0];
-      assert(call);
-      let handler = call.args[1];
-      handler({stack: "test"});
-      assert(log.external.called);
-    });
-
-    it("registers data handler", ()=>{
-      messaging.init("TEST");
-      let call = socketInstance.on.calls.filter((call)=> call.args[0] === "data")[0];
-      assert(call);
-      let handler = call.args[1];
-      assert(handler);
-    });
-
-    it("uses default url", ()=>{
-      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({displayid: "12345", messagingurl: "TEST"});
-      messaging.init();
-      assert(socketInstance.url.startsWith("TEST"));
+  it("registers disconnection handler", ()=>{
+    return new Promise(res=>{
+      messaging.onEvent("ms-disconnected", res);
+      receiver.simulateIncomingLM({topic: "ms-disconnected"});
     });
   });
 
-  describe("handlers", ()=>{
-    let messagingInternalDataHandler;
-
-    beforeEach(()=>{
-      messaging.init("TEST");
-      let dataHandlerRegistration = socketInstance.on.calls.filter((call)=>call.args[0] === "data")[0];
-      assert(dataHandlerRegistration);
-      messagingInternalDataHandler = dataHandlerRegistration.args[1];
-    });
-
-    it("calls handlers", ()=>{
-      let externalAttachingHandler = simple.mock();
-      messaging.on("test-message", externalAttachingHandler);
-      messagingInternalDataHandler({msg: "test-message", displayId: "12345"});
-      assert(externalAttachingHandler.called);
+  it("registers connection handler", ()=>{
+    return new Promise(res=>{
+      messaging.onEvent("ms-connected", res);
+      receiver.simulateIncomingLM({topic: "ms-connected"});
     });
   });
 
-  describe("write", ()=>{
-    beforeEach(()=>{
-      messaging.init("TEST");
-    });
-
-    it("calls socket.write", ()=>{
-      messaging.write("test");
-      assert(socketInstance.write.called);
-      assert(socketInstance.write.calls[0].args[0] === "test");
+  it("registers message handler", ()=>{
+    return new Promise(res=>{
+      messaging.on("screenshot-request", res);
+      receiver.simulateIncomingLM({msg: "screenshot-request"});
     });
   });
 
-  describe("disconnect", ()=>{
-    it("ends the connection", ()=>{
-      messaging.init("TEST");
-      messaging.disconnect();
-      assert(socketInstance.end.called);
+  it("writes to MS through LM using commonMessaging", ()=>{
+    messaging.write("test");
+    assert.equal(commonMessaging.sendToMessagingService.lastCall.args[0], "test");
+  });
+
+  it("allows event handlers to be triggered directly", ()=>{
+    return new Promise(res=>{
+      messaging.on("restart-request", res);
+      messaging.injectMessage({msg: "restart-request"});
     });
   });
 });

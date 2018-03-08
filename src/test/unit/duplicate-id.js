@@ -33,11 +33,6 @@ describe("Duplicate ID", ()=>{
     assert(viewerController.showDuplicateIdError.called);
   });
 
-  it("disconnects from messaging", ()=>{
-    duplicate.disconnectFromMessaging();
-    assert(messaging.disconnect.called);
-  });
-
   it("quits watchdog since viewer will no longer be running", ()=>{
     duplicate.quitWatchdog();
     assert(watchdog.quit.called);

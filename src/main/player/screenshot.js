@@ -23,7 +23,6 @@ module.exports = {
       .then(()=>{
         messaging.write({
           msg: "screenshot-saved",
-          displayId,
           clientId: data.clientId
         });
         log.file(`screenshot uploaded - 'screenshot-saved' message sent to ${displayId}/${data.clientId}`);
@@ -32,7 +31,6 @@ module.exports = {
         log.error("uploading screenshot", err);
         messaging.write({
           msg: "screenshot-failed",
-          displayId,
           clientId: data.clientId
         });
       });
