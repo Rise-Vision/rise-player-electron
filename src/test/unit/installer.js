@@ -1,4 +1,4 @@
-const moduleCommon = require("common-display-module");
+const commonMessaging = require("common-display-module/messaging");
 const simpleMock = require("simple-mock");
 const mock = simpleMock.mock;
 const installer = require("../../main/player/installer.js");
@@ -6,7 +6,7 @@ const assert = require("assert");
 let broadcastMessageMock = null;
 describe("installer", ()=>{
   beforeEach("setup mocks", ()=>{
-    broadcastMessageMock = mock(moduleCommon, "broadcastMessage");
+    broadcastMessageMock = mock(commonMessaging, "broadcastMessage");
   });
 
   afterEach("clean mocks", ()=>{

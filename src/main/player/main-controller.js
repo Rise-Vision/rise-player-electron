@@ -51,7 +51,7 @@ function readyHandler() {
 
       proxy.setSaveDir(commonConfig.getInstallDir());
       proxy.setEndpoint(displaySettings.proxy);
-      launcher.launch();
+      launcher.launch().catch(log.error);
     });
 }
 
