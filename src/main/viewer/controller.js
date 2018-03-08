@@ -116,7 +116,7 @@ function loadURL(viewerWindow, url) {
     ! offlineCheck.shouldBeConsideredOffline() && subscriptionCheck.isSubscribedCached();
 
   const options = dontUseCache ? {extraHeaders: "pragma: no-cache\n"} : {};
-log.all(`Loading: ${url} : ${options}`);
+log.all(`Loading: ${url} : ${JSON.stringify(options)}`);
   viewerWindow.loadURL(url, options);
 }
 
