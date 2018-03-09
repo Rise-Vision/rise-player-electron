@@ -21,6 +21,7 @@ let viewerWindow;
 let dataHandlerRegistered;
 let reloadTimeout;
 let session;
+let alreadyReloaded = false;
 
 function registerEvents(window) {
   const webContents = window.webContents;
@@ -61,13 +62,19 @@ function registerEvents(window) {
           log.file(require("util").inspect(err, { depth: null }));
         });
     } else if(data.message === "data-handler-registered") {
-      offlineCheck.markViewerAsStarted();
+      if (alreadyReloaded || !dontUseCache()) {
+        offlineCheck.markViewerAsStarted();
 
-      if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
-        dataHandlerRegistered();
+        if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
+          dataHandlerRegistered();
+        }
+
+        dataHandlerRegistered = true;
+      } else {
+        alreadyReloaded = true;
+
+        viewerWindow.webContents.reloadIgnoringCache();
       }
-
-      dataHandlerRegistered = true;
     } else if (data.message === "widget-ready") {
       viewerContentLoader.incrementReady(data.widgetUrl);
     } else if (data.message === "widget-log") {
@@ -111,13 +118,14 @@ function createPresentationUrl() {
   return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
+function dontUseCache() {
+  return ! offlineCheck.shouldBeConsideredOffline() && subscriptionCheck.isSubscribedCached();
+}
+
 function loadURL(viewerWindow, url) {
   log.debug(`Loading presentation at ${url}`);
 
-  const dontUseCache =
-    ! offlineCheck.shouldBeConsideredOffline() && subscriptionCheck.isSubscribedCached();
-
-  const options = dontUseCache ? {extraHeaders: "pragma: no-cache\n"} : {};
+  const options = dontUseCache() ? {extraHeaders: "pragma: no-cache\n"} : {};
 log.all(`Loading: ${url} : ${JSON.stringify(options)}`);
   viewerWindow.webContents.loadURL(url, options);
 }
