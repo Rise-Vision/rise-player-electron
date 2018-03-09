@@ -20,7 +20,6 @@ let ipc;
 let viewerWindow;
 let dataHandlerRegistered;
 let reloadTimeout;
-let session;
 let alreadyReloaded = false;
 
 function registerEvents(window) {
@@ -131,7 +130,7 @@ log.all(`Loading: ${url} : ${JSON.stringify(options)}`);
 }
 
 module.exports = {
-  init(_BrowserWindow, _app, _globalShortcut, _ipc, _session) {
+  init(_BrowserWindow, _app, _globalShortcut, _ipc) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
     if (!_app) { throw new Error("Invalid app"); }
     if (!_globalShortcut) { throw new Error("Invalid globalShortcut"); }
@@ -140,7 +139,6 @@ module.exports = {
     app = _app;
     globalShortcut = _globalShortcut;
     ipc = _ipc;
-    session = _session;
   },
   launch(overrideUrl) {
     let displaySettings = commonConfig.getDisplaySettingsSync();
@@ -189,7 +187,7 @@ module.exports = {
     });
 
     return new Promise(res => {
-      session.defaultSession.clearCache(() => res());
+      viewerWindow.webContents.session.clearCache(() => res());
     })
     .then(offlineCheck.startOfflineTimeoutIfRpp)
     .then(createPresentationUrl)
