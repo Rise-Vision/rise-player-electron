@@ -117,7 +117,7 @@ function loadURL(viewerWindow, url) {
 
   const options = dontUseCache ? {extraHeaders: "pragma: no-cache\n"} : {};
 log.all(`Loading: ${url} : ${JSON.stringify(options)}`);
-  viewerWindow.loadURL(url, options);
+  viewerWindow.webContents.loadURL(url, options);
 }
 
 module.exports = {

@@ -14,6 +14,7 @@ mocks.app = {
 };
 
 mocks.webContents = {
+  loadURL: simple.stub(),
   on: simple.spy((evt, fn)=>{if(evt === "did-finish-load"){fn();}}),
   send: simple.stub(),
   session: {setProxy: simple.stub(), setCertificateVerifyProc: simple.stub()},
@@ -92,8 +93,7 @@ describe("viewerController", ()=>{
 
       return viewerController.launch()
       .then(()=>{
-        console.log(mocks.viewerWindow.loadURL.calls);
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl));
+        assert(mocks.webContents.loadURL.calls[0].args[0].startsWith(viewerurl));
       });
     });
 
@@ -103,7 +103,7 @@ describe("viewerController", ()=>{
 
       return viewerController.launch()
       .then(()=>{
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl + "?"));
+        assert(mocks.webContents.loadURL.calls[0].args[0].startsWith(viewerurl + "?"));
       });
     });
 
@@ -117,7 +117,7 @@ describe("viewerController", ()=>{
       return viewerController.launch()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].includes("fakedisplay"));
+        assert(mocks.webContents.loadURL.calls[0].args[0].includes("fakedisplay"));
       });
     });
 
@@ -223,7 +223,7 @@ describe("viewerController", ()=>{
 
       return viewerController.launch()
       .then(()=>{
-        assert.ok(mocks.viewerWindow.loadURL.lastCall.args[0].includes("file://"));
+        assert.ok(mocks.webContents.loadURL.lastCall.args[0].includes("file://"));
       });
     });
 
@@ -260,7 +260,7 @@ describe("viewerController", ()=>{
       return viewerController.reload()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].includes("fakedisplay"));
+        assert(mocks.webContents.loadURL.calls[0].args[0].includes("fakedisplay"));
       });
     });
 
