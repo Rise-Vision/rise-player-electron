@@ -196,11 +196,12 @@ module.exports = {
     .then(()=>{
       return new Promise((res)=>{
         let viewerTimeout = setTimeout(()=>{
-          log.external("viewer load timeout");
+          log.all("viewer load timeout");
           res(viewerWindow);
         }, 2.5 * 60 * 1000);
 
         viewerWindow.webContents.on("did-finish-load", ()=>{
+          log.all("did finish load");
           clearTimeout(viewerTimeout);
           res(viewerWindow);
         });
@@ -213,10 +214,11 @@ module.exports = {
       });
     })
     .then(()=>{
-      log.debug("viewer launch complete");
+      log.all("viewer launch complete");
       return viewerWindow;
     })
     .catch((err)=>{
+      log.all("viewer launch error");
       log.external("viewer launch error", err);
       return viewerWindow;
     });
