@@ -12,6 +12,7 @@ const viewerLogger = require("./ext-logger");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs");
 const scheduledReboot = require("../player/scheduled-reboot");
+
 let BrowserWindow;
 let app;
 let globalShortcut;
@@ -19,6 +20,7 @@ let ipc;
 let viewerWindow;
 let dataHandlerRegistered;
 let reloadTimeout;
+let session;
 
 function registerEvents(window) {
   const webContents = window.webContents;
@@ -121,7 +123,7 @@ log.all(`Loading: ${url} : ${JSON.stringify(options)}`);
 }
 
 module.exports = {
-  init(_BrowserWindow, _app, _globalShortcut, _ipc) {
+  init(_BrowserWindow, _app, _globalShortcut, _ipc, _session) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
     if (!_app) { throw new Error("Invalid app"); }
     if (!_globalShortcut) { throw new Error("Invalid globalShortcut"); }
@@ -130,6 +132,7 @@ module.exports = {
     app = _app;
     globalShortcut = _globalShortcut;
     ipc = _ipc;
+    session = _session;
   },
   launch(overrideUrl) {
     let displaySettings = commonConfig.getDisplaySettingsSync();
@@ -177,7 +180,10 @@ module.exports = {
       }
     });
 
-    return offlineCheck.startOfflineTimeoutIfRpp()
+    return new Promise(res => {
+      session.defaultSession.clearCache(() => res());
+    })
+    .then(offlineCheck.startOfflineTimeoutIfRpp)
     .then(createPresentationUrl)
     .then((url)=>{
       if (proxy.configuration().hostname) {

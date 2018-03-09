@@ -38,7 +38,8 @@ process.on("unhandledRejection", (err)=>{
 });
 
 network.registerProxyUpdatedObserver((fields)=>{
-  var newSession = session.fromPartition(String(Math.random()));
+  log.all('xxxxxxxxxxxxxxxxxxxx');
+  var newSession = session.fromPartition(String(Math.random()), {cache: false});
 
   if(fields.hostname) {
     newSession.setProxy({pacScript: proxy.pacScriptURL()}, ()=>{});
@@ -50,7 +51,7 @@ network.registerProxyUpdatedObserver((fields)=>{
   network.setNodeAgents(agent, agent);
 });
 
-viewerController.init(BrowserWindow, app, globalShortcut, ipc);
+viewerController.init(BrowserWindow, app, globalShortcut, ipc, session);
 
 mainController.init({ app, displaySettings, ipc, globalShortcut, BrowserWindow, protocol });
 
