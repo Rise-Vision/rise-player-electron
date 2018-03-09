@@ -106,7 +106,8 @@ function createPresentationUrl() {
   const overrideUrl = displaySettings.viewerurl;
   const id = displaySettings.displayid || "";
 
-  let url = overrideUrl || "https://rvashow2.appspot.com/Viewer.html?";
+  // let url = overrideUrl || "https://rvashow2.appspot.com/Viewer.html?";
+  let url = overrideUrl || "http://localhost:8822/Viewer.html?";
 
   if (offlineCheck.shouldBeConsideredOffline()) {
     url = "file://" + __dirname + "/localviewer/main/Viewer.html?";
