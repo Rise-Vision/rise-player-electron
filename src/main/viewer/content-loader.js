@@ -19,7 +19,7 @@ const presentationRewrites = {
     "http://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html": "../widgets/webpage/widget.html",
     "http://s3.amazonaws.com/widget-time-date/1.0.0/dist/widget.html": "../widgets/time-date/widget.html",
     "http://s3.amazonaws.com/widget-rss/1.0.0/dist/widget.html": "../widgets/rss/widget.html",
-    "https://storage.googleapis.com/rise-content/stable/components/rise-twitter/rise-twitter-widget.html": "../components/rise-twitter/rise-twitter-widget.html"
+    "https://widgets.risevision.com/stable/components/rise-twitter/rise-twitter-widget.html": "../components/rise-twitter/rise-twitter-widget.html"
   }
 };
 
