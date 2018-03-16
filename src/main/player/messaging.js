@@ -17,7 +17,7 @@ module.exports = {
           return eventHandlers[message.topic]();
         }
 
-        log.external("message received", JSON.stringify(message));
+        log.debug(JSON.stringify(message));
         handlers.forEach((handler)=>{
           handler(message);
         });
