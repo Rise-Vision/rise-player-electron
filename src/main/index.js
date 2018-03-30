@@ -20,8 +20,6 @@ global.log = require("rise-common-electron").logger(preventBQLog ? null : extern
 
 log.resetLogFiles(Math.pow(10,5));
 
-log.debug = log.file;
-
 if(preventBQLog) { log.file("Environment variable RISE_PREVENT_BQ_LOG. Not logging to BQ."); }
 
 displaySettings = commonConfig.getDisplaySettingsSync();
