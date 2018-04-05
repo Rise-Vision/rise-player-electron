@@ -6,7 +6,8 @@ let messageHandlers = [];
 
 if(displaySettings.enablepinchtozoom !== "true") {
   // Disable pinch-to-zoom
-  webFrame.setZoomLevelLimits(1, 1);
+  webFrame.setVisualZoomLevelLimits && webFrame.setVisualZoomLevelLimits(1, 1);
+  webFrame.setZoomLevelLimits && webFrame.setZoomLevelLimits(1, 1);
 }
 
 webFrame.registerURLSchemeAsPrivileged("rchttp");

@@ -135,7 +135,8 @@ module.exports = {
         "preload": __dirname + "/preload.js",
         "plugins": true,
         "nodeIntegration": false,
-        "webSecurity": false
+        "webSecurity": false,
+        "allowRunningInsecureContent": true
       }
     }, customResolutionSettings));
 
