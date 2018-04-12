@@ -1,4 +1,5 @@
 var {app, session, protocol} = require("electron"),
+fs = require("fs"),
 ipc = require("electron").ipcMain,
 BrowserWindow = require("electron").BrowserWindow,
 commonConfig = require("common-display-module"),
@@ -24,6 +25,10 @@ if(preventBQLog) { log.file("Environment variable RISE_PREVENT_BQ_LOG. Not loggi
 
 displaySettings = commonConfig.getDisplaySettingsSync();
 log.setDisplaySettings(displaySettings);
+
+setInterval(()=>{
+  fs.writeFileSync("/home/rise/rvplayer/player-main-mem.out", Date() + "\n" + JSON.stringify(process.getProcessMemoryInfo(), null, 2) + "\n", {flag: "a"});
+}, 5000);
 
 process.on("uncaughtException", (err)=>{
   platform.writeTextFileSync(config.getUncaughtErrorFileName(), "Exception | " + require("util").inspect(err, {depth: 4}) + err.stack);
