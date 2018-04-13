@@ -7,11 +7,9 @@ const child = require("child_process");
 const commonConfig = require("common-display-module");
 const messaging = require("common-display-module/messaging");
 const fs = require("fs");
-const path = require("path");
 const simple = require("simple-mock");
 const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("electron");
 
-const config = require("../../main/player/config");
 const screenshot = require("../../main/player/screenshot");
 const viewerController = require("../../main/viewer/controller");
 const viewerWindowBindings = require("../../main/viewer/window-bindings");
