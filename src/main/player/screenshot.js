@@ -35,6 +35,11 @@ module.exports = {
         });
       });
     });
+
+    messaging.onEvent('local-screenshot-request', module.exports.handleLocalScreenshotRequest);
+  },
+  handleLocalScreenshotRequest() {
+    log.debug('screenshot requested');
   }
 };
 
