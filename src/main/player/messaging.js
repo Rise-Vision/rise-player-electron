@@ -13,8 +13,10 @@ module.exports = {
         if (!message) {return;}
         if (!message.topic && !message.msg) {return;}
 
-        if (eventHandlers[message.topic]) {
-          return eventHandlers[message.topic]();
+        const topic = message.topic && message.topic.toLowerCase();
+
+        if (eventHandlers[topic]) {
+          return eventHandlers[topic]();
         }
 
         log.debug(JSON.stringify(message));
