@@ -5,6 +5,7 @@ global.log = global.log || {
   all(msg){console.log(msg);},
   debug(msg){console.log(msg);},
   file(msg){console.log(msg);},
+  error(msg){console.log(msg);},
   external(msg){console.log(msg);}
 };
 

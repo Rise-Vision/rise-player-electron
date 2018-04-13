@@ -8,6 +8,7 @@ global.log = global.log || {
   all: console.log,
   external: console.log,
   debug: console.log,
+  file: console.log,
   error:  console.log
 };
 

@@ -1,4 +1,4 @@
-global.log = global.log || {all() {}, file() {}, external() {}, debug: console.log};
+global.log = global.log || {all() {}, file() {}, error() {}, external() {}, debug: console.log};
 const assert = require("assert");
 const path = require("path");
 const gcs = require("../../main/player/gcs.js");
