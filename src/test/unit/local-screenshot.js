@@ -1,5 +1,6 @@
 const assert = require("assert");
 const commonConfig = require("common-display-module");
+const messaging = require("common-display-module/messaging");
 const fs = require("fs");
 const simple = require("simple-mock");
 
@@ -10,6 +11,7 @@ describe("Local screenshot", function() {
 
   beforeEach(() => {
     simple.mock(commonConfig, "getModulePath").returnWith("module/path");
+    simple.mock(messaging, "broadcastMessage").resolveWith();
     simple.mock(Date, "now").returnWith("123");
     simple.mock(fs, "writeFile");
     simple.mock(viewerWindowBindings, "sendToViewer");
@@ -37,7 +39,16 @@ describe("Local screenshot", function() {
     });
 
     return screenshot.handleLocalScreenshotRequest()
-    .then(() => assert(fs.writeFile.called));
+    .then(() => {
+      assert(fs.writeFile.called);
+      assert.equal(messaging.broadcastMessage.callCount, 1);
+
+      assert.deepEqual(messaging.broadcastMessage.lastCall.args[0], {
+        from: 'player-electron',
+        topic: 'local-screenshot-result',
+        filePath: 'module/path/screenshot-123.png'
+      });
+    });
   });
 
 });

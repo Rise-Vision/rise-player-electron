@@ -1,4 +1,5 @@
 const commonConfig = require("common-display-module");
+const commonMessaging = require("common-display-module/messaging");
 const config = require("./config");
 const fs = require("fs");
 const messaging = require("./messaging");
@@ -52,6 +53,9 @@ module.exports = {
 
       return writeFile(filePath, buffer);
     })
+    .then(filePath => commonMessaging.broadcastMessage({
+      from: config.moduleName, topic: 'local-screenshot-result', filePath
+    }))
     .catch(error => log.error('error while handling local screenshot request', error.stack));
   }
 };
