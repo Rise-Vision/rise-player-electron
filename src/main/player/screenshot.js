@@ -1,8 +1,11 @@
 const commonConfig = require("common-display-module");
-const messaging = require("./messaging.js");
+const config = require("./config");
+const fs = require("fs");
+const messaging = require("./messaging");
+const path = require("path");
 const platform = require("rise-common-electron").platform;
 const request = require("request");
-const viewerWindowBindings = require("../viewer/window-bindings.js");
+const viewerWindowBindings = require("../viewer/window-bindings");
 
 const JPEGQUALITY = 15;
 let RETRIES_TIMEOUT_DELAY;
@@ -39,7 +42,17 @@ module.exports = {
     messaging.onEvent('local-screenshot-request', module.exports.handleLocalScreenshotRequest);
   },
   handleLocalScreenshotRequest() {
-    log.debug('screenshot requested');
+    log.debug('local screenshot requested');
+
+    return captureScreenshot()
+    .then(screenshot => {
+      const buffer = nativeImage.createFromDataURL(screenshot).toPNG();
+      const modulePath = commonConfig.getModulePath(config.moduleName);
+      const filePath = path.join(modulePath, `screenshot-${Date.now()}.png`);
+
+      return writeFile(filePath, buffer);
+    })
+    .catch(error => log.error('error while handling local screenshot request', error.stack));
   }
 };
 
@@ -86,6 +99,18 @@ function uploadBuffer(signedUrl, contents) {
       } else {
         reject(err);
       }
+    });
+  });
+}
+
+function writeFile(filePath, buffer) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filePath, buffer, error => {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(filePath);
     });
   });
 }
