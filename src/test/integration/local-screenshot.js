@@ -1,4 +1,6 @@
-global.log = global.log || {all() {}, file() {}, external() {}, debug: console.log};
+global.log = global.log || {
+  all() {}, file() {}, error() {}, external() {}, debug: console.log
+};
 
 const assert = require("assert");
 const child = require("child_process");
@@ -14,14 +16,13 @@ const screenshot = require("../../main/player/screenshot");
 const viewerController = require("../../main/viewer/controller");
 const viewerWindowBindings = require("../../main/viewer/window-bindings");
 
-const modulePath = commonConfig.getModulePath(config.moduleName);
-
 describe("Local screenshot", function() {
   let win;
 
-  const expectedPath = path.join(modulePath, 'screenshot-123.png');
+  const expectedPath = '/tmp/screenshot-123.png';
 
   beforeEach(() => {
+    simple.mock(commonConfig, "getModulePath").returnWith("/tmp");
     simple.mock(messaging, "broadcastMessage").resolveWith();
     simple.mock(Date, "now").returnWith("123");
   });
