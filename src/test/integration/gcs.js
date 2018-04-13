@@ -1,4 +1,4 @@
-global.log = global.log || {file() {}, external() {}, debug: console.log};
+global.log = global.log || {all() {}, file() {}, external() {}, debug: console.log};
 const assert = require("assert");
 const path = require("path");
 const gcs = require("../../main/player/gcs.js");
@@ -45,7 +45,7 @@ describe("GCS", function() {
         "generation": "-1",
         "lastFetch": 0,
         "content": {
-          "test": "test" 
+          "test": "test"
         }
       }
     })
@@ -73,7 +73,7 @@ describe("GCS", function() {
         "generation": "-1",
         "lastFetch": (new Date()).getTime(),
         "content": {
-          "test": fakeCommand 
+          "test": fakeCommand
         }
       }
     })

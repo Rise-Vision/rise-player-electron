@@ -4,7 +4,13 @@ var childProcess = require("child_process");
 var watchdog = require("../../main/player/watchdog.js");
 var mocks = {};
 
-global.log = global.log || {external: console.log, debug: console.log, error:  console.log};
+global.log = global.log || {
+  all: console.log,
+  external: console.log,
+  debug: console.log,
+  error:  console.log
+};
+
 mocks.watchdog = {
   send: simple.stub(),
   on: simple.stub(),

@@ -43,6 +43,7 @@ module.exports = {
     messaging.onEvent('local-screenshot-request', module.exports.handleLocalScreenshotRequest);
   },
   handleLocalScreenshotRequest() {
+
     log.debug('local screenshot requested');
 
     return captureScreenshot()

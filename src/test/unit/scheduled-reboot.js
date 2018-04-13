@@ -1,8 +1,12 @@
 const assert = require("assert");
 const scheduledReboot = require("../../main/player/scheduled-reboot.js");
 const simple = require("simple-mock");
-global.log = global.log || {debug(msg){console.log(msg);}, external(msg){console.log(msg);}};
-
+global.log = global.log || {
+  all(msg){console.log(msg);},
+  debug(msg){console.log(msg);},
+  file(msg){console.log(msg);},
+  external(msg){console.log(msg);}
+};
 
 describe("Scheduled Reboot", ()=>{
   const validContents = {display: {restartEnabled: true, restartTime: "03:00"}};

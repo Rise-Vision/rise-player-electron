@@ -5,7 +5,7 @@ watchdog = require("../../main/player/watchdog.js"),
 simple = require("simple-mock"),
 assert = require("assert");
 
-global.log = global.log || {};
+global.log = global.log || {debug(){},all(){},file(){},external(){}};
 
 describe("Duplicate ID", ()=>{
   beforeEach("setup mocks", ()=>{

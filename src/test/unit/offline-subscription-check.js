@@ -4,7 +4,7 @@ const onlineDetection = require("../../main/player/online-detection.js");
 const commonConfig = require("common-display-module");
 const simple = require("simple-mock");
 const assert = require("assert");
-global.log = global.log || {debug(){},all(){},external(){}};
+global.log = global.log || {debug(){},all(){},file(){},external(){}};
 
 describe("Offline Subscription Check", ()=>{
   let jsonStub = simple.stub().resolveWith({authorized:true});
