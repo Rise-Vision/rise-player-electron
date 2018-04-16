@@ -1,4 +1,4 @@
-global.log = global.log || {file() {}, external() {}, debug: console.log, error: {}};
+global.log = global.log || {all() {}, file() {}, external() {}, debug: console.log, error: {}};
 
 const assert = require("assert");
 const gcsPolling = require("../../main/player/gcs-polling.js");
