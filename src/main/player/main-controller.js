@@ -4,8 +4,6 @@ launcher = require("../player/launcher.js"),
 config = require("./config.js"),
 commonConfig = require("common-display-module"),
 onlineDetection = require("../player/online-detection.js"),
-flashPluginFileName = platform.isWindows() ? "pepflashplayer.dll" : "libpepflashplayer.so",
-flashPluginPath = require("path").join(commonConfig.getInstallDir(), flashPluginFileName),
 path = require("path");
 
 let app,
@@ -72,8 +70,6 @@ module.exports = {
     globalShortcut = imports.globalShortcut;
     BrowserWindow = imports.BrowserWindow;
     protocol = imports.protocol;
-
-    app.commandLine.appendSwitch("ppapi-flash-path", flashPluginPath);
 
     protocol.registerStandardSchemes(["rchttp", "rchttps"], {secure: true});
 
