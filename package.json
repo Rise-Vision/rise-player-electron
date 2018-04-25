@@ -21,7 +21,7 @@
     "wtfnode": "^0.5.6"
   },
   "dependencies": {
-    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.0.1",
+    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.0.6",
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#8d66",
     "primus": "^6.0.1",
     "request": "2.73.0",
