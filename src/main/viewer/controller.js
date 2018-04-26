@@ -157,12 +157,12 @@ module.exports = {
       viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
       electron.screen.on("display-added", (event, newDisplay) => {
         const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
-        log.all(`window bounds reset to ${JSON.stringify(bounds)} after display added ${JSON.stringify(newDisplay)}`, `window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
+        log.all(`window bounds reset`, `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
         viewerWindow.setBounds(bounds);
       });
     }
 
-    log.all(`initial window bounds ${JSON.stringify(viewerWindow.getBounds())}`, `displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
+    log.all(`initial window bounds`, `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
 
     registerEvents(viewerWindow);
     viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
