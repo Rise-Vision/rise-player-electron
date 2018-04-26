@@ -1,3 +1,4 @@
+const electron = require("electron");
 const {BrowserWindow, app, globalShortcut} = require("electron");
 const assert = require("assert");
 const simple = require("simple-mock");
@@ -9,7 +10,7 @@ describe("Viewer logging",()=>{
   let win;
 
   before(()=>{
-    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
     viewerController.launch().then((viewerWindow)=>{win = viewerWindow;});
   });
 

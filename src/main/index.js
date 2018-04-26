@@ -1,4 +1,5 @@
 var {app, session, protocol} = require("electron"),
+electron = require("electron"),
 ipc = require("electron").ipcMain,
 BrowserWindow = require("electron").BrowserWindow,
 commonConfig = require("common-display-module"),
@@ -48,7 +49,7 @@ network.registerProxyUpdatedObserver((fields)=>{
   network.setNodeAgents(agent, agent);
 });
 
-viewerController.init(BrowserWindow, app, globalShortcut, ipc);
+viewerController.init(BrowserWindow, app, globalShortcut, ipc, electron);
 
 mainController.init({ app, displaySettings, ipc, globalShortcut, BrowserWindow, protocol });
 

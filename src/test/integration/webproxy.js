@@ -2,6 +2,7 @@ const ElectronProxyAgent = require('electron-proxy-agent');
 const commonConfig = require("common-display-module");
 const network = require("rise-common-electron").network;
 const simple = require("simple-mock");
+const electron = require("electron");
 const {ipcMain, session} = require("electron");
 network.registerProxyUpdatedObserver = ()=>{};
 
@@ -136,7 +137,7 @@ describe("Proxy Integration", function() {
       proxy.setSaveDir(commonConfig.getInstallDir());
       proxy.setEndpoint({hostname: "localhost", port: 9090});
 
-      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
       return viewerController.launch("about:blank")
         .then((viewerWindow)=>{
           return new Promise((res)=>{
@@ -153,7 +154,7 @@ describe("Proxy Integration", function() {
     it("uses a proxy with browser configuration", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
       return session.defaultSession.setProxy("localhost:9090", ()=>{
-        viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+        viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
         return viewerController.launch("about:blank")
           .then((viewerWindow)=>{
           return new Promise((res)=>{
@@ -171,7 +172,7 @@ describe("Proxy Integration", function() {
     it("bypasses local addresses", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
       proxy.setEndpoint({hostname: "localhost", port: 9090});
-      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
       return viewerController.launch("http://localhost:8080")
       .then((viewerWindow)=>{
         win = viewerWindow;
@@ -182,7 +183,7 @@ describe("Proxy Integration", function() {
     xit("doesn't use a proxy when proxy is cleared", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
       proxy.setEndpoint();
-      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
       return viewerController.launch("about:blank")
       .then((viewerWindow)=>{
         win = viewerWindow;
@@ -205,7 +206,7 @@ describe("Proxy Integration", function() {
         password: "pw"
       });
 
-      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+      viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
       let electronAuthSuppliedCallbackPromise = new Promise((res)=>{
         electronAuthSuppliedCallback = res;

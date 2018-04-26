@@ -18,6 +18,7 @@ let ipc;
 let viewerWindow;
 let dataHandlerRegistered;
 let reloadTimeout;
+let electron;
 
 function registerEvents(window) {
   const webContents = window.webContents;
@@ -107,15 +108,17 @@ function createPresentationUrl() {
 }
 
 module.exports = {
-  init(_BrowserWindow, _app, _globalShortcut, _ipc) {
+  init(_BrowserWindow, _app, _globalShortcut, _ipc, _electron) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
     if (!_app) { throw new Error("Invalid app"); }
     if (!_globalShortcut) { throw new Error("Invalid globalShortcut"); }
     if (!_ipc) { throw new Error("Invalid ipc"); }
+    if (!_electron) { throw new Error("Invalid electron"); }
     BrowserWindow = _BrowserWindow;
     app = _app;
     globalShortcut = _globalShortcut;
     ipc = _ipc;
+    electron = _electron;
   },
   launch(overrideUrl) {
     let displaySettings = commonConfig.getDisplaySettingsSync();
@@ -152,7 +155,14 @@ module.exports = {
 
     if(customResolution) {
       viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
+      electron.screen.on("display-added", (event, newDisplay) => {
+        const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
+        log.all(`window bounds reset to ${JSON.stringify(bounds)} after display added ${JSON.stringify(newDisplay)}`, `window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
+        viewerWindow.setBounds(bounds);
+      });
     }
+
+    log.all(`initial window bounds ${JSON.stringify(viewerWindow.getBounds())}`, `displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
 
     registerEvents(viewerWindow);
     viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{

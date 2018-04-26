@@ -1,3 +1,4 @@
+const electron = require("electron");
 const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("electron");
 const childProc = require("child_process");
 const screenshot = require("../../main/player/screenshot.js");
@@ -26,7 +27,7 @@ describe("Screenshot", ()=>{
     simple.mock(log, "debug").callFn(console.log);
     simple.mock(log, "error").callFn(console.error);
     screenshot.init(ipcMain, nativeImage);
-    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
     return viewerController.launch("about:blank")
     .then((viewerWindow)=>{return (win = viewerWindow);})

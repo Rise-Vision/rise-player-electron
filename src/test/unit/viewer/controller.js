@@ -28,10 +28,18 @@ mocks.viewerWindow = {
   webContents: mocks.webContents,
   isFocused: simple.stub(),
   setSize: simple.stub(),
-  isDestroyed: simple.stub().returnWith(false)
+  isDestroyed: simple.stub().returnWith(false),
+  getBounds: simple.stub(),
+  setBounds: simple.stub()
+};
+
+mocks.screen = {
+  on: simple.stub(),
+  getAllDisplays: simple.stub()
 };
 
 mocks.electron = {
+  screen: mocks.screen,
   BrowserWindow: simple.stub().returnWith(mocks.viewerWindow)
 };
 
@@ -47,7 +55,7 @@ mocks.ipc = {
 
 describe("viewerController", ()=>{
   beforeEach(()=>{
-    viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc);
+    viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron);
   });
 
   afterEach(()=>{
@@ -69,10 +77,11 @@ describe("viewerController", ()=>{
       assert.throws(()=>viewerController.init(mocks.electron.BrowserWindow));
       assert.throws(()=>viewerController.init(undefined, mocks.app));
       assert.throws(()=>viewerController.init(mocks.electron.BrowserWindow, mocks.app));
+      assert.throws(()=>viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc));
     });
 
     it("does not throw when all imports provided", ()=>{
-      assert.doesNotThrow(()=>viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc));
+      assert.doesNotThrow(()=>viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron));
     });
 
   });
@@ -80,6 +89,7 @@ describe("viewerController", ()=>{
   describe("launch", ()=>{
     beforeEach(()=>{
       simple.mock(mocks.webContents, "executeJavaScript").callbackWith(true);
+      simple.mock(log, "all");
     });
 
     afterEach(()=>{
@@ -170,6 +180,27 @@ describe("viewerController", ()=>{
         assert(mocks.viewerWindow.setSize.lastCall.args[0], 2000);
         assert(mocks.viewerWindow.setSize.lastCall.args[1], 1000);
         assert(mocks.viewerWindow.webContents.session.setCertificateVerifyProc.called);
+      });
+    });
+
+    it("resets Viewer window when user provided resolution mode and a display has been added", ()=>{
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
+        displayid: "fakedisplay",
+        claimid: "fakeclaim",
+        screenwidth: "2000",
+        screenheight: "1000"
+      });
+
+      simple.mock(network, "getLocalIP").resolveWith("test");
+
+      return viewerController.launch()
+      .then(()=>{
+        const call = mocks.screen.on.calls.filter((call)=> call.args[0] === "display-added")[0];
+        const handler = call.args[1];
+        handler();
+        assert.ok(mocks.viewerWindow.setBounds.called);
+        const bounds = mocks.viewerWindow.setBounds.lastCall.args[0];
+        assert.deepEqual(bounds, {x: 0, y:0, width: 2000, height: 1000});
       });
     });
 
