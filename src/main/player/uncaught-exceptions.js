@@ -1,5 +1,4 @@
 const config = require("./config");
-const fs = require("fs-extra");
 const platform = require("rise-common-electron").platform;
 
 function sendToBQ() {
@@ -10,13 +9,8 @@ function sendToBQ() {
     .then(content => {
       log.error('uncaught exception file found', `Uncaught exception: ${content}`);
 
-      return new Promise(resolve => {
-        fs.remove(path, error => {
-          error && log.error(`could not delete ${path}`, error);
-
-          resolve();
-        });
-      });
+      return platform.renameFile(path, `${path}.bak`)
+      .catch(error => log.error(error.message || `could not rename ${path} to ${path}.bak`, error.error ? error.error.stack : error.stack));
     })
     .catch(error => log.error('error while retrieving previous uncaught exceptions', error.stack));
   }
