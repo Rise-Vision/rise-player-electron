@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 MODULENAME="player-electron"
 VERSION=$(date +%Y.%m.%d.%H.%M)
 echo "staging $VERSION"

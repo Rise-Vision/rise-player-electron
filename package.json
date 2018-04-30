@@ -13,6 +13,7 @@
     "electron": "1.6.6",
     "electron-ipc-mock": "0.0.3",
     "electron-mocha": "^5.0.0",
+    "fs-extra": "^5.0.0",
     "http-shutdown": "^1.2.0",
     "istanbul": "^0.4.5",
     "jshint": "^2.9.5",
@@ -25,7 +26,7 @@
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#8d66",
     "primus": "^6.0.1",
     "request": "2.73.0",
-    "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#402de1c",
+    "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#788e119",
     "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.1",
     "ws": "^1.1.1"
   },
@@ -33,7 +34,7 @@
     "test": "jshint src && istanbul cover node_modules/mocha/bin/_mocha -- --exit --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive src/test/unit",
     "test-no-coverage": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 10000 src/test/integration",
-    "ci-integration": "xvfb-run node_modules/.bin/electron-mocha -t 20000 src/test/integration",
+    "ci-integration": "xvfb-run node_modules/.bin/electron-mocha --exit -t 20000 src/test/integration",
     "start": "./node_modules/.bin/electron ./src/main/index.js"
   },
   "useElectron": true
