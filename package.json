@@ -26,7 +26,7 @@
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#8d66",
     "primus": "^6.0.1",
     "request": "2.73.0",
-    "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#f527",
+    "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#788e119",
     "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.1",
     "ws": "^1.1.1"
   },
