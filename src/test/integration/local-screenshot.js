@@ -8,6 +8,7 @@ const commonConfig = require("common-display-module");
 const messaging = require("common-display-module/messaging");
 const fs = require("fs");
 const simple = require("simple-mock");
+const electron = require("electron");
 const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("electron");
 
 const screenshot = require("../../main/player/screenshot");
@@ -33,7 +34,7 @@ describe("Local screenshot", function() {
 
   it("handles a local screenshot request", () => {
     screenshot.init(ipcMain, nativeImage);
-    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain);
+    viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
     return viewerController.launch("about:blank")
     .then(viewerWindow => {
