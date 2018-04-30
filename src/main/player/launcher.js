@@ -1,22 +1,23 @@
 const config = require("./config");
-const messaging = require("./messaging.js");
-const screenshot = require("./screenshot.js");
-const dupeId = require("./duplicate-id.js");
-const restart = require("./restart.js");
-const reboot = require("./reboot.js");
-const scheduledReboot= require("./scheduled-reboot.js");
+const messaging = require("./messaging");
+const screenshot = require("./screenshot");
+const dupeId = require("./duplicate-id");
+const restart = require("./restart");
+const reboot = require("./reboot");
+const scheduledReboot= require("./scheduled-reboot");
 const platform = require("rise-common-electron").platform;
-const installer = require("./installer.js");
-const watchdog = require("./watchdog.js");
-const riseCacheWatchdog = require("../player/rise-cache-watchdog.js");
-const gcsPolling = require("./gcs-polling.js");
-const gcs = require("./gcs.js");
-const viewerWindowBindings = require("../viewer/window-bindings.js");
+const installer = require("./installer");
+const watchdog = require("./watchdog");
+const riseCacheWatchdog = require("../player/rise-cache-watchdog");
+const gcsPolling = require("./gcs-polling");
+const gcs = require("./gcs");
+const viewerWindowBindings = require("../viewer/window-bindings");
 const viewer = require("../viewer");
-const onlineDetection = require("./online-detection.js");
-const offlineSubscriptionCheck = require("./offline-subscription-check.js");
-const viewerContentLoader = require("../viewer/content-loader.js");
+const onlineDetection = require("./online-detection");
+const offlineSubscriptionCheck = require("./offline-subscription-check");
+const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
+const uncaughtExceptions = require("./uncaught-exceptions");
 
 module.exports = {
   launch() {
@@ -98,6 +99,7 @@ module.exports = {
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)
-    .then(() => heartbeat.startHeartbeatInterval(config.moduleName));
+    .then(() => heartbeat.startHeartbeatInterval(config.moduleName))
+    .then(uncaughtExceptions.sendToBQ);
   }
 };
