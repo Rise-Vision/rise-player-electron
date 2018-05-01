@@ -74,7 +74,7 @@ describe("Screenshot", function() {
 
     return messagingScreenshotRequestPromise
     .then(()=>{
-      assert.equal(log.error.lastCall.args[1], "simulated failure message from viewer");
+      assert.equal(log.error.lastCall.args[0], "simulated failure message from viewer");
     });
   });
 });

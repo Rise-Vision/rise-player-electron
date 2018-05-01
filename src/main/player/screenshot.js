@@ -32,7 +32,7 @@ module.exports = {
         log.file(`screenshot uploaded - 'screenshot-saved' message sent to ${displayId}/${data.clientId}`);
       })
       .catch((err)=>{
-        log.error("uploading screenshot", err);
+        log.error(err, "uploading screenshot");
         messaging.write({
           msg: "screenshot-failed",
           clientId: data.clientId
@@ -57,7 +57,7 @@ module.exports = {
     .then(filePath => commonMessaging.broadcastMessage({
       from: config.moduleName, topic: 'local-screenshot-result', filePath
     }))
-    .catch(error => log.error('error while handling local screenshot request', error.stack));
+    .catch(error => log.error(error.stack, 'error while handling local screenshot request'));
   }
 };
 

@@ -46,7 +46,7 @@ function startCache() {
   }
   catch (err) {
     cache = null;
-    log.error("starting rise cache v2", inspect(err));
+    log.error(`starting rise cache v2: ${ inspect(err) }`, "starting rise cache v2");
   }
 }
 

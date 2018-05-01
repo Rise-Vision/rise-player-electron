@@ -37,8 +37,8 @@ describe("Uncaught Exceptions - Integration", () => {
       })
       .then(() => {
         assert.equal(global.log.error.callCount, 1);
-        assert.equal(global.log.error.lastCall.args[0], 'uncaught exception file found');
-        assert.equal(global.log.error.lastCall.args[1], 'Uncaught exception: test error content');
+        assert.equal(global.log.error.lastCall.args[0], 'Uncaught exception: test error content');
+        assert.equal(global.log.error.lastCall.args[1], 'uncaught exception file found');
 
         assert(!platform.fileExists(path));
         assert(platform.fileExists(backupPath));
@@ -70,8 +70,8 @@ describe("Uncaught Exceptions - Integration", () => {
     })
     .then(() => {
       assert.equal(global.log.error.callCount, 1);
-      assert.equal(global.log.error.lastCall.args[0], 'uncaught exception file found');
-      assert.equal(global.log.error.lastCall.args[1], 'Uncaught exception: test error content');
+      assert.equal(global.log.error.lastCall.args[0], 'Uncaught exception: test error content');
+      assert.equal(global.log.error.lastCall.args[1], 'uncaught exception file found');
 
       assert(!platform.fileExists(path));
       assert(platform.fileExists(backupPath));

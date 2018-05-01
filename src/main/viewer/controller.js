@@ -55,8 +55,8 @@ function registerEvents(window) {
 
       platform.runFunction(configLogger.logClientInfo.bind(null, data), RETRIES, RETRY_TIMEOUT, RETRY_DELAY)
         .catch((err)=>{
-          log.error("logging client info", err);
-          log.file(require("util").inspect(err, { depth: null }));
+          const errorDetail = require("util").inspect(err, { depth: null });
+          log.error(errorDetail, "logging client info");
         });
     } else if(data.message === "data-handler-registered") {
       if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
