@@ -27,12 +27,12 @@ displaySettings = commonConfig.getDisplaySettingsSync();
 log.setDisplaySettings(displaySettings);
 
 process.on("uncaughtException", (err)=>{
-  platform.writeTextFileSync(config.getUncaughtErrorFileName(), "Exception | " + require("util").inspect(err, {depth: 4}) + err.stack);
+  platform.writeTextFileSync(config.getUncaughtErrorFileName(), "player: Exception | " + require("util").inspect(err, {depth: 4}) + err.stack);
   app.quit();
 });
 
 process.on("unhandledRejection", (err)=>{
-  platform.writeTextFileSync(config.getUncaughtErrorFileName(), "Rejection | " + require("util").inspect(err, {depth: 4}) + err.stack);
+  platform.writeTextFileSync(config.getUncaughtErrorFileName(), "player: Rejection | " + require("util").inspect(err, {depth: 4}) + err.stack);
   app.quit();
 });
 
