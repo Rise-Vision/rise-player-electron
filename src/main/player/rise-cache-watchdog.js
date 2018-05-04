@@ -13,7 +13,7 @@ function scheduleCacheCheck() {
     isCacheRunning()
       .catch((err)=>{
         log.external("restarting cache", inspect(err));
-        module.exports.launchCache();
+        module.exports.restartCache();
       });
   }, module.exports.getCheckInterval());
 }
@@ -55,6 +55,13 @@ module.exports = {
     return checkInterval;
   },
   launchCache() {
+    startCache();
+  },
+  restartCache() {
+    if (cache) {
+      log.external('killing rise cache');
+      cache.kill('SIGINT');
+    }
     startCache();
   },
   quitCache() {
