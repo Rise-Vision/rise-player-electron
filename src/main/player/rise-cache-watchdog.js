@@ -58,14 +58,14 @@ module.exports = {
     startCache();
   },
   restartCache() {
-    if (cache) {
-      log.external('killing rise cache');
-      cache.kill('SIGINT');
-    }
+    module.exports.quitCache();
     startCache();
   },
   quitCache() {
-    if (cache) { cache.send("quit"); }
+    if (cache) { 
+      log.external("killing rise cache");
+      cache.send("quit");
+    }
   },
   startWatchdog() {
     scheduleCacheCheck();
