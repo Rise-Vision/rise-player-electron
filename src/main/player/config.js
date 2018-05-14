@@ -3,8 +3,12 @@ const {join: pathJoin, dirname} = require("path");
 const cacheVersion = require(pathJoin(dirname(require.resolve("rise-cache-v2")), "package.json")).version;
 const platform = require("rise-common-electron").platform;
 let serialNumber;
+let useRLSSingleFile = false;
+let useRLSFolder = false;
 
 const SERIAL_FILE = "/bookpc/serial-number";
+const WIDGETS_SINGLEFILE_FILE = "b6f5f06a0e080803355f68fcaf65cf57";
+const WIDGETS_FOLDER_FILE = "3ee8348d080fb43f58814c44801d28fe";
 
 function getSerialFileName(app) {
   let name;
@@ -23,6 +27,12 @@ function getSerialFileName(app) {
 module.exports = {
   moduleName: "player-electron",
   cacheVersion,
+  canUseRLSFolder() {
+    return useRLSFolder;
+  },
+  canUseRLSSingleFile() {
+    return useRLSSingleFile;
+  },
   getUncaughtErrorFileName() {
     return pathJoin(moduleCommon.getInstallDir(), "uncaught-exception.json");
   },
@@ -35,6 +45,15 @@ module.exports = {
   },
   setGracefulShutdownFlag() {
     moduleCommon.writeFile("graceful_shutdown_flag", "");
+  },
+  setRLSUsage() {
+    const singleFilePath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_SINGLEFILE_FILE);
+    const folderPath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_FOLDER_FILE);
+
+    useRLSSingleFile = platform.readTextFileSync(singleFilePath);
+    useRLSFolder = platform.readTextFileSync(folderPath);
+
+    log.debug(`set rls usage | single file: ${useRLSSingleFile}, folder: ${useRLSFolder}`);
   },
   setSerialNumber(app) {
     if (!app) {

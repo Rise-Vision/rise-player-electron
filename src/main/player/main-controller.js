@@ -46,6 +46,7 @@ function readyHandler() {
   onlineDetection.init(ipc, BrowserWindow)
     .then(()=>{
       config.setSerialNumber(app);
+      config.setRLSUsage();
 
       proxy.setSaveDir(commonConfig.getInstallDir());
       proxy.setEndpoint(displaySettings.proxy);

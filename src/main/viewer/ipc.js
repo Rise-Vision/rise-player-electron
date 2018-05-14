@@ -1,4 +1,5 @@
 const ipc = require("electron").ipcRenderer;
+const config = require("../player/config.js");
 const commonConfig = require("common-display-module");
 const displaySettings = commonConfig.getDisplaySettingsSync();
 const webFrame = require("electron").webFrame;
@@ -33,6 +34,8 @@ window.disableViewerContentFetch = true;
 window.enableWidgetLogging = true;
 window.enableViewerLogFromPlayer = true;
 window.enableRiseCacheScheme = true;
+window.useRLSSingleFile = config.canUseRLSSingleFile();
+window.useRLSFolder = config.canUseRLSFolder();
 
 ipc.on("viewer-message-received", (evt, message)=>{
   messageHandlers.forEach((handler)=>handler(message));
