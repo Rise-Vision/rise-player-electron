@@ -50,10 +50,12 @@ module.exports = {
     const singleFilePath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_SINGLEFILE_FILE);
     const folderPath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_FOLDER_FILE);
 
+    log.file(`single file path: ${singleFilePath}, folder path: ${folderPath}`);
+
     useRLSSingleFile = platform.fileExists(singleFilePath);
     useRLSFolder = platform.fileExists(folderPath);
 
-    log.debug(`set rls usage | single file: ${useRLSSingleFile}, folder: ${useRLSFolder}`);
+    log.file(`single file: ${useRLSSingleFile}, folder: ${useRLSFolder}`, "set rls usage");
   },
   setSerialNumber(app) {
     if (!app) {
