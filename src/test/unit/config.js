@@ -30,18 +30,6 @@ describe("Config", ()=>{
     assert(config.getSerialNumber(), "CYN123123123");
   });
 
-  it("sets and retrieves RLS usage for single file", ()=> {
-    mock(platform, "fileExists").returnWith(false);
-    config.setRLSUsage();
-    assert(!config.canUseRLSSingleFile());
-    assert(!config.canUseRLSFolder());
-
-    mock(platform, "fileExists").returnWith(true);
-    config.setRLSUsage();
-    assert(config.canUseRLSSingleFile());
-    assert(config.canUseRLSFolder());
-  });
-
   it("returns player graceful shutdown flag path", ()=>{
     mock(commonConfig, "getInstallDir").returnWith("root");
     let flagPath = config.getPlayerGracefulShutdownPath();
