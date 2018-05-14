@@ -31,12 +31,12 @@ describe("Config", ()=>{
   });
 
   it("sets and retrieves RLS usage for single file", ()=> {
-    mock(platform, "readTextFileSync").returnWith(false);
+    mock(platform, "fileExists").returnWith(false);
     config.setRLSUsage();
     assert(!config.canUseRLSSingleFile());
     assert(!config.canUseRLSFolder());
 
-    mock(platform, "readTextFileSync").returnWith(true);
+    mock(platform, "fileExists").returnWith(true);
     config.setRLSUsage();
     assert(config.canUseRLSSingleFile());
     assert(config.canUseRLSFolder());

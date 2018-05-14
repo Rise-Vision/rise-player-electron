@@ -50,8 +50,8 @@ module.exports = {
     const singleFilePath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_SINGLEFILE_FILE);
     const folderPath = pathJoin(moduleCommon.getInstallDir(), WIDGETS_FOLDER_FILE);
 
-    useRLSSingleFile = platform.readTextFileSync(singleFilePath);
-    useRLSFolder = platform.readTextFileSync(folderPath);
+    useRLSSingleFile = platform.fileExists(singleFilePath);
+    useRLSFolder = platform.fileExists(folderPath);
 
     log.debug(`set rls usage | single file: ${useRLSSingleFile}, folder: ${useRLSFolder}`);
   },
