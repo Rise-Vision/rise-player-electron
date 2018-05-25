@@ -7,7 +7,7 @@ const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
 
 describe("GCS Polling", function() {
-  this.timeout(5000);
+  this.timeout(8000);
 
   afterEach(()=>{
     simple.restore();
