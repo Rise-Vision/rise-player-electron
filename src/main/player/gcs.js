@@ -73,6 +73,10 @@ function getLocalContent(gcsPath, localGCSData) {
   return Promise.resolve(localGCSData[gcsPath].content);
 }
 
+function retryGetFileContents(gcsPath, options) {
+  return module.exports.getFileContents(gcsPath, options);
+}
+
 module.exports = {
   getFileContents(gcsPath, { retries = 2, useLocalData = true, useThrottle = true } = {}) {
     log.debug(`resolving contents for ${gcsPath}`);
@@ -110,7 +114,7 @@ module.exports = {
       .catch((err)=>{
         if (err && (err.message.startsWith("net::") || err.message.includes("ECONN"))) {networkFailure = true;}
         if (retries > 0) {
-          return module.exports.getFileContents(gcsPath, { retries: retries - 1, useLocalData, useThrottle });
+          return retryGetFileContents(gcsPath, { retries: retries - 1, useLocalData, useThrottle });
         }
 
         if (useLocalData) {
