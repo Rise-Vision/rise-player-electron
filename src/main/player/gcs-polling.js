@@ -10,6 +10,10 @@ let displayId;
 let pollingTimer;
 let gcsCommandsPath;
 
+function getRemoteFileContents(path) {
+  return gcs.getFileContents(path, {retries: 5, useLocalData: false});
+}
+
 module.exports = {
   init() {
     displayId = commonConfig.getDisplaySettingsSync().displayid || "";
@@ -79,7 +83,3 @@ module.exports = {
     });
   }
 };
-
-function getRemoteFileContents(path) {
-  return gcs.getFileContents(path, {retries: 5, useLocalData: false});
-}
