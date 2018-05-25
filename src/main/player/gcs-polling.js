@@ -55,7 +55,7 @@ module.exports = {
     });
   },
   refreshCommandsFileGeneration() {
-    return gcs.getFileContents(gcsCommandsPath, { useLocalData: false })
+    return getRemoteFileContents(gcsCommandsPath)
     .catch((err)=>{
       if(!err.message.includes("404") && !err.message.includes("401")) {
         log.error("Error refreshing GCS commands: " + inspect(err));
@@ -63,7 +63,7 @@ module.exports = {
     });
   },
   processCommands() {
-    return gcs.getFileContents(gcsCommandsPath, { useLocalData: false }).then((data)=>{
+    return getRemoteFileContents(gcsCommandsPath).then((data)=>{
       if(data && ["restart", "reboot", "screenshot"].includes(data.command)) {
         let message = Object.assign(data, { message: data.command + "-request" });
 
@@ -73,9 +73,13 @@ module.exports = {
     });
   },
   fetchContent() {
-    return gcs.getFileContents(contentLoader.contentPath(), { useLocalData: false }).then((data)=>{
+    return getRemoteFileContents(contentLoader.contentPath()).then((data)=>{
       if (!data) {return;}
       contentLoader.sendContentToViewer(data);
     });
   }
 };
+
+function getRemoteFileContents(path) {
+  return gcs.getFileContents(path, {useLocalData: false});
+}
