@@ -81,5 +81,5 @@ module.exports = {
 };
 
 function getRemoteFileContents(path) {
-  return gcs.getFileContents(path, {useLocalData: false});
+  return gcs.getFileContents(path, {retries: 5, useLocalData: false});
 }
