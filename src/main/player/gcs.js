@@ -8,6 +8,8 @@ const platform = require("rise-common-electron").platform;
 const urlParams = "alt=media&ifGenerationNotMatch=GENERATION";
 const urlTemplate = `${apiEndpoint}/b/BUCKETNAME/o/FILEPATH?${urlParams}`;
 
+const RETRY_INTERVAL_MILLIS = 1000;
+
 let networkFailure;
 
 function parseGCSPath(path) {
@@ -73,6 +75,16 @@ function getLocalContent(gcsPath, localGCSData) {
   return Promise.resolve(localGCSData[gcsPath].content);
 }
 
+function retryGetFileContents(gcsPath, options) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      module.exports.getFileContents(gcsPath, options)
+      .then(resolve)
+      .catch(reject);
+    }, RETRY_INTERVAL_MILLIS);
+  });
+}
+
 module.exports = {
   getFileContents(gcsPath, { retries = 2, useLocalData = true, useThrottle = true } = {}) {
     log.debug(`resolving contents for ${gcsPath}`);
@@ -110,7 +122,7 @@ module.exports = {
       .catch((err)=>{
         if (err && (err.message.startsWith("net::") || err.message.includes("ECONN"))) {networkFailure = true;}
         if (retries > 0) {
-          return module.exports.getFileContents(gcsPath, { retries: retries - 1, useLocalData, useThrottle });
+          return retryGetFileContents(gcsPath, { retries: retries - 1, useLocalData, useThrottle });
         }
 
         if (useLocalData) {
