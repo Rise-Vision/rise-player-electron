@@ -8,6 +8,8 @@ const platform = require("rise-common-electron").platform;
 const urlParams = "alt=media&ifGenerationNotMatch=GENERATION";
 const urlTemplate = `${apiEndpoint}/b/BUCKETNAME/o/FILEPATH?${urlParams}`;
 
+const RETRY_INTERVAL_MILLIS = 1000;
+
 let networkFailure;
 
 function parseGCSPath(path) {
@@ -74,7 +76,13 @@ function getLocalContent(gcsPath, localGCSData) {
 }
 
 function retryGetFileContents(gcsPath, options) {
-  return module.exports.getFileContents(gcsPath, options);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      module.exports.getFileContents(gcsPath, options)
+      .then(resolve)
+      .catch(reject);
+    }, RETRY_INTERVAL_MILLIS);
+  });
 }
 
 module.exports = {
