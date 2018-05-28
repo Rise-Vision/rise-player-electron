@@ -153,7 +153,7 @@ module.exports = {
         callback(0);
       } else {
         let url = overrideUrl || VIEWER_URL;
-        if (errorCode !== 0 && url.indexOf(hostname) !== -1) {
+        if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
           const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
           log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
         }
