@@ -11,6 +11,9 @@ const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings.js");
 const gcs = require("../player/gcs.js");
 const scheduledReboot = require("../player/scheduled-reboot.js");
+
+const VIEWER_URL = "https://rvashow2.appspot.com/Viewer.html?";
+
 let BrowserWindow;
 let app;
 let globalShortcut;
@@ -96,7 +99,7 @@ function createPresentationUrl() {
   const overrideUrl = displaySettings.viewerurl;
   const id = displaySettings.displayid || "";
 
-  let url = overrideUrl || "https://rvashow2.appspot.com/Viewer.html?";
+  let url = overrideUrl || VIEWER_URL;
 
   if (!onlineDetection.isOnline()) {
     url = "file://" + __dirname + "/localviewer/main/Viewer.html?";
@@ -145,10 +148,15 @@ module.exports = {
     viewerWindow.loadURL("about:blank");
 
     viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
-      const {hostname, certificate} = request;
+      const {hostname, certificate, verificationResult, errorCode} = request;
       if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
         callback(0);
       } else {
+        let url = overrideUrl || VIEWER_URL;
+        if (errorCode !== 0 && url.indexOf(hostname) !== -1) {
+          const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
+          log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
+        }
         callback(-3);
       }
     });
