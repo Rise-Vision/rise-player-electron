@@ -12,7 +12,7 @@ const viewerWindowBindings = require("./window-bindings.js");
 const gcs = require("../player/gcs.js");
 const scheduledReboot = require("../player/scheduled-reboot.js");
 
-const VIEWER_URL = "https://rvashow2.appspot.com/Viewer.html?";
+const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
 let BrowserWindow;
 let app;
