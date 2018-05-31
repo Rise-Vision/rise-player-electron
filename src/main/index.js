@@ -15,6 +15,7 @@ const ElectronProxyAgent = require("electron-proxy-agent");
 const externalLogger = require("./loggers/external-logger");
 const path = require("path");
 
+// Setting a different user data dir than the default one launcher uses, prevents web and service worker errors from happening.
 const userDataDir = path.join(commonConfig.getInstallDir(), "chrome");
 app.setPath('userData', userDataDir);
 
