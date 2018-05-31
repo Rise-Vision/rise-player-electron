@@ -13,6 +13,10 @@ const preventBQLog = process.env.RISE_PREVENT_BQ_LOG;
 const viewerController = require("./viewer/controller");
 const ElectronProxyAgent = require("electron-proxy-agent");
 const externalLogger = require("./loggers/external-logger");
+const path = require("path");
+
+const userDataDir = path.join(commonConfig.getInstallDir(), "chrome");
+app.setPath('userData', userDataDir);
 
 global.secondMillis = 1000;
 
