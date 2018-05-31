@@ -1,19 +1,18 @@
-var {app, session, protocol} = require("electron"),
-electron = require("electron"),
-ipc = require("electron").ipcMain,
-BrowserWindow = require("electron").BrowserWindow,
-commonConfig = require("common-display-module"),
-globalShortcut = require("electron").globalShortcut,
-{network, proxy, platform} = require("rise-common-electron"),
-nativeImage = require('electron').nativeImage,
-mainController = require("./player/main-controller.js"),
-screenshot = require("./player/screenshot.js"),
-config = require("./player/config.js"),
-preventBQLog = process.env.RISE_PREVENT_BQ_LOG,
-viewerController = require("./viewer/controller.js"),
-ElectronProxyAgent = require("electron-proxy-agent"),
-externalLogger = require("./loggers/external-logger.js"),
-displaySettings;
+const {app, session, protocol} = require("electron");
+const electron = require("electron");
+const ipc = require("electron").ipcMain;
+const BrowserWindow = require("electron").BrowserWindow;
+const commonConfig = require("common-display-module");
+const globalShortcut = require("electron").globalShortcut;
+const {network, proxy, platform} = require("rise-common-electron");
+const nativeImage = require('electron').nativeImage;
+const mainController = require("./player/main-controller");
+const screenshot = require("./player/screenshot");
+const config = require("./player/config");
+const preventBQLog = process.env.RISE_PREVENT_BQ_LOG;
+const viewerController = require("./viewer/controller");
+const ElectronProxyAgent = require("electron-proxy-agent");
+const externalLogger = require("./loggers/external-logger");
 
 global.secondMillis = 1000;
 
@@ -23,7 +22,7 @@ log.resetLogFiles(Math.pow(10,5));
 
 if(preventBQLog) { log.file("Environment variable RISE_PREVENT_BQ_LOG. Not logging to BQ."); }
 
-displaySettings = commonConfig.getDisplaySettingsSync();
+const displaySettings = commonConfig.getDisplaySettingsSync();
 log.setDisplaySettings(displaySettings);
 
 process.on("uncaughtException", (err)=>{
