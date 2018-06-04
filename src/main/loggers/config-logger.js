@@ -5,6 +5,7 @@ const bqClient = require("rise-common-electron")
 const commonConfig = require("common-display-module");
 const config = require("../player/config.js");
 const offlineSubscriptionCheck = require("../player/offline-subscription-check.js");
+const moment = require('moment-timezone');
 
 module.exports = {
   getBQClient() { return bqClient; },
@@ -33,7 +34,9 @@ module.exports = {
         height: viewerConfig.height,
         local_ip: localIP,
         mac: network.getMAC(),
-        serial_number: config.getSerialNumber()
+        serial_number: config.getSerialNumber(),
+        time_zone: moment.tz.guess(),
+        utc_offset: moment().format("Z")
       };
 
       return offlineSubscriptionCheck.isSubscribed().then((isSubscribed) => {

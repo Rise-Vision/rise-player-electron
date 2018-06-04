@@ -24,6 +24,7 @@
   "dependencies": {
     "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.0.6",
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#8d66",
+    "moment-timezone": "^0.5.17",
     "primus": "^6.0.1",
     "request": "2.73.0",
     "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#4879bca",
