@@ -42,7 +42,7 @@ module.exports = {
     })
     .then(()=>{
       log.all("starting watchdog", "", 100);
-      return watchdog.init();
+      return watchdog.init(["--delay", "360000"]);
     })
     .then(()=>{
       const offlineSubscribedPromise = offlineSubscriptionCheck.isSubscribed();
