@@ -18,6 +18,7 @@ const offlineSubscriptionCheck = require("./offline-subscription-check");
 const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
+const updateFrequencyLogger = require('./update-frequency-logger');
 
 module.exports = {
   launch() {
@@ -96,6 +97,7 @@ module.exports = {
       }
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
+      updateFrequencyLogger.logContentChanges(content);
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)
