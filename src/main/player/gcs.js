@@ -22,23 +22,21 @@ function parseGCSPath(path) {
 
 function getlocalGCSData() {
   return new Promise((resolve)=>{
-    let filePath;
-
     log.external("gcs local contents load", localGCSDataFileName);
 
     if (commonConfig.fileExists(localGCSDataFileName)) {
-      filePath = path.join(commonConfig.getInstallDir(), localGCSDataFileName);
+      const filePath = path.join(commonConfig.getInstallDir(), localGCSDataFileName);
       platform.readTextFile(filePath)
       .then((data)=>{
         resolve(JSON.parse(data));
       })
       .catch((err)=>{
         log.external("error loading gcs local contents", require("util").inspect(err));
-        resolve(JSON.parse("{}"));
+        resolve({});
       });
     } else {
       log.external("error loading gcs local contents", "File not found");
-      resolve(JSON.parse("{}"));
+      resolve({});
     }
   });
 }
