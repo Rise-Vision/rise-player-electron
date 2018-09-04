@@ -2,15 +2,16 @@ const path = require("path");
 const platform = require("rise-common-electron").platform;
 const proxy = require("rise-common-electron").proxy;
 const commonConfig = require("common-display-module");
-const configLogger = require("../loggers/config-logger.js");
+const configLogger = require("../loggers/config-logger");
 const widgetLogger = require("../loggers/widget-logger");
 const watchdog = require("../player/watchdog.js");
-const onlineDetection = require("../player/online-detection.js");
-const viewerContentLoader = require("./content-loader.js");
+const onlineDetection = require("../player/online-detection");
+const viewerContentLoader = require("./content-loader");
 const viewerLogger = require("./ext-logger.js");
-const viewerWindowBindings = require("./window-bindings.js");
+const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
-const scheduledReboot = require("../player/scheduled-reboot.js");
+const scheduledReboot = require("../player/scheduled-reboot");
+const updateFrequencyLogger = require('../player/update-frequency-logger');
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -243,6 +244,7 @@ module.exports = {
       }
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
+      updateFrequencyLogger.logContentChanges(content);
     });
   },
   showDuplicateIdError() {
