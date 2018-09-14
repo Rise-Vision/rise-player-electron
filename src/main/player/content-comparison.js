@@ -8,14 +8,14 @@ const contentComparisonFileName = ".content-comparison.json";
 module.exports = {
   compareContentData(newData) {
     if (!validateData(newData)) { return Promise.reject(Error('invalid data')); }
-    
+
     const newPresDates = getPresDatesFromContent(newData);
-    
+
     const newSchedDate = {
       id: newData.content.schedule.id,
       changeDate: newData.content.schedule.changeDate
     };
-    
+
     return readContentDates()
       .then(items => {
         const data = {
@@ -41,7 +41,7 @@ function validateData(newData) {
   if (!newData.content) { return false; }
   if (!newData.content.schedule) { return false; }
   if (!newData.content.presentations) { return false; }
-  
+
   return true;
 }
 
@@ -74,14 +74,14 @@ function readContentDates() {
   return new Promise(resolve => {
     if (!commonConfig.fileExists(contentComparisonFileName)) {
       return resolve({});
-    } 
+    }
 
     const filePath = path.join(commonConfig.getInstallDir(), contentComparisonFileName);
     return platform.readTextFile(filePath)
       .then(data => JSON.parse(data))
       .then(json => resolve(json))
       .catch(err => {
-        log.external(`error loading ${contentComparisonFileName} contents`, util.inspect(err));
+        log.error(util.inspect(err), `error loading ${contentComparisonFileName} contents`);
         resolve({});
       });
   });
@@ -91,6 +91,6 @@ function writeContentDates(items) {
   const filePath = path.join(commonConfig.getInstallDir(), contentComparisonFileName);
   return platform.writeTextFile(filePath, JSON.stringify(items, null, 2))
     .catch(err => {
-      log.external(`error updating ${contentComparisonFileName} contents`, util.inspect(err));
+      log.error(util.inspect(err), `error updating ${contentComparisonFileName} contents`);
     });
 }

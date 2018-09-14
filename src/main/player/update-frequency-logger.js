@@ -12,6 +12,6 @@ module.exports = {
       if (aPresentationHasChanged) {log.external('presentation updated');}
       if (theScheduleHasChanged) {log.external('schedule updated');}
     })
-    .catch(err=>log.external('Error comparing content.json data', util.inspect(err)));
+    .catch(err=>log.error(util.inspect(err), 'Error comparing content.json data'));
   }
 };
