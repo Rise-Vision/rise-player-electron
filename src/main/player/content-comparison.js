@@ -1,4 +1,3 @@
-const util = require("util");
 const path = require("path");
 const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
@@ -80,8 +79,8 @@ function readContentDates() {
     return platform.readTextFile(filePath)
       .then(data => JSON.parse(data))
       .then(json => resolve(json))
-      .catch(err => {
-        log.error(util.inspect(err), `error loading ${contentComparisonFileName} contents`);
+      .catch(() => {
+        log.error(`error loading ${contentComparisonFileName} contents`);
         resolve({});
       });
   });
@@ -90,7 +89,5 @@ function readContentDates() {
 function writeContentDates(items) {
   const filePath = path.join(commonConfig.getInstallDir(), contentComparisonFileName);
   return platform.writeTextFile(filePath, JSON.stringify(items, null, 2))
-    .catch(err => {
-      log.error(util.inspect(err), `error updating ${contentComparisonFileName} contents`);
-    });
+    .catch(() => log.error(`error updating ${contentComparisonFileName} contents`));
 }
