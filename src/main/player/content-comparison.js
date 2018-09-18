@@ -1,4 +1,3 @@
-const util = require("util");
 const path = require("path");
 const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
@@ -8,14 +7,14 @@ const contentComparisonFileName = ".content-comparison.json";
 module.exports = {
   compareContentData(newData) {
     if (!validateData(newData)) { return Promise.reject(Error('invalid data')); }
-    
+
     const newPresDates = getPresDatesFromContent(newData);
-    
+
     const newSchedDate = {
       id: newData.content.schedule.id,
       changeDate: newData.content.schedule.changeDate
     };
-    
+
     return readContentDates()
       .then(items => {
         const data = {
@@ -41,7 +40,7 @@ function validateData(newData) {
   if (!newData.content) { return false; }
   if (!newData.content.schedule) { return false; }
   if (!newData.content.presentations) { return false; }
-  
+
   return true;
 }
 
@@ -74,14 +73,14 @@ function readContentDates() {
   return new Promise(resolve => {
     if (!commonConfig.fileExists(contentComparisonFileName)) {
       return resolve({});
-    } 
+    }
 
     const filePath = path.join(commonConfig.getInstallDir(), contentComparisonFileName);
     return platform.readTextFile(filePath)
       .then(data => JSON.parse(data))
       .then(json => resolve(json))
-      .catch(err => {
-        log.external(`error loading ${contentComparisonFileName} contents`, util.inspect(err));
+      .catch(() => {
+        log.error(`error loading ${contentComparisonFileName} contents`);
         resolve({});
       });
   });
@@ -90,7 +89,5 @@ function readContentDates() {
 function writeContentDates(items) {
   const filePath = path.join(commonConfig.getInstallDir(), contentComparisonFileName);
   return platform.writeTextFile(filePath, JSON.stringify(items, null, 2))
-    .catch(err => {
-      log.external(`error updating ${contentComparisonFileName} contents`, util.inspect(err));
-    });
+    .catch(() => log.error(`error updating ${contentComparisonFileName} contents`));
 }

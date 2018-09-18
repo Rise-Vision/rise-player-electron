@@ -1,4 +1,3 @@
-const util = require("util");
 const contentComparison = require('./content-comparison');
 
 module.exports = {
@@ -12,6 +11,6 @@ module.exports = {
       if (aPresentationHasChanged) {log.external('presentation updated');}
       if (theScheduleHasChanged) {log.external('schedule updated');}
     })
-    .catch(err=>log.external('Error comparing content.json data', util.inspect(err)));
+    .catch(() => log.error('Error comparing content.json data'));
   }
 };
