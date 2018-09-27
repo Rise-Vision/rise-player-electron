@@ -251,6 +251,19 @@ describe('Content Comparison', () => {
       .catch(() => assert.ok(true));
     });
 
+    it('should pass without a schedule if default content.json', () => {
+      const data = {
+        content: {
+          presentations: [
+            {
+              id: "2b95b77e-839c-4674-b020-e2198df49061"
+            }
+          ]
+        }
+      };
+
+      return contentComparison.compareContentData(data);
+    });
     it('passing', () => {
       const data = {
         content: {
