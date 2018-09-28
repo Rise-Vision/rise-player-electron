@@ -136,6 +136,7 @@ module.exports = {
     viewerWindow = new BrowserWindow(Object.assign({
       "center": !customResolution,
       "fullscreen": !customResolution,
+      "alwaysOnTop": true,
       "frame": false,
       "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
       "webPreferences": {
