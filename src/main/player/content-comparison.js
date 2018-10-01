@@ -3,6 +3,7 @@ const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
 
 const contentComparisonFileName = ".content-comparison.json";
+const defaultPresentationId = "2b95b77e-839c-4674-b020-e2198df49061";
 
 module.exports = {
   compareContentData(newData) {
@@ -10,9 +11,12 @@ module.exports = {
 
     const newPresDates = getPresDatesFromContent(newData);
 
-    const newSchedDate = {
+    const newSchedDate = newData.content.schedule ? {
       id: newData.content.schedule.id,
       changeDate: newData.content.schedule.changeDate
+    } : {
+      id: "no-schedule",
+      changeDate: "no-schedule"
     };
 
     return readContentDates()
@@ -38,10 +42,17 @@ module.exports = {
 function validateData(newData) {
   if (!newData) { return false; }
   if (!newData.content) { return false; }
-  if (!newData.content.schedule) { return false; }
   if (!newData.content.presentations) { return false; }
+  if (!newData.content.schedule &&
+  !isDefaultContentJson(newData.content.presentations)) { return false; }
 
   return true;
+}
+
+function isDefaultContentJson(presentations) {
+  return Array.isArray(presentations) &&
+  presentations.length === 1 &&
+  presentations[0].id === defaultPresentationId;
 }
 
 function getPresDatesFromContent({ content }) {
