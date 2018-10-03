@@ -264,6 +264,22 @@ describe('Content Comparison', () => {
 
       return contentComparison.compareContentData(data);
     });
+
+    it('should pass without a presentation if only url items in the schedule', () => {
+      const data = {
+        content: {
+          schedule: {
+            items: [
+              {
+                type: "url"
+              }
+            ]
+          }
+        }
+      };
+
+      return contentComparison.compareContentData(data);
+    });
     it('passing', () => {
       const data = {
         content: {
