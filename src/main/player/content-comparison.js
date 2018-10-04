@@ -9,7 +9,10 @@ module.exports = {
   compareContentData(newData) {
     if (!validateData(newData)) { return Promise.reject(Error('invalid data')); }
 
-    const newPresDates = getPresDatesFromContent(newData);
+    const newPresDates = newData.content.presentations ? getPresDatesFromContent(newData) : {
+      id: "no-presentation",
+      changeDate: "no-presentation"
+    };
 
     const newSchedDate = newData.content.schedule ? {
       id: newData.content.schedule.id,
@@ -42,11 +45,18 @@ module.exports = {
 function validateData(newData) {
   if (!newData) { return false; }
   if (!newData.content) { return false; }
-  if (!newData.content.presentations) { return false; }
+  if (!newData.content.presentations &&
+    !isUsingURLItems(newData.content.schedule)) { return false; }
   if (!newData.content.schedule &&
-  !isDefaultContentJson(newData.content.presentations)) { return false; }
+    !isDefaultContentJson(newData.content.presentations)) { return false; }
 
   return true;
+}
+
+function isUsingURLItems(schedule) {
+  return schedule && schedule.items && schedule.items.every(item => {
+    return item.type && item.type === "url";
+  });
 }
 
 function isDefaultContentJson(presentations) {
