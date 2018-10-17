@@ -6,6 +6,7 @@ const onlineDetection = require("../player/online-detection");
 const scheduledReboot = require("../player/scheduled-reboot");
 const viewerWindowBindings = require("./window-bindings");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
+const uptime = require('../uptime/uptime');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
@@ -89,6 +90,7 @@ module.exports = {
         module.exports.sendContentToViewer(content);
         scheduledReboot.scheduleRebootFromViewerContents(content);
         updateFrequencyLogger.logContentChanges(content);
+        uptime.setSchedule(content);
       })
       .catch((err)=>{
         log.external("could not retrieve viewer content", require("util").inspect(err));

@@ -19,6 +19,7 @@ const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
 const updateFrequencyLogger = require('./update-frequency-logger');
+const uptime = require('../uptime/uptime');
 
 module.exports = {
   launch() {
@@ -98,6 +99,7 @@ module.exports = {
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
       updateFrequencyLogger.logContentChanges(content);
+      uptime.setSchedule(content);
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)

@@ -12,6 +12,7 @@ const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const scheduledReboot = require("../player/scheduled-reboot");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
+const uptime = require('../uptime/uptime');
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -246,6 +247,7 @@ module.exports = {
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
       updateFrequencyLogger.logContentChanges(content);
+      uptime.setSchedule(content);
     });
   },
   showDuplicateIdError() {
