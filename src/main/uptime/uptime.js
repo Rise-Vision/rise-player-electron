@@ -14,6 +14,7 @@ function setSchedule(data) {
  */
 function calculate() {
   if (!schedule) {
+    log.error('schedule not set, cannot calculate uptime.');
     return;
   }
 
@@ -21,7 +22,7 @@ function calculate() {
     .then(result => {
       const shouldBePlaying = scheduleParser.canPlay(schedule);
       const connectedToMS = result === 'connected';
-      log.external('uptime', {shouldBePlaying, connectedToMS});
+      log.file('uptime', JSON.stringify({shouldBePlaying, connectedToMS}));
     });
 }
 
