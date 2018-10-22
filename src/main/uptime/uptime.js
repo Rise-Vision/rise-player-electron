@@ -3,8 +3,10 @@ const scheduleParser = require("./schedule-parser");
 
 let schedule = null;
 
-function setSchedule(content) {
-  schedule = content.schedule;
+function setSchedule(data) {
+  if (data && data.content && data.content.schedule) {
+    schedule = data.content.schedule;
+  }
 }
 
 /**
