@@ -150,6 +150,8 @@ module.exports = {
 
     viewerWindow.loadURL("about:blank");
 
+    uptime.setRendererWindow(viewerWindow);
+
     viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
       const {hostname, certificate, verificationResult, errorCode} = request;
       if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
