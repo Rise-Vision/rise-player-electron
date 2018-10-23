@@ -1,4 +1,5 @@
 const messaging = require("common-display-module/messaging");
+const uptimeLogger = require("../loggers/uptime-logger");
 const scheduleParser = require("./schedule-parser");
 const pingTimeout = 3000;
 const uptimeInterval = 300000;
@@ -25,16 +26,20 @@ function calculate() {
   }
 
   Promise.all([
-    messaging.checkMessagingServiceConnection(),
+    messaging.checkMessagingServiceConnection().catch(e=>{
+      log.error(e.message);
+    }),
     sendRendererPing()
   ])
-  .then(([msResult])=>{
+  .then(([msResult, rendererResult])=>{
     const shouldBePlaying = scheduleParser.canPlay(schedule);
     const connectedToMS = msResult === 'connected';
-    log.file('uptime', JSON.stringify({shouldBePlaying, connectedToMS}));
+    log.file('uptime', JSON.stringify({shouldBePlaying, connectedToMS, rendererResult}));
+
+    uptimeLogger.log(connectedToMS, rendererResult, shouldBePlaying);
   })
   .catch((e)=>{
-    log.file('uptime', e.message);
+    log.error(e.message);
   });
 }
 
@@ -44,18 +49,20 @@ function setRendererWindow(_rendererWindow) {
 
 function sendRendererPing() {
   if (!rendererWindow || rendererWindow.isDestroyed()) {
-    return Promise.reject(Error("No renderer"));
+    log.file('uptime', 'no rendering window');
+    return Promise.resolve(false);
   }
 
-  return new Promise((res, rej)=>{
+  return new Promise((res)=>{
     const pongTimeoutTimer = setTimeout(()=>{
       ipcMain.removeAllListeners("renderer-pong");
-      rej(Error("renderer-ping-timeout"));
+      log.file('uptime', 'rendering window timeout');
+      res(false);
     }, pingTimeout);
 
     ipcMain.once("renderer-pong", ()=>{
       clearTimeout(pongTimeoutTimer);
-      res();
+      res(true);
     });
 
     rendererWindow.webContents.send("renderer-ping");
