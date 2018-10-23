@@ -49,3 +49,5 @@ window.useRLSFolder = useRLSFolder;
 ipc.on("viewer-message-received", (evt, message)=>{
   messageHandlers.forEach((handler)=>handler(message));
 });
+
+ipc.on("renderer-ping", ()=>ipc.send("renderer-pong"));
