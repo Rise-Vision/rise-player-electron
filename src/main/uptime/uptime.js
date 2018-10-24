@@ -29,7 +29,7 @@ function calculate() {
     messaging.checkMessagingServiceConnection().catch(e=>{
       log.error(e.message);
     }),
-    sendRendererPing()
+    checkRendererHealth()
   ])
   .then(([msResult, rendererResult])=>{
     const shouldBePlaying = scheduleParser.canPlay(schedule);
@@ -47,7 +47,7 @@ function setRendererWindow(_rendererWindow) {
   rendererWindow = _rendererWindow;
 }
 
-function sendRendererPing() {
+function checkRendererHealth() {
   if (!rendererWindow || rendererWindow.isDestroyed()) {
     log.file('uptime', 'no rendering window');
     return Promise.resolve(false);
