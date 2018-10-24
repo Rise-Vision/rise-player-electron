@@ -12,6 +12,7 @@ const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const scheduledReboot = require("../player/scheduled-reboot");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
+const uptime = require('../uptime/uptime');
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -149,6 +150,8 @@ module.exports = {
 
     viewerWindow.loadURL("about:blank");
 
+    uptime.setRendererWindow(viewerWindow);
+
     viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
       const {hostname, certificate, verificationResult, errorCode} = request;
       if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
@@ -246,6 +249,7 @@ module.exports = {
       viewerContentLoader.sendContentToViewer(content);
       scheduledReboot.scheduleRebootFromViewerContents(content);
       updateFrequencyLogger.logContentChanges(content);
+      uptime.setSchedule(content);
     });
   },
   showDuplicateIdError() {
