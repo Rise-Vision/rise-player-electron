@@ -71,7 +71,6 @@ function checkRendererHealth() {
 
 module.exports = {
   setSchedule,
-  calculate,
   init,
   setRendererWindow
 };
