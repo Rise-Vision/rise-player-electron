@@ -8,10 +8,15 @@ const  bqController = require("rise-common-electron")
 bqController.init();
 
 module.exports = {
+  getBQClient() { return bqController.getBQClient(); },
+  pendingEntries() { return bqController.pendingEntries(); },
   log(connected, showing, scheduled) {
     const display_id = commonConfig.getDisplaySettingsSync().displayid;
 
-    if (!display_id) {return log.file("uptime logger", "missing display id");}
+    if (!display_id) {
+      log.file("uptime logger", "missing display id");
+      return Promise.reject(Error("missing display id"));
+    }
 
     return bqController.log("events", {
       display_id,
@@ -19,6 +24,9 @@ module.exports = {
       showing,
       connected,
       scheduled
+    })
+    .catch(e=>{
+      log.file("Could not log to bq " + require("util").inspect(e, { depth: null }));
     });
   }
 };
