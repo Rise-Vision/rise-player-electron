@@ -20,6 +20,7 @@ const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
 const updateFrequencyLogger = require('./update-frequency-logger');
 const uptime = require('../uptime/uptime');
+const scheduleParser = require("../uptime/schedule-parser");
 
 module.exports = {
   launch() {
@@ -65,7 +66,14 @@ module.exports = {
       return Promise.reject("not online");
     })
     .then(()=>{
+      return gcs.getFileContents(viewerContentLoader.contentPath())
+      .catch((err)=>{
+        log.external("could not retrieve initial content", require("util").inspect(err));
+      });
+    })
+    .then(content=>{
       log.all("launching viewer", "", 80);
+      scheduleParser.setContent(content);
       return viewer.launch();
     })
     .then((viewerWindow)=>{
@@ -79,9 +87,9 @@ module.exports = {
       reboot.startListener();
     })
     .then(()=>{
-      return gcs.getFileContents(viewerContentLoader.contentPath())
+      return gcs.getCachedFileContents(viewerContentLoader.contentPath())
       .catch((err)=>{
-        log.external("could not retrieve initial content", require("util").inspect(err));
+        log.external("could not retrieve initial content from cache", require("util").inspect(err));
       });
     })
     .then((content)=>{

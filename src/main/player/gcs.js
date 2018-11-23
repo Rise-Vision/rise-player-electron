@@ -132,6 +132,9 @@ module.exports = {
       });
     });
   },
+  getCachedFileContents(gcsPath) {
+    return getlocalGCSData().then(localGCSData=>getLocalContent(gcsPath, localGCSData));
+  },
   localGCSDataFileName,
   hasNetworkFailure() {return networkFailure;},
   apiEndpointHost() {

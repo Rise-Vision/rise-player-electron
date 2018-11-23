@@ -1,13 +1,14 @@
-var assert = require("assert");
-var simple = require("simple-mock");
-var viewerController = require("../../../main/viewer/controller.js");
-var commonConfig = require("common-display-module");
-var network = require("rise-common-electron").network;
-var onlineDetection = require("../../../main/player/online-detection");
-var gcs = require("../../../main/player/gcs.js");
-var viewerContentLoader = require("../../../main/viewer/content-loader.js");
-var messaging = require("../../../main/player/messaging.js");
-var mocks = {};
+const assert = require("assert");
+const simple = require("simple-mock");
+const viewerController = require("../../../main/viewer/controller.js");
+const commonConfig = require("common-display-module");
+const network = require("rise-common-electron").network;
+const onlineDetection = require("../../../main/player/online-detection");
+const gcs = require("../../../main/player/gcs.js");
+const viewerContentLoader = require("../../../main/viewer/content-loader.js");
+const scheduleParser = require("../../../main/uptime/schedule-parser");
+const messaging = require("../../../main/player/messaging.js");
+const mocks = {};
 
 mocks.app = {
   getAppPath: simple.stub().returnWith("/fake/app/path")
@@ -134,6 +135,24 @@ describe("viewerController", ()=>{
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].includes("fakedisplay"));
+      });
+    });
+
+    it.only("creates a no-viewer window", ()=>{
+      simple.mock(onlineDetection, "isOnline").returnWith(true);
+      simple.mock(scheduleParser, "hasOnlyRiseStorageURLItems").returnWith(true);
+      simple.mock(scheduleParser, "firstURL").returnWith("fake-first-storage-url");
+
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
+        displayid: "fakedisplay"
+      });
+
+      simple.mock(network, "getLocalIP").resolveWith("test");
+
+      return viewerController.launch()
+      .then(()=>{
+        assert(mocks.electron.BrowserWindow.called);
+        assert.equal(mocks.viewerWindow.loadURL.calls[1].args[0], "fake-first-storage-url");
       });
     });
 
