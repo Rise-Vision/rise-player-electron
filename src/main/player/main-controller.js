@@ -4,6 +4,7 @@ launcher = require("../player/launcher.js"),
 config = require("./config.js"),
 commonConfig = require("common-display-module"),
 onlineDetection = require("../player/online-detection.js"),
+viewerContentLoader = require("../viewer/content-loader"),
 path = require("path");
 
 let app,
@@ -42,6 +43,8 @@ function readyHandler() {
   protocol.registerHttpProtocol("rchttps", schemeHandler);
 
   module.exports.bindQuitAccelerator();
+
+  viewerContentLoader.init();
 
   onlineDetection.init(ipc, BrowserWindow)
     .then(()=>{

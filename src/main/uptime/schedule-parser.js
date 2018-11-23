@@ -1,3 +1,5 @@
+let scheduleContent;
+
 const RECURRENCE_TYPE = {
   DAILY: "Daily",
   WEEKLY: "Weekly",
@@ -16,6 +18,42 @@ const DAY_OF_WEEK = {
 };
 
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+
+module.exports = {
+  canPlay,
+  hasOnlyRiseStorageURLItems(data = scheduleContent) {
+    if (!data) {return false;}
+    if (!data.content) {return false;}
+    if (!data.content.schedule) {return false;}
+    if (!data.content.schedule.items) {return false;}
+    if (!data.content.schedule.items.length) {return false;}
+
+    const expectedURLStart = "https://storage.googleapis.com/risemedialibrary";
+
+    return data.content.schedule.items.every(item=>{
+      if (item.name !== "URL Item") {return false;}
+      if (item.type !== "url") {return false;}
+      if (!item.objectReference) {return false;}
+      if (typeof item.objectReference !== "string") {return false;}
+      if (!item.objectReference.startsWith(expectedURLStart)) {return false;}
+
+      return true;
+    });
+  },
+  setContent(data) {scheduleContent = data;},
+  firstURL(data = scheduleContent) {
+    const noURL = "about:blank";
+
+    if (!data) {return noURL;}
+    if (!data.content) {return noURL;}
+    if (!data.content.schedule) {return noURL;}
+    if (!data.content.schedule.items) {return noURL;}
+    if (!data.content.schedule.items.length) {return noURL;}
+    if (typeof data.content.schedule.items[0] !== "object") {return noURL;}
+
+    return data.content.schedule.items[0].objectReference;
+  }
+};
 
 function canPlay(item, d = new Date()) {
   if (!item.timeDefined || !item.startDate) {
@@ -176,7 +214,3 @@ function _isRecurrenceDay(weekday, recurrenceDaysOfWeek) {
     return false;
   }
 }
-
-module.exports = {
-  canPlay
-};

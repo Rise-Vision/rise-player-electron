@@ -9,7 +9,6 @@ module.exports = {
     commonMessaging.receiveMessages(config.moduleName)
     .then(receiver=>{
       receiver.on("message", (message)=>{
-        console.log("handling message ", message);
         if (!message) {return;}
         if (!message.topic && !message.msg) {return;}
 
