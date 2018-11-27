@@ -51,6 +51,7 @@ describe("launcher", ()=>{
     mock(platform, "waitForMillis").resolveWith();
     mock(platform, "killJava").resolveWith();
     mock(gcs, "getFileContents").resolveWith({display: {}});
+    mock(gcs, "getCachedFileContents").resolveWith({display: {}});
     mock(network, "httpFetch").resolveWith();
     mock(messaging, "init").resolveWith();
     mock(viewer, "launch").resolveWith();
@@ -74,6 +75,7 @@ describe("launcher", ()=>{
     mock(platform, "waitForMillis").resolveWith();
     mock(platform, "killJava").resolveWith();
     mock(gcs, "getFileContents").resolveWith({display: "abc123"});
+    mock(gcs, "getCachedFileContents").resolveWith({display: "abc123"});
     mock(network, "httpFetch").rejectWith();
     mock(messaging, "init").resolveWith();
     mock(viewer, "launch").resolveWith();
@@ -112,6 +114,7 @@ describe("launcher", ()=>{
     mock(platform, "waitForMillis").resolveWith();
     mock(platform, "killJava").resolveWith();
     mock(gcs, "getFileContents").resolveWith({display: {test: "test"}});
+    mock(gcs, "getCachedFileContents").resolveWith({display: {test: "test"}});
     mock(viewerContentLoader, "contentPath").returnWith("test/path");
     mock(network, "httpFetch").rejectWith();
     mock(messaging, "init").resolveWith();

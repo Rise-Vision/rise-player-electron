@@ -13,6 +13,7 @@ const gcs = require("../player/gcs.js");
 const scheduledReboot = require("../player/scheduled-reboot");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
+const scheduleParser = require("../uptime/schedule-parser");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -109,7 +110,13 @@ function createPresentationUrl() {
 
   url = url.slice(-1) === "?" ? url : url+"?";
 
-  return Promise.resolve(`${url}type=display&player=true&id=${id}`);
+  if (scheduleParser.hasOnlyRiseStorageURLItems()) {
+    dataHandlerRegistered = true;
+    return Promise.resolve(scheduleParser.firstURL());
+  }
+  else {
+    return Promise.resolve(`${url}type=display&player=true&id=${id}`);
+  }
 }
 
 module.exports = {
@@ -141,7 +148,7 @@ module.exports = {
       "frame": false,
       "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
       "webPreferences": {
-        "preload": __dirname + "/preload.js",
+        "preload": __dirname + (scheduleParser.hasOnlyRiseStorageURLItems() ? "/no-viewer-preload.js" : "/preload.js"),
         "plugins": true,
         "nodeIntegration": false,
         "webSecurity": false
@@ -231,12 +238,17 @@ module.exports = {
     });
   },
   reload() {
-    return module.exports.launch()
+    return gcs.getFileContents(viewerContentLoader.contentPath())
+    .catch((err)=>{
+      log.external("could not retrieve initial content", require("util").inspect(err));
+    })
+    .then(scheduleParser.setContent)
+    .then(module.exports.launch)
     .then((viewerWindow)=>{
       viewerWindowBindings.setWindow(viewerWindow);
     })
     .then(()=>{
-      return gcs.getFileContents(viewerContentLoader.contentPath())
+      return gcs.getCachedFileContents(viewerContentLoader.contentPath())
       .catch((err)=>{
         log.external("could not retrieve initial content", require("util").inspect(err));
       });
@@ -246,7 +258,7 @@ module.exports = {
         log.all("no viewer content");
         return;
       }
-      viewerContentLoader.sendContentToViewer(content);
+      if (!scheduleParser.hasOnlyRiseStorageURLItems()) {viewerContentLoader.sendContentToViewer(content);}
       scheduledReboot.scheduleRebootFromViewerContents(content);
       updateFrequencyLogger.logContentChanges(content);
       uptime.setSchedule(content);

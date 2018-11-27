@@ -95,7 +95,6 @@ module.exports = {
       .replace("FILEPATH", filePath)
       .replace("GENERATION", getGeneration(gcsPath, localGCSData));
 
-
       if (useThrottle && shouldThrottle(gcsPath, localGCSData)) {
         log.external("gcs check throttled", gcsPath);
         return getLocalContent(gcsPath, localGCSData);
@@ -131,6 +130,9 @@ module.exports = {
         throw err;
       });
     });
+  },
+  getCachedFileContents(gcsPath) {
+    return getlocalGCSData().then(localGCSData=>getLocalContent(gcsPath, localGCSData));
   },
   localGCSDataFileName,
   hasNetworkFailure() {return networkFailure;},
