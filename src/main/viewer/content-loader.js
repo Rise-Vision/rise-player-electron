@@ -7,6 +7,7 @@ const scheduledReboot = require("../player/scheduled-reboot");
 const viewerWindowBindings = require("./window-bindings");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
+const scheduleParser = require('../uptime/schedule-parser');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
@@ -86,16 +87,20 @@ module.exports = {
     log.debug("content path is " + contentPath);
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(contentPath, {useLocalData: true, useThrottle: false})
-      .then((content)=>{
-        module.exports.sendContentToViewer(content);
-        scheduledReboot.scheduleRebootFromViewerContents(content);
-        updateFrequencyLogger.logContentChanges(content);
-        uptime.setSchedule(content);
-      })
+      .then(module.exports.setUpContent)
       .catch((err)=>{
         log.external("could not retrieve viewer content", require("util").inspect(err));
       });
     });
+  },
+  setUpContent(content) {
+    scheduleParser.setContent(content);
+    if (!scheduleParser.hasOnlyRiseStorageURLItems()) {
+      module.exports.sendContentToViewer(content);
+    }
+    scheduledReboot.scheduleRebootFromViewerContents(content);
+    updateFrequencyLogger.logContentChanges(content);
+    uptime.setSchedule(content);
   },
   sendContentToViewer(content) {
     expectedReady = countWidgets(content);

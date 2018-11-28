@@ -10,8 +10,6 @@ const viewerContentLoader = require("./content-loader");
 const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
-const scheduledReboot = require("../player/scheduled-reboot");
-const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
 const scheduleParser = require("../uptime/schedule-parser");
 
@@ -258,10 +256,7 @@ module.exports = {
         log.all("no viewer content");
         return;
       }
-      if (!scheduleParser.hasOnlyRiseStorageURLItems()) {viewerContentLoader.sendContentToViewer(content);}
-      scheduledReboot.scheduleRebootFromViewerContents(content);
-      updateFrequencyLogger.logContentChanges(content);
-      uptime.setSchedule(content);
+      viewerContentLoader.setUpContent(content);
     });
   },
   showDuplicateIdError() {
