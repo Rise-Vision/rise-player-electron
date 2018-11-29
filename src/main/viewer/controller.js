@@ -12,6 +12,7 @@ const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const uptime = require('../uptime/uptime');
 const scheduleParser = require("../uptime/schedule-parser");
+const messaging = require("../player/messaging");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -195,6 +196,14 @@ module.exports = {
     globalShortcut = _globalShortcut;
     ipc = _ipc;
     electron = _electron;
+
+    messaging.on("content-update", ()=>{
+      return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
+      .then(viewerContentLoader.setUpContent)
+      .catch((err)=>{
+        log.external("could not retrieve viewer content", require("util").inspect(err));
+      });
+    });
   },
   launch(overrideUrl) {
 
