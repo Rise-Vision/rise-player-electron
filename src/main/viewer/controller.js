@@ -77,7 +77,7 @@ function registerEvents(window) {
     }
   });
 
-  ipc.on( "online-status-changed", ( evt, status ) => {
+  ipc.on("online-status-changed", (evt, status) => {
     if (status === "online" && viewerWindowBindings.offlineOrOnline() === "offline") {
       clearTimeout(reloadTimeout);
 
@@ -91,7 +91,7 @@ function registerEvents(window) {
 
       }, 60000);
     }
-  } );
+  });
 
 }
 
@@ -117,6 +117,72 @@ function createPresentationUrl() {
   }
 }
 
+function createViewerWindow(overrideUrl) {
+  const displaySettings = commonConfig.getDisplaySettingsSync();
+  const customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
+  const customResolutionSettings = !customResolution ? {} : {
+    x: 0,
+    y: 0,
+    enableLargerThanScreen: true
+  };
+
+  viewerWindow = new BrowserWindow(Object.assign({
+    "center": !customResolution,
+    "fullscreen": !customResolution,
+    "alwaysOnTop": false,
+    "frame": false,
+    "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
+    "webPreferences": {
+      "preload": `${__dirname}/preload.js`,
+      "plugins": true,
+      "nodeIntegration": false,
+      "webSecurity": false
+    }
+  }, customResolutionSettings));
+
+  viewerWindow.loadURL("about:blank");
+
+  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
+    const {hostname, certificate, verificationResult, errorCode} = request;
+    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
+      callback(0);
+    } else {
+      let url = overrideUrl || VIEWER_URL;
+      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
+        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
+        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
+      }
+      callback(-3);
+    }
+  });
+
+  if (customResolution) {
+    viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
+    electron.screen.on("display-added", (event, newDisplay) => {
+      const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
+      log.all("window bounds reset", `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
+      viewerWindow.setBounds(bounds);
+    });
+  }
+
+  log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
+
+  registerEvents(viewerWindow);
+
+  viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
+    if (proxy.configuration().username) {
+      event.preventDefault();
+      if (!cb) {cb = authInfo;}
+      cb(proxy.configuration().username, proxy.configuration().password);
+    }
+  });
+
+  if (proxy.configuration().hostname) {
+    viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
+    log.debug("using pac: " + proxy.pacScriptURL());
+  }
+}
+
 module.exports = {
   init(_BrowserWindow, _app, _globalShortcut, _ipc, _electron) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
@@ -131,73 +197,13 @@ module.exports = {
     electron = _electron;
   },
   launch(overrideUrl) {
-    let displaySettings = commonConfig.getDisplaySettingsSync();
-    let customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
-    let customResolutionSettings = !customResolution ? {} : {
-      x: 0,
-      y: 0,
-      enableLargerThanScreen: true
-    };
 
-    viewerWindow = new BrowserWindow(Object.assign({
-      "center": !customResolution,
-      "fullscreen": !customResolution,
-      "alwaysOnTop": true,
-      "frame": false,
-      "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
-      "webPreferences": {
-        "preload": __dirname + (scheduleParser.hasOnlyRiseStorageURLItems() ? "/no-viewer-preload.js" : "/preload.js"),
-        "plugins": true,
-        "nodeIntegration": false,
-        "webSecurity": false
-      }
-    }, customResolutionSettings));
-
-    viewerWindow.loadURL("about:blank");
+    createViewerWindow(overrideUrl);
 
     uptime.setRendererWindow(viewerWindow);
 
-    viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
-      const {hostname, certificate, verificationResult, errorCode} = request;
-      if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
-        callback(0);
-      } else {
-        let url = overrideUrl || VIEWER_URL;
-        if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
-          const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
-          log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
-        }
-        callback(-3);
-      }
-    });
-
-    if(customResolution) {
-      viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
-      electron.screen.on("display-added", (event, newDisplay) => {
-        const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
-        log.all("window bounds reset", `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
-        viewerWindow.setBounds(bounds);
-      });
-    }
-
-    log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
-
-    registerEvents(viewerWindow);
-    viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
-      if (proxy.configuration().username) {
-        event.preventDefault();
-        if (!cb) {cb = authInfo;}
-        cb(proxy.configuration().username, proxy.configuration().password);
-      }
-    });
-
     return createPresentationUrl()
     .then((url)=>{
-      if (proxy.configuration().hostname) {
-        viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
-        log.debug("using pac: " + proxy.pacScriptURL());
-      }
-
       if (overrideUrl) {
         log.debug(`Overriding presentation at ${url}`);
         viewerWindow.loadURL(overrideUrl);
