@@ -206,6 +206,21 @@ function loadUrl(url) {
   });
 }
 
+function isViewerLoaded() {
+  const loadedUrl = viewerWindow && viewerWindow.webContents && viewerWindow.webContents.getURL();
+  return loadedUrl && loadedUrl.indexOf(VIEWER_URL) !== -1;
+}
+
+function loadContent(content) {
+  if (scheduleParser.hasOnlyRiseStorageURLItems()) {
+    dataHandlerRegistered = false;
+    return loadUrl(scheduleParser.firstURL());
+  }
+
+  const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
+  return viewerPromise.then(() => viewerContentLoader.sendContentToViewer(content));
+}
+
 module.exports = {
   init(_BrowserWindow, _app, _globalShortcut, _ipc, _electron) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
@@ -221,7 +236,10 @@ module.exports = {
 
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
-      .then(viewerContentLoader.setUpContent)
+      .then(content => {
+        viewerContentLoader.setUpContent(content);
+        loadContent(content);
+      })
       .catch((err)=>{
         log.external("could not retrieve viewer content", require("util").inspect(err));
       });
