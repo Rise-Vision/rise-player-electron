@@ -96,7 +96,7 @@ function registerEvents(window) {
 
 }
 
-function createPresentationUrl() {
+function createViewerUrl() {
   const displaySettings = commonConfig.getDisplaySettingsSync();
   const overrideUrl = displaySettings.viewerurl;
   const id = displaySettings.displayid || "";
@@ -109,13 +109,7 @@ function createPresentationUrl() {
 
   url = url.slice(-1) === "?" ? url : url+"?";
 
-  if (scheduleParser.hasOnlyRiseStorageURLItems()) {
-    dataHandlerRegistered = true;
-    return Promise.resolve(scheduleParser.firstURL());
-  }
-  else {
-    return Promise.resolve(`${url}type=display&player=true&id=${id}`);
-  }
+  return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
 function createViewerWindow(overrideUrl) {
@@ -184,6 +178,34 @@ function createViewerWindow(overrideUrl) {
   }
 }
 
+function loadViewerUrl() {
+  return createViewerUrl()
+    .then(url => loadUrl(url))
+    .then(()=>{
+      return new Promise((res)=>{
+        if (dataHandlerRegistered) {return res();}
+        dataHandlerRegistered = res;
+      });
+    });
+}
+
+function loadUrl(url) {
+  log.external("loading url", url);
+  viewerWindow.loadURL(url);
+
+  return new Promise((res)=>{
+    let viewerTimeout = setTimeout(()=>{
+      log.external("url load timeout", url);
+      res(viewerWindow);
+    }, 2.5 * 60 * 1000);
+
+    viewerWindow.webContents.on("did-finish-load", ()=>{
+      clearTimeout(viewerTimeout);
+      res(viewerWindow);
+    });
+  });
+}
+
 module.exports = {
   init(_BrowserWindow, _app, _globalShortcut, _ipc, _electron) {
     if (!_BrowserWindow) { throw new Error("Invalid BrowserWindow"); }
@@ -206,42 +228,21 @@ module.exports = {
     });
   },
   launch(overrideUrl) {
-
-    createViewerWindow(overrideUrl);
+    const noViewerUrl = scheduleParser.hasOnlyRiseStorageURLItems() ? scheduleParser.firstURL() : null;
+    const urlToLoad = overrideUrl || noViewerUrl;
+    createViewerWindow(urlToLoad);
 
     uptime.setRendererWindow(viewerWindow);
 
-    return createPresentationUrl()
-    .then((url)=>{
-      if (overrideUrl) {
-        log.debug(`Overriding presentation at ${url}`);
-        viewerWindow.loadURL(overrideUrl);
-        return viewerWindow;
-      }
+    let loadUrlPromise = Promise.resolve();
+    if (urlToLoad) {
+      dataHandlerRegistered = false;
+      loadUrlPromise = loadUrl(urlToLoad);
+    } else {
+      loadUrlPromise = loadViewerUrl();
+    }
 
-      log.debug(`Loading presentation at ${url}`);
-      viewerWindow.loadURL(url);
-    })
-    .then(()=>{
-      return new Promise((res)=>{
-        let viewerTimeout = setTimeout(()=>{
-          log.external("viewer load timeout");
-          res(viewerWindow);
-        }, 2.5 * 60 * 1000);
-
-        viewerWindow.webContents.on("did-finish-load", ()=>{
-          clearTimeout(viewerTimeout);
-          res(viewerWindow);
-        });
-      });
-    })
-    .then(()=>{
-      return new Promise((res)=>{
-        if (overrideUrl || dataHandlerRegistered) {return res();}
-        dataHandlerRegistered = res;
-      });
-    })
-    .then(()=>{
+    return loadUrlPromise.then(()=>{
       log.debug("viewer launch complete");
       return viewerWindow;
     })
