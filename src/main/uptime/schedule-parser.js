@@ -31,7 +31,6 @@ module.exports = {
     const expectedURLStart = "https://storage.googleapis.com/risemedialibrary";
 
     return data.content.schedule.items.every(item=>{
-      if (item.name !== "URL Item") {return false;}
       if (item.type !== "url") {return false;}
       if (!item.objectReference) {return false;}
       if (typeof item.objectReference !== "string") {return false;}
