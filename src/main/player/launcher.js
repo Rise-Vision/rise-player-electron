@@ -102,6 +102,7 @@ module.exports = {
         return Promise.reject(Error("no content"));
       }
       viewerContentLoader.setUpContent(content);
+      viewerContentLoader.sendContentToViewer(content);
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)

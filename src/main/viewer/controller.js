@@ -291,6 +291,7 @@ module.exports = {
         return;
       }
       viewerContentLoader.setUpContent(content);
+      viewerContentLoader.sendContentToViewer(content);
     });
   },
   showDuplicateIdError() {

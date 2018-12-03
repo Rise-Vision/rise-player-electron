@@ -86,14 +86,14 @@ module.exports = {
   },
   setUpContent(content) {
     scheduleParser.setContent(content);
-    if (!scheduleParser.hasOnlyRiseStorageURLItems()) {
-      module.exports.sendContentToViewer(content);
-    }
     scheduledReboot.scheduleRebootFromViewerContents(content);
     updateFrequencyLogger.logContentChanges(content);
     uptime.setSchedule(content);
   },
   sendContentToViewer(content) {
+    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
+      return;
+    }
     expectedReady = countWidgets(content);
     readyReceived = 0;
 
