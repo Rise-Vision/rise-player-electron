@@ -1,12 +1,11 @@
 const bucketName = "risevision-display-notifications";
 const commonConfig = require("common-display-module");
-const gcs = require("../player/gcs");
-const messaging = require("../player/messaging");
 const onlineDetection = require("../player/online-detection");
 const scheduledReboot = require("../player/scheduled-reboot");
 const viewerWindowBindings = require("./window-bindings");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
+const scheduleParser = require('../uptime/schedule-parser');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
@@ -84,20 +83,17 @@ module.exports = {
     contentPath = `${bucketName}/${displayId}/content.json`;
 
     log.debug("content path is " + contentPath);
-    messaging.on("content-update", ()=>{
-      return gcs.getFileContents(contentPath, {useLocalData: true, useThrottle: false})
-      .then((content)=>{
-        module.exports.sendContentToViewer(content);
-        scheduledReboot.scheduleRebootFromViewerContents(content);
-        updateFrequencyLogger.logContentChanges(content);
-        uptime.setSchedule(content);
-      })
-      .catch((err)=>{
-        log.external("could not retrieve viewer content", require("util").inspect(err));
-      });
-    });
+  },
+  setUpContent(content) {
+    scheduleParser.setContent(content);
+    scheduledReboot.scheduleRebootFromViewerContents(content);
+    updateFrequencyLogger.logContentChanges(content);
+    uptime.setSchedule(content);
   },
   sendContentToViewer(content) {
+    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
+      return;
+    }
     expectedReady = countWidgets(content);
     readyReceived = 0;
 

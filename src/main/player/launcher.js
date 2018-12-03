@@ -4,7 +4,6 @@ const screenshot = require("./screenshot");
 const dupeId = require("./duplicate-id");
 const restart = require("./restart");
 const reboot = require("./reboot");
-const scheduledReboot= require("./scheduled-reboot");
 const platform = require("rise-common-electron").platform;
 const installer = require("./installer");
 const watchdog = require("./watchdog");
@@ -18,8 +17,6 @@ const offlineSubscriptionCheck = require("./offline-subscription-check");
 const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
-const updateFrequencyLogger = require('./update-frequency-logger');
-const uptime = require('../uptime/uptime');
 const scheduleParser = require("../uptime/schedule-parser");
 
 module.exports = {
@@ -104,10 +101,8 @@ module.exports = {
         }
         return Promise.reject(Error("no content"));
       }
-      if (!scheduleParser.hasOnlyRiseStorageURLItems()) {viewerContentLoader.sendContentToViewer(content);}
-      scheduledReboot.scheduleRebootFromViewerContents(content);
-      updateFrequencyLogger.logContentChanges(content);
-      uptime.setSchedule(content);
+      viewerContentLoader.setUpContent(content);
+      viewerContentLoader.sendContentToViewer(content);
       installer.playerLoadComplete();
     })
     .then(gcsPolling.init)

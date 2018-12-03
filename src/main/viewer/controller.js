@@ -10,10 +10,9 @@ const viewerContentLoader = require("./content-loader");
 const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
-const scheduledReboot = require("../player/scheduled-reboot");
-const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
 const scheduleParser = require("../uptime/schedule-parser");
+const messaging = require("../player/messaging");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
 
@@ -79,7 +78,7 @@ function registerEvents(window) {
     }
   });
 
-  ipc.on( "online-status-changed", ( evt, status ) => {
+  ipc.on("online-status-changed", (evt, status) => {
     if (status === "online" && viewerWindowBindings.offlineOrOnline() === "offline") {
       clearTimeout(reloadTimeout);
 
@@ -93,11 +92,11 @@ function registerEvents(window) {
 
       }, 60000);
     }
-  } );
+  });
 
 }
 
-function createPresentationUrl() {
+function createViewerUrl() {
   const displaySettings = commonConfig.getDisplaySettingsSync();
   const overrideUrl = displaySettings.viewerurl;
   const id = displaySettings.displayid || "";
@@ -110,13 +109,116 @@ function createPresentationUrl() {
 
   url = url.slice(-1) === "?" ? url : url+"?";
 
+  return Promise.resolve(`${url}type=display&player=true&id=${id}`);
+}
+
+function createViewerWindow(overrideUrl) {
+  const displaySettings = commonConfig.getDisplaySettingsSync();
+  const customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
+  const customResolutionSettings = !customResolution ? {} : {
+    x: 0,
+    y: 0,
+    enableLargerThanScreen: true
+  };
+
+  viewerWindow = new BrowserWindow(Object.assign({
+    "center": !customResolution,
+    "fullscreen": !customResolution,
+    "alwaysOnTop": false,
+    "frame": false,
+    "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
+    "webPreferences": {
+      "preload": `${__dirname}/preload.js`,
+      "plugins": true,
+      "nodeIntegration": false,
+      "webSecurity": false
+    }
+  }, customResolutionSettings));
+
+  viewerWindow.loadURL("about:blank");
+
+  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
+    const {hostname, certificate, verificationResult, errorCode} = request;
+    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
+      callback(0);
+    } else {
+      let url = overrideUrl || VIEWER_URL;
+      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
+        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
+        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
+      }
+      callback(-3);
+    }
+  });
+
+  if (customResolution) {
+    viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
+    electron.screen.on("display-added", (event, newDisplay) => {
+      const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
+      log.all("window bounds reset", `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
+      viewerWindow.setBounds(bounds);
+    });
+  }
+
+  log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
+
+  registerEvents(viewerWindow);
+
+  viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
+    if (proxy.configuration().username) {
+      event.preventDefault();
+      if (!cb) {cb = authInfo;}
+      cb(proxy.configuration().username, proxy.configuration().password);
+    }
+  });
+
+  if (proxy.configuration().hostname) {
+    viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
+    log.debug("using pac: " + proxy.pacScriptURL());
+  }
+}
+
+function loadViewerUrl() {
+  return createViewerUrl()
+    .then(url => loadUrl(url))
+    .then(()=>{
+      return new Promise((res)=>{
+        if (dataHandlerRegistered) {return res();}
+        dataHandlerRegistered = res;
+      });
+    });
+}
+
+function loadUrl(url) {
+  log.external("loading url", url);
+  viewerWindow.loadURL(url);
+
+  return new Promise((res)=>{
+    let viewerTimeout = setTimeout(()=>{
+      log.external("url load timeout", url);
+      res(viewerWindow);
+    }, 2.5 * 60 * 1000);
+
+    viewerWindow.webContents.on("did-finish-load", ()=>{
+      clearTimeout(viewerTimeout);
+      res(viewerWindow);
+    });
+  });
+}
+
+function isViewerLoaded() {
+  const loadedUrl = viewerWindow && viewerWindow.webContents && viewerWindow.webContents.getURL();
+  return loadedUrl && loadedUrl.indexOf(VIEWER_URL) !== -1;
+}
+
+function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
-    dataHandlerRegistered = true;
-    return Promise.resolve(scheduleParser.firstURL());
+    dataHandlerRegistered = false;
+    return loadUrl(scheduleParser.firstURL());
   }
-  else {
-    return Promise.resolve(`${url}type=display&player=true&id=${id}`);
-  }
+
+  const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
+  return viewerPromise.then(() => viewerContentLoader.sendContentToViewer(content));
 }
 
 module.exports = {
@@ -131,104 +233,34 @@ module.exports = {
     globalShortcut = _globalShortcut;
     ipc = _ipc;
     electron = _electron;
+
+    messaging.on("content-update", ()=>{
+      return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
+      .then(content => {
+        viewerContentLoader.setUpContent(content);
+        loadContent(content);
+      })
+      .catch((err)=>{
+        log.external("could not retrieve viewer content", require("util").inspect(err));
+      });
+    });
   },
   launch(overrideUrl) {
-    let displaySettings = commonConfig.getDisplaySettingsSync();
-    let customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
-    let customResolutionSettings = !customResolution ? {} : {
-      x: 0,
-      y: 0,
-      enableLargerThanScreen: true
-    };
-
-    viewerWindow = new BrowserWindow(Object.assign({
-      "center": !customResolution,
-      "fullscreen": !customResolution,
-      "alwaysOnTop": true,
-      "frame": false,
-      "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
-      "webPreferences": {
-        "preload": __dirname + (scheduleParser.hasOnlyRiseStorageURLItems() ? "/no-viewer-preload.js" : "/preload.js"),
-        "plugins": true,
-        "nodeIntegration": false,
-        "webSecurity": false
-      }
-    }, customResolutionSettings));
-
-    viewerWindow.loadURL("about:blank");
+    const noViewerUrl = scheduleParser.hasOnlyRiseStorageURLItems() ? scheduleParser.firstURL() : null;
+    const urlToLoad = overrideUrl || noViewerUrl;
+    createViewerWindow(urlToLoad);
 
     uptime.setRendererWindow(viewerWindow);
 
-    viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
-      const {hostname, certificate, verificationResult, errorCode} = request;
-      if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
-        callback(0);
-      } else {
-        let url = overrideUrl || VIEWER_URL;
-        if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
-          const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
-          log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
-        }
-        callback(-3);
-      }
-    });
-
-    if(customResolution) {
-      viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
-      electron.screen.on("display-added", (event, newDisplay) => {
-        const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
-        log.all("window bounds reset", `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
-        viewerWindow.setBounds(bounds);
-      });
+    let loadUrlPromise = Promise.resolve();
+    if (urlToLoad) {
+      dataHandlerRegistered = false;
+      loadUrlPromise = loadUrl(urlToLoad);
+    } else {
+      loadUrlPromise = loadViewerUrl();
     }
 
-    log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
-
-    registerEvents(viewerWindow);
-    viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
-      if (proxy.configuration().username) {
-        event.preventDefault();
-        if (!cb) {cb = authInfo;}
-        cb(proxy.configuration().username, proxy.configuration().password);
-      }
-    });
-
-    return createPresentationUrl()
-    .then((url)=>{
-      if (proxy.configuration().hostname) {
-        viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
-        log.debug("using pac: " + proxy.pacScriptURL());
-      }
-
-      if (overrideUrl) {
-        log.debug(`Overriding presentation at ${url}`);
-        viewerWindow.loadURL(overrideUrl);
-        return viewerWindow;
-      }
-
-      log.debug(`Loading presentation at ${url}`);
-      viewerWindow.loadURL(url);
-    })
-    .then(()=>{
-      return new Promise((res)=>{
-        let viewerTimeout = setTimeout(()=>{
-          log.external("viewer load timeout");
-          res(viewerWindow);
-        }, 2.5 * 60 * 1000);
-
-        viewerWindow.webContents.on("did-finish-load", ()=>{
-          clearTimeout(viewerTimeout);
-          res(viewerWindow);
-        });
-      });
-    })
-    .then(()=>{
-      return new Promise((res)=>{
-        if (overrideUrl || dataHandlerRegistered) {return res();}
-        dataHandlerRegistered = res;
-      });
-    })
-    .then(()=>{
+    return loadUrlPromise.then(()=>{
       log.debug("viewer launch complete");
       return viewerWindow;
     })
@@ -258,10 +290,8 @@ module.exports = {
         log.all("no viewer content");
         return;
       }
-      if (!scheduleParser.hasOnlyRiseStorageURLItems()) {viewerContentLoader.sendContentToViewer(content);}
-      scheduledReboot.scheduleRebootFromViewerContents(content);
-      updateFrequencyLogger.logContentChanges(content);
-      uptime.setSchedule(content);
+      viewerContentLoader.setUpContent(content);
+      viewerContentLoader.sendContentToViewer(content);
     });
   },
   showDuplicateIdError() {

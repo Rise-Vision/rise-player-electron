@@ -85,6 +85,44 @@ describe("viewerController", ()=>{
       assert.doesNotThrow(()=>viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron));
     });
 
+    it("registers content-update listener", ()=>{
+      simple.mock(messaging, "on");
+      viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron);
+      var call = messaging.on.calls[0];
+      assert.equal(call.args[0], "content-update");
+    });
+
+  });
+
+  describe("content update" ,()=>{
+    beforeEach(()=>{
+      simple.mock(viewerContentLoader, "setUpContent");
+      simple.mock(log, "external");
+      simple.mock(log, "debug");
+      simple.mock(messaging, "on");
+    });
+
+    it("sends content to viewer when found", ()=>{
+      const content = {"test-content": "test-content"};
+      simple.mock(gcs, "getFileContents").resolveWith(content);
+      viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron);
+
+      return messaging.on.lastCall.args[1]().then(()=>{
+        assert(gcs.getFileContents.called);
+        assert.deepEqual(viewerContentLoader.setUpContent.lastCall.args[0], content);
+        assert.equal(gcs.getFileContents.lastCall.args[1].useLocalData, true);
+      });
+    });
+
+    it("does not send new content to viewer on error", ()=>{
+      simple.mock(gcs, "getFileContents").rejectWith(404);
+      viewerController.init(mocks.electron.BrowserWindow, mocks.app, mocks.globalShortcut, mocks.ipc, mocks.electron);
+
+      return messaging.on.lastCall.args[1]().catch(()=>{
+        assert(gcs.getFileContents.called);
+        assert(!viewerContentLoader.sendToViewer.called);
+      });
+    });
   });
 
   describe("launch", ()=>{

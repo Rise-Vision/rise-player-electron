@@ -1,7 +1,6 @@
 const assert = require("assert");
 const simple = require("simple-mock");
 const viewerWindowBindings = require("../../../main/viewer/window-bindings.js");
-const gcs = require("../../../main/player/gcs.js");
 const contentLoader = require("../../../main/viewer/content-loader.js");
 const commonConfig = require("common-display-module");
 const onlineDetection = require("../../../main/player/online-detection.js");
@@ -20,46 +19,6 @@ describe("Viewer Content Loader", ()=>{
   });
 
   it("exists", ()=>assert(!!contentLoader));
-
-  describe("init", ()=>{
-    it("registers content-update listener", ()=>{
-      simple.mock(messaging, "on");
-      contentLoader.init();
-      var call = messaging.on.calls[0];
-      assert.equal(call.args[0], "content-update");
-    });
-  });
-
-  describe("sendContentToViewer" ,()=>{
-    beforeEach(()=>{
-      simple.mock(viewerWindowBindings, "sendToViewer");
-      simple.mock(log, "external");
-      simple.mock(log, "debug");
-    });
-
-    it("sends content to viewer when found", ()=>{
-      simple.mock(gcs, "getFileContents").resolveWith({"test-content": "test-content"});
-      simple.mock(messaging, "on");
-      contentLoader.init();
-
-      return messaging.on.lastCall.args[1]().then(()=>{
-        assert(gcs.getFileContents.called);
-        assert(viewerWindowBindings.sendToViewer.lastCall.args[0].newContent["test-content"]);
-        assert.equal(gcs.getFileContents.lastCall.args[1].useLocalData, true);
-      });
-    });
-
-    it("does not send new content to viewer on error", ()=>{
-      simple.mock(gcs, "getFileContents").rejectWith(404);
-      simple.mock(messaging, "on");
-      contentLoader.init();
-
-      return messaging.on.lastCall.args[1]().catch(()=>{
-        assert(gcs.getFileContents.called);
-        assert(!viewerWindowBindings.sendToViewer.called);
-      });
-    });
-  });
 
   describe("rewrites", ()=>{
     beforeEach(()=>{
