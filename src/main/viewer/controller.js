@@ -11,7 +11,7 @@ const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const uptime = require('../uptime/uptime');
-const scheduleParser = require("../uptime/schedule-parser");
+const scheduleParser = require("../scheduling/schedule-parser");
 const messaging = require("../player/messaging");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";

@@ -6,7 +6,7 @@ const network = require("rise-common-electron").network;
 const onlineDetection = require("../../../main/player/online-detection");
 const gcs = require("../../../main/player/gcs.js");
 const viewerContentLoader = require("../../../main/viewer/content-loader.js");
-const scheduleParser = require("../../../main/uptime/schedule-parser");
+const scheduleParser = require("../../../main/scheduling/schedule-parser");
 const messaging = require("../../../main/player/messaging.js");
 const mocks = {};
 

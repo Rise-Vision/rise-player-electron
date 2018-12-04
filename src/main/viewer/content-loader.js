@@ -5,7 +5,7 @@ const scheduledReboot = require("../player/scheduled-reboot");
 const viewerWindowBindings = require("./window-bindings");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
-const scheduleParser = require('../uptime/schedule-parser');
+const scheduleParser = require('../scheduling/schedule-parser');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
