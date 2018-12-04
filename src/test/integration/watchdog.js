@@ -28,6 +28,10 @@ before(()=>{
   return new Promise(res=>server.listen(port, res));
 });
 
+after(()=>{
+  watchdog.quit();
+});
+
 describe("watchdog", function () {
   this.timeout(6000);
   it("starts installer if it doesn't receive a ping within its delay  period", ()=>{
