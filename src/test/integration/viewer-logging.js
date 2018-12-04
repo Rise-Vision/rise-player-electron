@@ -3,6 +3,7 @@ const {BrowserWindow, app, globalShortcut} = require("electron");
 const assert = require("assert");
 const simple = require("simple-mock");
 const viewerController = require("../../main/viewer/controller.js");
+const configLogger = require("../../main/loggers/config-logger.js");
 const { ipcRenderer, ipcMain } = require('electron-ipc-mock')();
 global.log = require("rise-common-electron").logger();
 
@@ -20,6 +21,7 @@ describe("Viewer logging",()=>{
 
   beforeEach(() => {
     simple.mock(log,"debug").returnWith(true);
+    simple.mock(configLogger,"logClientInfo").returnWith(true);
   });
 
   afterEach(()=>{

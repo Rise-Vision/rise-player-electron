@@ -10,6 +10,7 @@ const assert = require("assert"),
 httpFetch = require("rise-common-electron").network.httpFetch,
 proxy = require("rise-common-electron").proxy,
 viewerController = require("../../main/viewer/controller.js"),
+configLogger = require("../../main/loggers/config-logger.js"),
 onlineDetection = require("../../main/player/online-detection.js"),
 http = require("http"),
 directPort = 8080,
@@ -77,6 +78,7 @@ describe("Proxy Integration", function() {
   beforeEach(()=>{
     simple.mock(log, "debug").callFn(console.log);
     simple.mock(onlineDetection, "isOnline").returnWith(true);
+    simple.mock(configLogger,"logClientInfo").returnWith(true);
     simple.mock(ipcMain, "on", (evt, handler)=>{
       handler("test", {message: "data-handler-registered"});
     });

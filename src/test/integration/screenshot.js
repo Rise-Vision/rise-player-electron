@@ -5,6 +5,7 @@ const screenshot = require("../../main/player/screenshot.js");
 const messaging = require("../../main/player/messaging.js");
 const viewerWindowBindings = require("../../main/viewer/window-bindings.js");
 const viewerController = require("../../main/viewer/controller.js");
+const configLogger = require("../../main/loggers/config-logger.js");
 const simple = require("simple-mock");
 const assert = require("assert");
 const random = Math.random();
@@ -25,6 +26,7 @@ describe("Screenshot", ()=>{
     simple.mock(messaging, "on").callbackWith({url: uploadURL});
     simple.mock(messaging, "write").callFn(console.log);
     simple.mock(log, "debug").callFn(console.log);
+    simple.mock(configLogger,"logClientInfo").returnWith(true);
     simple.mock(log, "error").callFn(console.error);
     screenshot.init(ipcMain, nativeImage);
     viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
