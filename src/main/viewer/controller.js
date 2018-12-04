@@ -239,6 +239,8 @@ module.exports = {
     ipc = _ipc;
     electron = _electron;
 
+    scheduleParser.setPlayUrlHandler = loadUrl;
+
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
       .then(content => {

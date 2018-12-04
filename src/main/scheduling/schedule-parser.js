@@ -40,6 +40,7 @@ module.exports = {
     });
   },
   setContent(data) {scheduleContent = data;},
+  setPlayUrlHandler(fn) {playUrlHandler = fn;},
   firstURL(data = scheduleContent) {
     const noURL = "about:blank";
 
