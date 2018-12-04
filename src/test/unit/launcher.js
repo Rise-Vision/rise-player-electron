@@ -7,6 +7,7 @@ const restart = require("../../main/player/restart.js");
 const reboot = require("../../main/player/reboot.js");
 const gcs = require("../../main/player/gcs.js");
 const riseCacheWatchdog = require("../../main/player/rise-cache-watchdog.js");
+const watchdog = require("../../main/player/watchdog.js");
 const assert = require("assert");
 const simpleMock = require("simple-mock");
 const mock = require("simple-mock").mock;
@@ -33,6 +34,7 @@ describe("launcher", ()=>{
     mock(gcsPolling, "init").returnWith();
     mock(riseCacheWatchdog, "launchCache").returnWith();
     mock(riseCacheWatchdog, "startWatchdog").returnWith();
+    mock(watchdog, "init").returnWith();
     uiController = {
       showOffline: mock(),
       showFailedProxy: mock(),
