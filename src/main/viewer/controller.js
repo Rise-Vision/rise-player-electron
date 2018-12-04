@@ -12,6 +12,7 @@ const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const uptime = require('../uptime/uptime');
 const scheduleParser = require("../scheduling/schedule-parser");
+const noViewerSchedulePlayer = require("../scheduling/schedule-player");
 const messaging = require("../player/messaging");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
@@ -222,7 +223,7 @@ function isViewerLoaded() {
 function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
     dataHandlerRegistered = false;
-    return loadUrl(scheduleParser.firstURL());
+    return noViewerSchedulePlayer.start();
   }
 
   const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
@@ -242,7 +243,7 @@ module.exports = {
     ipc = _ipc;
     electron = _electron;
 
-    scheduleParser.setPlayUrlHandler = loadUrl;
+    noViewerSchedulePlayer.setPlayUrlHandler(loadUrl);
 
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
@@ -261,9 +262,9 @@ module.exports = {
     uptime.setRendererWindow(viewerWindow);
 
     let loadUrlPromise = Promise.resolve();
-    if (urlToLoad) {
+    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
       dataHandlerRegistered = false;
-      loadUrlPromise = loadUrl(urlToLoad);
+      loadUrlPromise = Promise.resolve(noViewerSchedulePlayer.start());
     } else {
       loadUrlPromise = loadViewerUrl();
     }

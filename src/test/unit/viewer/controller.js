@@ -7,6 +7,7 @@ const onlineDetection = require("../../../main/player/online-detection");
 const gcs = require("../../../main/player/gcs.js");
 const viewerContentLoader = require("../../../main/viewer/content-loader.js");
 const scheduleParser = require("../../../main/scheduling/schedule-parser");
+const noViewerSchedulePlayer = require("../../../main/scheduling/schedule-player");
 const messaging = require("../../../main/player/messaging.js");
 const mocks = {};
 
@@ -179,7 +180,7 @@ describe("viewerController", ()=>{
     it("creates a no-viewer window", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
       simple.mock(scheduleParser, "hasOnlyRiseStorageURLItems").returnWith(true);
-      simple.mock(scheduleParser, "firstURL").returnWith("fake-first-storage-url");
+      simple.mock(noViewerSchedulePlayer, "start").returnWith(true);
 
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
         displayid: "fakedisplay"
@@ -190,7 +191,7 @@ describe("viewerController", ()=>{
       return viewerController.launch()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
-        assert.equal(mocks.viewerWindow.loadURL.calls[1].args[0], "fake-first-storage-url");
+        assert(noViewerSchedulePlayer.start.called);
       });
     });
 

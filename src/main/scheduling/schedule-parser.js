@@ -39,20 +39,7 @@ module.exports = {
       return true;
     });
   },
-  setContent(data) {scheduleContent = data;},
-  setPlayUrlHandler(fn) {playUrlHandler = fn;},
-  firstURL(data = scheduleContent) {
-    const noURL = "about:blank";
-
-    if (!data) {return noURL;}
-    if (!data.content) {return noURL;}
-    if (!data.content.schedule) {return noURL;}
-    if (!data.content.schedule.items) {return noURL;}
-    if (!data.content.schedule.items.length) {return noURL;}
-    if (typeof data.content.schedule.items[0] !== "object") {return noURL;}
-
-    return data.content.schedule.items[0].objectReference;
-  }
+  setContent(data) {scheduleContent = data;}
 };
 
 function canPlay(item, d = new Date()) {
