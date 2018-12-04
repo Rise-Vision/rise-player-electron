@@ -39,7 +39,8 @@ module.exports = {
       return true;
     });
   },
-  setContent(data) {scheduleContent = data;}
+  setContent(data) {scheduleContent = data;},
+  getContent() {return Object.assign({}, scheduleContent);}
 };
 
 function canPlay(item, d = new Date()) {
