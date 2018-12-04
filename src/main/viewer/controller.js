@@ -112,7 +112,7 @@ function createViewerUrl() {
   return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
-function createViewerWindow(overrideUrl) {
+function createViewerWindow() {
   const displaySettings = commonConfig.getDisplaySettingsSync();
   const customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
   const customResolutionSettings = !customResolution ? {} : {
@@ -136,20 +136,6 @@ function createViewerWindow(overrideUrl) {
   }, customResolutionSettings));
 
   viewerWindow.loadURL("about:blank");
-
-  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
-    const {hostname, certificate, verificationResult, errorCode} = request;
-    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
-      callback(0);
-    } else {
-      let url = overrideUrl || VIEWER_URL;
-      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
-        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
-        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
-      }
-      callback(-3);
-    }
-  });
 
   if (customResolution) {
     viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
@@ -178,6 +164,21 @@ function createViewerWindow(overrideUrl) {
   }
 }
 
+function setCertificateHandling(url = VIEWER_URL) {
+  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
+    const {hostname, certificate, verificationResult, errorCode} = request;
+    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
+      callback(0);
+    } else {
+      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
+        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
+        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
+      }
+      callback(-3);
+    }
+  });
+}
+
 function loadViewerUrl() {
   return createViewerUrl()
     .then(url => loadUrl(url))
@@ -191,6 +192,8 @@ function loadViewerUrl() {
 
 function loadUrl(url) {
   log.external("loading url", url);
+
+  setCertificateHandling(url);
   viewerWindow.loadURL(url);
 
   return new Promise((res)=>{
@@ -252,10 +255,8 @@ module.exports = {
       });
     });
   },
-  launch(overrideUrl) {
-    const noViewerUrl = scheduleParser.hasOnlyRiseStorageURLItems() ? scheduleParser.firstURL() : null;
-    const urlToLoad = overrideUrl || noViewerUrl;
-    createViewerWindow(urlToLoad);
+  launch() {
+    createViewerWindow();
 
     uptime.setRendererWindow(viewerWindow);
 
