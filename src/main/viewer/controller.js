@@ -199,7 +199,12 @@ function loadUrl(url) {
       res(viewerWindow);
     }, 2.5 * 60 * 1000);
 
+    viewerWindow.webContents.on("did-fail-load", (evt, errorCode)=>{
+      log.error(JSON.stringify({url, errorCode}), "fail to load url");
+    });
+
     viewerWindow.webContents.on("did-finish-load", ()=>{
+      log.external("finished loading url", url);
       clearTimeout(viewerTimeout);
       res(viewerWindow);
     });
@@ -261,7 +266,7 @@ module.exports = {
     }
 
     return loadUrlPromise.then(()=>{
-      log.debug("viewer launch complete");
+      log.file("viewer launch complete");
       return viewerWindow;
     })
     .catch((err)=>{
