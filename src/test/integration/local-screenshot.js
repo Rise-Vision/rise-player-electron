@@ -13,6 +13,7 @@ const {BrowserWindow, app, globalShortcut, ipcMain, nativeImage} = require("elec
 
 const screenshot = require("../../main/player/screenshot");
 const viewerController = require("../../main/viewer/controller");
+const configLogger = require("../../main/loggers/config-logger.js");
 const viewerWindowBindings = require("../../main/viewer/window-bindings");
 
 describe("Local screenshot", function() {
@@ -22,6 +23,7 @@ describe("Local screenshot", function() {
 
   beforeEach(() => {
     simple.mock(commonConfig, "getModulePath").returnWith("/tmp");
+    simple.mock(configLogger,"logClientInfo").returnWith(true);
     simple.mock(messaging, "broadcastMessage").resolveWith();
     simple.mock(Date, "now").returnWith("123");
   });
