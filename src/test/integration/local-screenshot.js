@@ -24,6 +24,9 @@ describe("Local screenshot", function() {
   beforeEach(() => {
     simple.mock(commonConfig, "getModulePath").returnWith("/tmp");
     simple.mock(configLogger,"logClientInfo").returnWith(true);
+    simple.mock(global.log,"error").returnWith(true);
+    simple.mock(global.log,"external").returnWith(true);
+    simple.mock(global.log,"file").returnWith(true);
     simple.mock(messaging, "broadcastMessage").resolveWith();
     simple.mock(Date, "now").returnWith("123");
   });
@@ -38,14 +41,9 @@ describe("Local screenshot", function() {
     screenshot.init(ipcMain, nativeImage);
     viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
-    return viewerController.launch("about:blank")
-    .then(viewerWindow => {
-      win = viewerWindow;
+    viewerWindowBindings.setWindow(viewerController.createViewerWindow());
 
-      viewerWindowBindings.setWindow(viewerWindow);
-
-      return screenshot.handleLocalScreenshotRequest();
-    })
+    return screenshot.handleLocalScreenshotRequest()
     .then(() => {
       const fileProcess = child.spawnSync("file", [expectedPath]);
       const stdout = fileProcess.stdout.toString();
@@ -55,5 +53,4 @@ describe("Local screenshot", function() {
       fs.unlinkSync(expectedPath);
     });
   });
-
 });

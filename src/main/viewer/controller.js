@@ -113,7 +113,7 @@ function createViewerUrl() {
   return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
-function createViewerWindow() {
+function createViewerWindow(initialPage = "about:blank") {
   const displaySettings = commonConfig.getDisplaySettingsSync();
   const customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
   const customResolutionSettings = !customResolution ? {} : {
@@ -136,7 +136,7 @@ function createViewerWindow() {
     }
   }, customResolutionSettings));
 
-  viewerWindow.loadURL("about:blank");
+  viewerWindow.loadURL(initialPage);
 
   if (customResolution) {
     viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
@@ -163,6 +163,8 @@ function createViewerWindow() {
     viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
     log.debug("using pac: " + proxy.pacScriptURL());
   }
+
+  return viewerWindow;
 }
 
 function setCertificateHandling(url = VIEWER_URL) {
@@ -306,5 +308,6 @@ module.exports = {
   showDuplicateIdError() {
     let htmlPath = path.join(app.getAppPath(), "/dupe-id.html?" + commonConfig.getDisplaySettingsSync().displayid);
     viewerWindow.loadURL("file://" + htmlPath);
-  }
+  },
+  createViewerWindow
 };
