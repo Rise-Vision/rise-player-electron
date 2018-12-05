@@ -128,7 +128,7 @@ function createViewerWindow(overrideUrl) {
     "frame": false,
     "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
     "webPreferences": {
-      "preload": `${__dirname}/preload.js`,
+      "preload": `${__dirname}/preload/index.js`,
       "plugins": true,
       "nodeIntegration": false,
       "webSecurity": false
