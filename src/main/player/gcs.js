@@ -134,6 +134,22 @@ module.exports = {
   getCachedFileContents(gcsPath) {
     return getlocalGCSData().then(localGCSData=>getLocalContent(gcsPath, localGCSData));
   },
+  getCachedFileContentsSync(gcsPath) {
+    if (!commonConfig.fileExists(localGCSDataFileName)) {
+      return null;
+    }
+
+    const filePath = path.join(commonConfig.getInstallDir(), localGCSDataFileName);
+    const data = platform.readTextFileSync(filePath);
+
+    const localGCSData = JSON.parse(data);
+
+    if (!localGCSData[gcsPath] || !localGCSData[gcsPath].content) {
+      return null;
+    }
+
+    return localGCSData[gcsPath].content;
+  },
   localGCSDataFileName,
   hasNetworkFailure() {return networkFailure;},
   apiEndpointHost() {
