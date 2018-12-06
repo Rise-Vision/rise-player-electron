@@ -94,6 +94,7 @@ function registerEvents(window) {
     }
   });
 
+  ipc.on("player-configuration-called", () => log.file("player configuration function called"));
 }
 
 function createViewerUrl() {

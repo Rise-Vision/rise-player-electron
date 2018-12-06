@@ -1,3 +1,4 @@
+const ipc = require("electron").ipcRenderer;
 const platform = require("rise-common-electron").platform;
 const commonConfig = require("common-display-module");
 const gcs = require("../../player/gcs");
@@ -16,6 +17,7 @@ if (data && data.content && data.content.schedule) {
 }
 
 window.getRisePlayerConfiguration = function() {
+  ipc.send("player-configuration-called");
   return {
     playerInfo: {
       displayId,
