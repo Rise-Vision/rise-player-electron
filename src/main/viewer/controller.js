@@ -95,6 +95,7 @@ function registerEvents(window) {
     }
   });
 
+  ipc.on("player-configuration-called", () => log.file("player configuration function called"));
 }
 
 function createViewerUrl() {
@@ -129,7 +130,7 @@ function createViewerWindow(initialPage = "about:blank") {
     "frame": false,
     "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
     "webPreferences": {
-      "preload": `${__dirname}/preload.js`,
+      "preload": `${__dirname}/preload/index.js`,
       "plugins": true,
       "nodeIntegration": false,
       "webSecurity": false
