@@ -1,6 +1,6 @@
 const messaging = require("common-display-module/messaging");
 const uptimeLogger = require("../loggers/uptime-logger");
-const scheduleParser = require("./schedule-parser");
+const scheduleParser = require("../scheduling/schedule-parser");
 const pingTimeout = 3000;
 const uptimeInterval = 300000;
 

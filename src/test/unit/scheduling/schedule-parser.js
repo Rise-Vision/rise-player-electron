@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-const scheduleParser = require("../../../main/uptime/schedule-parser");
+const scheduleParser = require("../../../main/scheduling/schedule-parser");
 
 const JAN = 0, FEB = 1, APR = 3, JUN = 5, JUL = 6;
 

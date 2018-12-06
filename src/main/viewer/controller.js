@@ -11,7 +11,8 @@ const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const uptime = require('../uptime/uptime');
-const scheduleParser = require("../uptime/schedule-parser");
+const scheduleParser = require("../scheduling/schedule-parser");
+const noViewerSchedulePlayer = require("../scheduling/schedule-player");
 const messaging = require("../player/messaging");
 
 const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
@@ -112,7 +113,7 @@ function createViewerUrl() {
   return Promise.resolve(`${url}type=display&player=true&id=${id}`);
 }
 
-function createViewerWindow(overrideUrl) {
+function createViewerWindow(initialPage = "about:blank") {
   const displaySettings = commonConfig.getDisplaySettingsSync();
   const customResolution = !isNaN(displaySettings.screenwidth) && !isNaN(displaySettings.screenheight);
   const customResolutionSettings = !customResolution ? {} : {
@@ -135,21 +136,7 @@ function createViewerWindow(overrideUrl) {
     }
   }, customResolutionSettings));
 
-  viewerWindow.loadURL("about:blank");
-
-  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
-    const {hostname, certificate, verificationResult, errorCode} = request;
-    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
-      callback(0);
-    } else {
-      let url = overrideUrl || VIEWER_URL;
-      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
-        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
-        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
-      }
-      callback(-3);
-    }
-  });
+  viewerWindow.loadURL(initialPage);
 
   if (customResolution) {
     viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
@@ -176,6 +163,23 @@ function createViewerWindow(overrideUrl) {
     viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
     log.debug("using pac: " + proxy.pacScriptURL());
   }
+
+  return viewerWindow;
+}
+
+function setCertificateHandling(url = VIEWER_URL) {
+  viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
+    const {hostname, certificate, verificationResult, errorCode} = request;
+    if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
+      callback(0);
+    } else {
+      if (errorCode && errorCode !== 0 && url.indexOf(hostname) !== -1) {
+        const redacted = Object.assign({}, certificate, {data: "", issuerCert: ""});
+        log.external("viewer certificate error", `Hostname ${hostname} with result ${verificationResult} on certificate: ${JSON.stringify(redacted)}`);
+      }
+      callback(-3);
+    }
+  });
 }
 
 function loadViewerUrl() {
@@ -191,6 +195,8 @@ function loadViewerUrl() {
 
 function loadUrl(url) {
   log.external("loading url", url);
+
+  setCertificateHandling(url);
   viewerWindow.loadURL(url);
 
   return new Promise((res)=>{
@@ -219,7 +225,7 @@ function isViewerLoaded() {
 function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
     dataHandlerRegistered = false;
-    return loadUrl(scheduleParser.firstURL());
+    return noViewerSchedulePlayer.start();
   }
 
   const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
@@ -239,6 +245,8 @@ module.exports = {
     ipc = _ipc;
     electron = _electron;
 
+    noViewerSchedulePlayer.setPlayUrlHandler(loadUrl);
+
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
       .then(content => {
@@ -250,17 +258,15 @@ module.exports = {
       });
     });
   },
-  launch(overrideUrl) {
-    const noViewerUrl = scheduleParser.hasOnlyRiseStorageURLItems() ? scheduleParser.firstURL() : null;
-    const urlToLoad = overrideUrl || noViewerUrl;
-    createViewerWindow(urlToLoad);
+  launch() {
+    createViewerWindow();
 
     uptime.setRendererWindow(viewerWindow);
 
     let loadUrlPromise = Promise.resolve();
-    if (urlToLoad) {
+    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
       dataHandlerRegistered = false;
-      loadUrlPromise = loadUrl(urlToLoad);
+      loadUrlPromise = Promise.resolve(noViewerSchedulePlayer.start());
     } else {
       loadUrlPromise = loadViewerUrl();
     }
@@ -302,5 +308,6 @@ module.exports = {
   showDuplicateIdError() {
     let htmlPath = path.join(app.getAppPath(), "/dupe-id.html?" + commonConfig.getDisplaySettingsSync().displayid);
     viewerWindow.loadURL("file://" + htmlPath);
-  }
+  },
+  createViewerWindow
 };

@@ -17,7 +17,7 @@ const offlineSubscriptionCheck = require("./offline-subscription-check");
 const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
-const scheduleParser = require("../uptime/schedule-parser");
+const scheduleParser = require("../scheduling/schedule-parser");
 
 module.exports = {
   launch() {

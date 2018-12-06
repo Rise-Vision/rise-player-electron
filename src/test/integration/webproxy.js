@@ -79,6 +79,9 @@ describe("Proxy Integration", function() {
     simple.mock(log, "debug").callFn(console.log);
     simple.mock(onlineDetection, "isOnline").returnWith(true);
     simple.mock(configLogger,"logClientInfo").returnWith(true);
+    simple.mock(global.log,"error").returnWith(true);
+    simple.mock(global.log,"external").returnWith(true);
+    simple.mock(global.log,"file").returnWith(true);
     simple.mock(ipcMain, "on", (evt, handler)=>{
       handler("test", {message: "data-handler-registered"});
     });
@@ -214,11 +217,9 @@ describe("Proxy Integration", function() {
         electronAuthSuppliedCallback = res;
       });
 
-      return viewerController.launch("http://www.google.com")
-      .then((viewerWindow)=>{
-        win = viewerWindow;
-        return electronAuthSuppliedCallbackPromise;
-      })
+      win = viewerController.createViewerWindow("http://www.google.com");
+
+      return electronAuthSuppliedCallbackPromise
       .then(()=>{
         assert.ok(proxied.includes("www.google.com"));
       })
