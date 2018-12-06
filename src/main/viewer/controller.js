@@ -194,8 +194,6 @@ function loadViewerUrl() {
 }
 
 function loadUrl(url) {
-  log.external("loading url", url);
-
   setCertificateHandling(url);
   viewerWindow.loadURL(url);
 
@@ -210,7 +208,6 @@ function loadUrl(url) {
     });
 
     viewerWindow.webContents.on("did-finish-load", ()=>{
-      log.external("finished loading url", url);
       clearTimeout(viewerTimeout);
       res(viewerWindow);
     });
