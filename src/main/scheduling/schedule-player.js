@@ -4,6 +4,7 @@ const FALLBACK_URL = "about:blank";
 
 let playUrlHandler = ()=>{};
 let playableItems = [];
+let playingItem = null;
 let nothingPlayingListeners = [];
 let timers = {
   scheduleCheck: null,
@@ -49,6 +50,10 @@ function playCurrentlyPlayableItems(now) {
     return nothingPlaying();
   }
 
+  if (playingItemIsStillPlayable()) {
+    return shiftToNextItem();
+  }
+
   playItems();
 }
 
@@ -56,12 +61,33 @@ function playItems() {
   let item = playableItems.shift();
   playableItems.push(item);
 
+  playingItem = item;
   playUrl(item.objectReference);
 
   timers.itemDuration = setTimeout(playItems, item.duration * 1000);
 }
 
 function playUrl(url) {playUrlHandler(url);}
+
+function playingItemIsStillPlayable() {
+  if (playingItem === null || timers.itemDuration === null) {return false;}
+
+  return playableItems.some(item=>{
+    return item.name === playingItem.name &&
+      item.objectReference === playingItem.objectReference;
+  });
+}
+
+function shiftToNextItem() {
+  if (playingItem === null) {return;}
+
+  do {
+    playableItems.push(playableItems.shift());
+  } while (playableItems[0].name !== playingItem.name ||
+    playableItems[0].objectReference !== playingItem.objectReference);
+
+  playableItems.push(playableItems.shift());
+}
 
 function millisUntilTomorrow(now) {
   const acceptablePrecisionSecondsIntoNextDay = 5;

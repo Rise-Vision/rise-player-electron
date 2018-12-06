@@ -246,5 +246,34 @@ describe.only("Schedule Player", ()=>{
       assert.equal(log.external.callCount, 0);
       assert(played.includes("test-url-1") && played.includes("test-url-2"));
     });
+
+    it("continues playing item if start is called and item is still valid", ()=>{
+      setTimeout.reset();
+      simple.mock(global, "setTimeout").returnWith();
+
+      const testData = {content: {
+        schedule: {
+          name: "test schedule",
+          timeDefined: false,
+          items: [
+            {
+              name: "test item 5",
+              timeDefined: false,
+              objectReference: "test-url-1"
+            },
+            {
+              name: "test item 6",
+              timeDefined: false,
+              objectReference: "test-url-2"
+            }
+          ]
+        }
+      }};
+      scheduleParser.setContent(testData);
+      schedulePlayer.start();
+      schedulePlayer.start();
+
+      assert(played.includes("test-url-1") && !played.includes("test-url-2"));
+    });
   });
 });
