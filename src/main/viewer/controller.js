@@ -57,13 +57,7 @@ function registerEvents(window) {
     if (data.message === "ping") {
       watchdog.send(data);
     } else if(data.message === "viewer-config") {
-      const RETRIES = 10, RETRY_TIMEOUT = 10000, RETRY_DELAY = 30000;
-
-      platform.runFunction(configLogger.logClientInfo.bind(null, data), RETRIES, RETRY_TIMEOUT, RETRY_DELAY)
-        .catch((err)=>{
-          const errorDetail = require("util").inspect(err, { depth: null });
-          log.error(errorDetail, "logging client info");
-        });
+      logClientInfo(data);
     } else if(data.message === "data-handler-registered") {
       if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
         dataHandlerRegistered();
@@ -96,6 +90,26 @@ function registerEvents(window) {
   });
 
   ipc.on("player-configuration-called", () => log.file("player configuration function called"));
+}
+
+function logClientInfo(data) {
+  if (!data && !viewerWindow) {
+    log.error("empty data and viewer window", "error logging client info");
+    return;
+  }
+
+  if (!data) {
+    const [width, height] = viewerWindow.getContentSize();
+    data = {width, height};
+  }
+
+  const RETRIES = 10, RETRY_TIMEOUT = 10000, RETRY_DELAY = 30000;
+
+  return platform.runFunction(configLogger.logClientInfo.bind(null, data), RETRIES, RETRY_TIMEOUT, RETRY_DELAY)
+    .catch((err)=>{
+      const errorDetail = require("util").inspect(err, { depth: null });
+      log.error(errorDetail, "logging client info");
+    });
 }
 
 function createViewerUrl() {
@@ -225,12 +239,17 @@ function isViewerLoaded() {
 
 function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
+    logClientInfo();
     dataHandlerRegistered = false;
-    return noViewerSchedulePlayer.start();
+    return Promise.resolve(noViewerSchedulePlayer.start());
   }
 
   const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
-  return viewerPromise.then(() => viewerContentLoader.sendContentToViewer(content));
+  return viewerPromise.then(() => {
+    if (content) {
+      viewerContentLoader.sendContentToViewer(content);
+    }
+  });
 }
 
 module.exports = {
@@ -264,15 +283,7 @@ module.exports = {
 
     uptime.setRendererWindow(viewerWindow);
 
-    let loadUrlPromise = Promise.resolve();
-    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
-      dataHandlerRegistered = false;
-      loadUrlPromise = Promise.resolve(noViewerSchedulePlayer.start());
-    } else {
-      loadUrlPromise = loadViewerUrl();
-    }
-
-    return loadUrlPromise.then(()=>{
+    return loadContent().then(()=>{
       log.file("viewer launch complete");
       return viewerWindow;
     })

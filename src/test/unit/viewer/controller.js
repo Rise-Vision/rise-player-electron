@@ -19,7 +19,8 @@ mocks.webContents = {
   on: simple.spy((evt, fn)=>{if(evt === "did-finish-load"){fn();}}),
   send: simple.stub(),
   session: {setProxy: simple.stub(), setCertificateVerifyProc: simple.stub()},
-  toggleDevTools: simple.stub()
+  toggleDevTools: simple.stub(),
+  getURL: simple.stub().returnWith("")
 };
 
 mocks.viewerWindow = {
@@ -30,6 +31,7 @@ mocks.viewerWindow = {
   webContents: mocks.webContents,
   isFocused: simple.stub(),
   setSize: simple.stub(),
+  getContentSize: simple.stub().returnWith([800,600]),
   isDestroyed: simple.stub().returnWith(false),
   getBounds: simple.stub(),
   setBounds: simple.stub()
@@ -192,6 +194,7 @@ describe("viewerController", ()=>{
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(noViewerSchedulePlayer.start.called);
+        assert(mocks.viewerWindow.getContentSize.called);
       });
     });
 
