@@ -3,15 +3,20 @@ const {inspect} = require("util");
 const FALLBACK_URL = "about:blank";
 
 let playUrlHandler = ()=>{};
-let timers = [];
+let playableItems = [];
+let timers = {
+  scheduleCheck: null,
+  itemDuration: null
+};
 
 module.exports = {
   start() {
-    timers.forEach(clearTimeout);
+    clearTimeout(timers.scheduleCheck);
 
     if (!scheduleParser.validateContent()) {
       log.external("invalid schedule data", inspect(scheduleParser.getContent()));
 
+      clearTimeout(timers.itemDuration);
       return playUrl(FALLBACK_URL);
     }
 
@@ -31,12 +36,28 @@ function considerFutureScheduledItems(now) {
     millisUntilTomorrow(now)
   ]);
 
-  setTimeout(()=>module.exports.start(), nextCheckMillis);
+  timers.scheduleCheck = setTimeout(module.exports.start, nextCheckMillis);
 }
 
 function playCurrentlyPlayableItems(now) {
-  return now;
-  // playUrl(data.content.schedule.items[0].objectReference);
+  playableItems = scheduleParser.getCurrentPlayableItems(now);
+
+  if (playableItems.length === 0) {
+    log.external("no playable items", inspect(scheduleParser.getContent()));
+    clearTimeout(timers.itemDuration);
+    return;
+  }
+
+  playItems();
+}
+
+function playItems() {
+  let item = playableItems.shift();
+  playableItems.push(item);
+
+  playUrl(item.objectReference);
+
+  timers.itemDuration = setTimeout(playItems, item.duration * 1000);
 }
 
 function playUrl(url) {playUrlHandler(url);}

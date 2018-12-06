@@ -49,6 +49,13 @@ module.exports = {
   entireScheduleIs24x7(sched = scheduleContent.content.schedule) {
     return sched.items.concat(sched).every(is24x7);
   },
+  getCurrentPlayableItems(now, sched = scheduleContent.content.schedule) {
+    if (!canPlay(sched, now)) {return [];}
+
+    return sched.items.reduce((playable, item)=>{
+      return canPlay(item, now) ? playable.concat(item) : playable;
+    }, []);
+  },
   setContent(data) {scheduleContent = data;},
   getContent() {return Object.assign({}, scheduleContent);},
   validateContent(data = scheduleContent) {
