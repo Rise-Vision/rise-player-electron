@@ -60,13 +60,17 @@ function playCurrentlyPlayableItems(now) {
 }
 
 function playItems() {
-  let item = playableItems.shift();
-  playableItems.push(item);
+  let nextItem = playableItems.shift();
+  playableItems.push(nextItem);
 
-  playingItem = item;
-  playUrl(item.objectReference);
+  let previousItem = playingItem;
+  playingItem = nextItem;
 
-  timers.itemDuration = setTimeout(playItems, item.duration * 1000);
+  if (!previousItem || previousItem.objectReference !== nextItem.objectReference) {
+    playUrl(nextItem.objectReference);
+  }
+
+  timers.itemDuration = setTimeout(playItems, nextItem.duration * 1000);
 }
 
 function playUrl(url) {playUrlHandler(url);}

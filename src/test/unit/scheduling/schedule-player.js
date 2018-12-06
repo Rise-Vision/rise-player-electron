@@ -5,7 +5,7 @@ const scheduleParser = require("../../../main/scheduling/schedule-parser");
 const FALLBACK_URL = schedulePlayer.getFallbackUrl();
 const ONE_MINUTE_MILLIS = 60000;
 
-describe.only("Schedule Player", ()=>{
+describe("Schedule Player", ()=>{
   const played = [];
 
   beforeEach(()=>{
@@ -243,6 +243,38 @@ describe.only("Schedule Player", ()=>{
       schedulePlayer.start();
 
       assert(played.includes("test-url-1") && played.includes("test-url-2"));
+    });
+
+    it("doesn't reload a url duplicated in multiple schedule items", ()=>{
+      setTimeout.reset();
+
+      simple.mock(global, "setTimeout")
+      .callbackAtIndex(0)
+      .returnWith();
+
+      const testData = {content: {
+        schedule: {
+          name: "test schedule",
+          timeDefined: false,
+          items: [
+            {
+              name: "test item 1",
+              timeDefined: false,
+              objectReference: "test-same-url"
+            },
+            {
+              name: "test item 2",
+              timeDefined: false,
+              objectReference: "test-same-url"
+            }
+          ]
+        }
+      }};
+      scheduleParser.setContent(testData);
+      schedulePlayer.start();
+
+      assert(played.length === 1);
+      assert(played.includes("test-same-url"));
     });
 
     it("continues playing item if start is called and item is still valid", ()=>{
