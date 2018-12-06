@@ -22,11 +22,7 @@ const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 module.exports = {
   canPlay,
   hasOnlyRiseStorageURLItems(data = scheduleContent) {
-    if (!data) {return false;}
-    if (!data.content) {return false;}
-    if (!data.content.schedule) {return false;}
-    if (!data.content.schedule.items) {return false;}
-    if (!data.content.schedule.items.length) {return false;}
+    if (!module.exports.validateContent()) {return false;}
 
     const expectedURLStart = "https://storage.googleapis.com/risemedialibrary";
 
@@ -40,7 +36,17 @@ module.exports = {
     });
   },
   setContent(data) {scheduleContent = data;},
-  getContent() {return Object.assign({}, scheduleContent);}
+  getContent() {return Object.assign({}, scheduleContent);},
+  validateContent(data = scheduleContent) {
+    if (!data) {return false;}
+    if (!data.content) {return false;}
+    if (!data.content.schedule) {return false;}
+    if (!data.content.schedule.items) {return false;}
+    if (!data.content.schedule.items.length) {return false;}
+    if (typeof data.content.schedule.items[0] !== "object") {return false;}
+
+    return true;
+  }
 };
 
 function canPlay(item, d = new Date()) {
