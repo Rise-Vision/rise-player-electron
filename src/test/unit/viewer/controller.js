@@ -19,7 +19,8 @@ mocks.webContents = {
   on: simple.spy((evt, fn)=>{if(evt === "did-finish-load"){fn();}}),
   send: simple.stub(),
   session: {setProxy: simple.stub(), setCertificateVerifyProc: simple.stub()},
-  toggleDevTools: simple.stub()
+  toggleDevTools: simple.stub(),
+  getURL: simple.stub().returnWith("")
 };
 
 mocks.viewerWindow = {

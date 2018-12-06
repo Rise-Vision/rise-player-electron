@@ -226,11 +226,15 @@ function isViewerLoaded() {
 function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
     dataHandlerRegistered = false;
-    return noViewerSchedulePlayer.start();
+    return Promise.resolve(noViewerSchedulePlayer.start());
   }
 
   const viewerPromise = isViewerLoaded() ? Promise.resolve() : loadViewerUrl();
-  return viewerPromise.then(() => viewerContentLoader.sendContentToViewer(content));
+  return viewerPromise.then(() => {
+    if (content) {
+      viewerContentLoader.sendContentToViewer(content);
+    }
+  });
 }
 
 module.exports = {
@@ -264,15 +268,7 @@ module.exports = {
 
     uptime.setRendererWindow(viewerWindow);
 
-    let loadUrlPromise = Promise.resolve();
-    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
-      dataHandlerRegistered = false;
-      loadUrlPromise = Promise.resolve(noViewerSchedulePlayer.start());
-    } else {
-      loadUrlPromise = loadViewerUrl();
-    }
-
-    return loadUrlPromise.then(()=>{
+    return loadContent().then(()=>{
       log.file("viewer launch complete");
       return viewerWindow;
     })
