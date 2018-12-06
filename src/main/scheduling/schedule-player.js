@@ -1,7 +1,9 @@
 const scheduleParser = require("./schedule-parser");
 const {inspect} = require("util");
+const FALLBACK_URL = "about:blank";
 
 let playUrlHandler = ()=>{};
+let timers = [];
 
 module.exports = {
   start(delayFn = setTimeout) {
@@ -13,12 +15,24 @@ module.exports = {
       return playUrl(FALLBACK_URL);
     }
 
-    playUrl(data.content.schedule.items[0].objectReference);
+    considerFuturePlayableItems(delayFn);
+
+    playCurrentlyPlayableItems();
   },
-  setPlayUrlHandler(fn) {playUrlHandler = fn;}
+  setPlayUrlHandler(fn) {playUrlHandler = fn;},
+  getFallbackUrl() {return FALLBACK_URL;}
 };
 
-function playUrl(url) {playUrlHandler(url);}
+function considerFuturePlayableItems(delayFn) {
+  const nextCheckMillis = scheduleParser.millisUntilNextScheduledTime();
 
+  if (nextCheckMillis === Number.MAX_VALUE) {return;}
 
+  delayFn(()=>module.exports.start(delayFn), nextCheckMillis);
 }
+
+function playCurrentlyPlayableItems() {
+  // playUrl(data.content.schedule.items[0].objectReference);
+}
+
+function playUrl(url) {playUrlHandler(url);}

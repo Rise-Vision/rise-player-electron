@@ -1,10 +1,12 @@
 const assert = require("assert");
 const simple = require("simple-mock");
 const schedulePlayer = require("../../../main/scheduling/schedule-player");
+const scheduleParser = require("../../../main/scheduling/schedule-parser");
+const FALLBACK_URL = schedulePlayer.getFallbackUrl();
 
 describe.only("Schedule Player", ()=>{
+  const mockSetTimeout = simple.stub();
   const played = [];
-  const fallbackUrl = "about:blank";
 
   beforeEach(()=>{
     simple.mock(global.log, "external").returnWith();
@@ -12,7 +14,6 @@ describe.only("Schedule Player", ()=>{
 
   afterEach(()=>{
     simple.restore();
-    played.length = 0;
   });
 
   describe("Schedule Data Validation", ()=>{
@@ -22,18 +23,38 @@ describe.only("Schedule Player", ()=>{
       {content: {}},
       {content: {schedule: {}}},
       {content: {schedule: {items: []}}},
-      {content: {schedule: {items: ['invalid']}}},
+      {content: {schedule: {items: ['should be an object']}}},
     ];
 
     testData.forEach(test=>{
       it(`plays fallback url and logs external for ${JSON.stringify(test)}`, ()=>{
+        played.length = 0;
+        scheduleParser.setContent(testData);
         schedulePlayer.setPlayUrlHandler(url=>played.push(url));
 
-        schedulePlayer.start(test, fallbackUrl);
+        schedulePlayer.start(mockSetTimeout);
 
         assert.equal(global.log.external.lastCall.args[0], "invalid schedule data");
-        assert(played[0], fallbackUrl);
+        assert.equal(played[0], FALLBACK_URL);
       });
+    });
+  });
+
+  describe("Playability re-check", ()=>{
+    it("Doesn't re-check for playability if everything is 24/7", ()=>{
+      const testData = {content: {
+        schedule: {
+          timeDefined: false,
+          items: [
+            {
+              timeDefined: false
+            }
+          ]
+        }}};
+
+      scheduleParser.setContent(testData);
+      schedulePlayer.start(mockSetTimeout);
+      assert.equal(mockSetTimeout.callCount, 0);
     });
   });
 });

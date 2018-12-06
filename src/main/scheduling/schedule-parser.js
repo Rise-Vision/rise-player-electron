@@ -35,6 +35,23 @@ module.exports = {
       return true;
     });
   },
+  millisUntilNextScheduledTime(sched = scheduleContent.content.schedule) {
+    const nowTime = new Date();
+
+    return sched.items.concat(sched).reduce((nextMillis, item)=>{
+      if (!item.startDate || !item.timeDefined) {return nextMillis;}
+
+      return Math.min(nextMillis, millisUntil(item.startTime), millisUntil(item.endTime));
+
+      function millisUntil(timeDate) {
+        if (!timeDate) {return Number.MAX_VALUE;}
+
+        const time = _toTime(timeDate);
+
+        return time > nowTime ? time - nowTime : Number.MAX_VALUE;
+      }
+    }, Number.MAX_VALUE);
+  },
   setContent(data) {scheduleContent = data;},
   getContent() {return Object.assign({}, scheduleContent);},
   validateContent(data = scheduleContent) {
