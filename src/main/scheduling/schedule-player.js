@@ -4,6 +4,7 @@ const FALLBACK_URL = "about:blank";
 
 let playUrlHandler = ()=>{};
 let playableItems = [];
+let nothingPlayingListeners = [];
 let timers = {
   scheduleCheck: null,
   itemDuration: null
@@ -16,7 +17,7 @@ module.exports = {
     if (!scheduleParser.validateContent()) {
       log.external("invalid schedule data", inspect(scheduleParser.getContent()));
 
-      clearTimeout(timers.itemDuration);
+      nothingPlaying();
       return playUrl(FALLBACK_URL);
     }
 
@@ -25,7 +26,8 @@ module.exports = {
     playCurrentlyPlayableItems(now);
   },
   setPlayUrlHandler(fn) {playUrlHandler = fn;},
-  getFallbackUrl() {return FALLBACK_URL;}
+  getFallbackUrl() {return FALLBACK_URL;},
+  listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);}
 };
 
 function considerFutureScheduledItems(now) {
@@ -44,8 +46,7 @@ function playCurrentlyPlayableItems(now) {
 
   if (playableItems.length === 0) {
     log.external("no playable items", inspect(scheduleParser.getContent()));
-    clearTimeout(timers.itemDuration);
-    return;
+    return nothingPlaying();
   }
 
   playItems();
@@ -72,4 +73,10 @@ function millisUntilTomorrow(now) {
   tomorrow.setSeconds(acceptablePrecisionSecondsIntoNextDay);
 
   return tomorrow - now;
+}
+
+function nothingPlaying() {
+  clearTimeout(timers.itemDuration);
+  playingItem = null;
+  nothingPlayingListeners.forEach(listener=>listener());
 }
