@@ -17,7 +17,7 @@ module.exports = {
     clearTimeout(timers.scheduleCheck);
 
     if (!scheduleParser.validateContent()) {
-      log.external("invalid schedule data", inspect(scheduleParser.getContent()));
+      log.external("invalid schedule data", inspect(scheduleParser.getContent(), {depth: 5}));
 
       nothingPlaying();
       return playUrl(FALLBACK_URL);
@@ -47,7 +47,7 @@ function playCurrentlyPlayableItems(now) {
   playableItems = scheduleParser.getCurrentPlayableItems(now);
 
   if (playableItems.length === 0) {
-    log.external("no playable items", inspect(scheduleParser.getContent()));
+    log.external("no playable items", inspect(scheduleParser.getContent(), {depth: 5}));
     return nothingPlaying();
   }
 
