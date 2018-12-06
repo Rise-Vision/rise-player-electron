@@ -31,6 +31,7 @@ mocks.viewerWindow = {
   webContents: mocks.webContents,
   isFocused: simple.stub(),
   setSize: simple.stub(),
+  getContentSize: simple.stub().returnWith([800,600]),
   isDestroyed: simple.stub().returnWith(false),
   getBounds: simple.stub(),
   setBounds: simple.stub()
@@ -193,6 +194,7 @@ describe("viewerController", ()=>{
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(noViewerSchedulePlayer.start.called);
+        assert(mocks.viewerWindow.getContentSize.called);
       });
     });
 
