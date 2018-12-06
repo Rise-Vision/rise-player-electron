@@ -35,22 +35,19 @@ module.exports = {
       return true;
     });
   },
-  millisUntilNextScheduledTime(sched = scheduleContent.content.schedule) {
-    const nowTime = new Date();
-
+  millisUntilNextScheduledTime(now, sched = scheduleContent.content.schedule) {
     return sched.items.concat(sched).reduce((nextMillis, item)=>{
-      if (!item.startDate || !item.timeDefined) {return nextMillis;}
+      if (is24x7(item)) {return nextMillis;}
 
-      return Math.min(nextMillis, millisUntil(item.startTime), millisUntil(item.endTime));
-
-      function millisUntil(timeDate) {
-        if (!timeDate) {return Number.MAX_VALUE;}
-
-        const time = _toTime(timeDate);
-
-        return time > nowTime ? time - nowTime : Number.MAX_VALUE;
-      }
+      return Math.min(...[
+        nextMillis,
+        millisUntilTime(now, item.startTime),
+        millisUntilTime(now, item.endTime)
+      ]);
     }, Number.MAX_VALUE);
+  },
+  entireScheduleIs24x7(sched = scheduleContent.content.schedule) {
+    return sched.items.concat(sched).every(is24x7);
   },
   setContent(data) {scheduleContent = data;},
   getContent() {return Object.assign({}, scheduleContent);},
@@ -66,10 +63,14 @@ module.exports = {
   }
 };
 
-function canPlay(item, d = new Date()) {
+function is24x7(item) {
   if (!item.timeDefined || !item.startDate) {
     return true;
   }
+}
+
+function canPlay(item, d = new Date()) {
+  if (is24x7(item)) {return true;}
 
   const t = _toTime(d),
     startDate = _toDate(item.startDate),
@@ -186,6 +187,17 @@ function _toTime(d) {
   newDate.setSeconds(date.getSeconds());
 
   return newDate;
+}
+
+function millisUntilTime(now, timeDate) {
+  if (!timeDate || !now) {return Number.MAX_VALUE;}
+
+  let timeComponent = new Date(timeDate);
+  timeComponent.setFullYear(now.getFullYear());
+  timeComponent.setMonth(now.getMonth());
+  timeComponent.setDate(now.getDate());
+
+  return timeComponent > now ? timeComponent - now : Number.MAX_VALUE;
 }
 
 function _daysInMonth(d) {
