@@ -183,6 +183,8 @@ function setCertificateHandling(url = VIEWER_URL) {
 }
 
 function loadViewerUrl() {
+  noViewerSchedulePlayer.stop();
+
   return createViewerUrl()
     .then(url => loadUrl(url))
     .then(()=>{

@@ -29,7 +29,8 @@ module.exports = {
   },
   setPlayUrlHandler(fn) {playUrlHandler = fn;},
   getFallbackUrl() {return FALLBACK_URL;},
-  listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);}
+  listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);},
+  stop() {Object.values(timers).forEach(clearTimeout);}
 };
 
 function considerFutureScheduledItems(now) {
