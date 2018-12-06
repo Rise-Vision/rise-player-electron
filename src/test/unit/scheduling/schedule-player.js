@@ -211,7 +211,6 @@ describe.only("Schedule Player", ()=>{
       scheduleParser.setContent(testData);
       schedulePlayer.start();
 
-      assert.equal(log.external.callCount, 1);
       assert.equal(log.external.lastCall.args[0], "no playable items");
     });
 
@@ -243,7 +242,6 @@ describe.only("Schedule Player", ()=>{
       scheduleParser.setContent(testData);
       schedulePlayer.start();
 
-      assert.equal(log.external.callCount, 0);
       assert(played.includes("test-url-1") && played.includes("test-url-2"));
     });
 
@@ -274,6 +272,12 @@ describe.only("Schedule Player", ()=>{
       schedulePlayer.start();
 
       assert(played.includes("test-url-1") && !played.includes("test-url-2"));
+    });
+  });
+
+  describe("System time", ()=>{
+    xit("handles a system time change (eg: DST)", ()=>{
+      assert(false);
     });
   });
 });

@@ -13,6 +13,7 @@ let timers = {
 
 module.exports = {
   start() {
+    log.external("no-viewer mode");
     clearTimeout(timers.scheduleCheck);
 
     if (!scheduleParser.validateContent()) {
