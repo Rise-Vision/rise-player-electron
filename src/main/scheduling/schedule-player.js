@@ -2,14 +2,15 @@ const scheduleParser = require("./schedule-parser");
 const util = require("util");
 const FALLBACK_URL = "about:blank";
 
-let playUrlHandler = ()=>{};
-let playableItems = [];
-let playingItem = null;
-let nothingPlayingListeners = [];
-let timers = {
+const nothingPlayingListeners = [];
+const timers = {
   scheduleCheck: null,
   itemDuration: null
 };
+
+let playUrlHandler = ()=>{};
+let playableItems = [];
+let playingItem = null;
 
 module.exports = {
   start() {
@@ -23,7 +24,7 @@ module.exports = {
       return playUrl(FALLBACK_URL);
     }
 
-    let now = new Date();
+    const now = new Date();
     considerFutureScheduledItems(now);
     playCurrentlyPlayableItems(now);
   },
@@ -39,10 +40,10 @@ module.exports = {
 function considerFutureScheduledItems(now) {
   if (scheduleParser.entireScheduleIs24x7()) {return;}
 
-  const nextCheckMillis = Math.min(...[
+  const nextCheckMillis = Math.min(
     scheduleParser.millisUntilNextScheduledTime(now),
     millisUntilTomorrow(now)
-  ]);
+  );
 
   timers.scheduleCheck = setTimeout(module.exports.start, nextCheckMillis);
 }
