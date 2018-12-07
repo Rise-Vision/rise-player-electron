@@ -346,10 +346,4 @@ describe("Schedule Player", ()=>{
       assert(played.includes("test-url-1") && !played.includes("test-url-2"));
     });
   });
-
-  describe("System time", ()=>{
-    xit("handles a system time change (eg: DST)", ()=>{
-      assert(false);
-    });
-  });
 });
