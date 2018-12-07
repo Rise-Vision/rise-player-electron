@@ -348,4 +348,52 @@ describe("Schedule Player", ()=>{
       assert(played.includes("test-url-1") && !played.includes("test-url-2"));
     });
   });
+
+  describe.only("Scenarios", ()=>{
+    let timedCalls = [];
+
+    beforeEach(()=>{
+      setTimeout.reset();
+      simple.mock(global, "setTimeout").callFn(fn=>timedCalls.push(fn));
+    });
+
+    describe("24x7 primary schedule with two 24x7 items", ()=>{
+      const testData = {content: {
+        schedule: {
+          name: "test schedule",
+          timeDefined: false,
+          items: [
+            {
+              name: "test item 5",
+              timeDefined: false,
+              objectReference: "test-url-1",
+              duration: 10
+            },
+            {
+              name: "test item 6",
+              timeDefined: false,
+              objectReference: "test-url-2",
+              duration: 10
+            }
+          ]
+        }
+      }};
+
+      it("continuously alternates between the two presentations", ()=>{
+        scheduleParser.setContent(testData);
+        schedulePlayer.start();
+
+        assert.equal(played[played.length - 1], "test-url-1");
+
+        timedCalls.shift()();
+        assert.equal(played[played.length - 1], "test-url-2");
+
+        timedCalls.shift()();
+        assert.equal(played[played.length - 1], "test-url-1");
+
+        timedCalls.shift()();
+        assert.equal(played[played.length - 1], "test-url-2");
+      });
+    });
+  });
 });
