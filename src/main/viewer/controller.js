@@ -267,6 +267,9 @@ module.exports = {
     electron = _electron;
 
     noViewerSchedulePlayer.setPlayUrlHandler(loadUrl);
+    noViewerSchedulePlayer.listenForNothingPlaying(()=>{
+      loadUrl(`file://${__dirname}/black-screen.html`);
+    });
 
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
