@@ -1,5 +1,5 @@
 const scheduleParser = require("./schedule-parser");
-const {inspect} = require("util");
+const util = require("util");
 const FALLBACK_URL = "about:blank";
 
 let playUrlHandler = ()=>{};
@@ -17,7 +17,7 @@ module.exports = {
     clearTimeout(timers.scheduleCheck);
 
     if (!scheduleParser.validateContent()) {
-      log.external("invalid schedule data", inspect(scheduleParser.getContent(), {depth: 5}));
+      logWithScheduleData("invalid schedule data");
 
       nothingPlaying();
       return playUrl(FALLBACK_URL);
@@ -51,7 +51,7 @@ function playCurrentlyPlayableItems(now) {
   playableItems = scheduleParser.getCurrentPlayableItems(now);
 
   if (playableItems.length === 0) {
-    log.external("no playable items", inspect(scheduleParser.getContent(), {depth: 5}));
+    logWithScheduleData("no playable items");
     return nothingPlaying();
   }
 
@@ -114,4 +114,9 @@ function nothingPlaying() {
   clearTimeout(timers.itemDuration);
   playingItem = null;
   nothingPlayingListeners.forEach(listener=>listener());
+}
+
+function logWithScheduleData(event) {
+  const logData = util.inspect(scheduleParser.getContent(), {depth: 5});
+  log.external(event, logData);
 }
