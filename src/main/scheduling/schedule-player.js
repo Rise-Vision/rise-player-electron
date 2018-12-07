@@ -30,7 +30,10 @@ module.exports = {
   setPlayUrlHandler(fn) {playUrlHandler = fn;},
   getFallbackUrl() {return FALLBACK_URL;},
   listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);},
-  stop() {Object.values(timers).forEach(clearTimeout);}
+  stop() {
+    Object.values(timers).forEach(clearTimeout);
+    playingItem = null;
+  }
 };
 
 function considerFutureScheduledItems(now) {
