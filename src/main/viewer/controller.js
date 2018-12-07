@@ -196,6 +196,8 @@ function loadViewerUrl() {
 }
 
 function loadUrl(url) {
+  log.external("loading url", url);
+
   setCertificateHandling(url);
   viewerWindow.loadURL(url);
 
