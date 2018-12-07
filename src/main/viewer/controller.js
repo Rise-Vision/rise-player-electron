@@ -199,6 +199,7 @@ function setCertificateHandling(url = VIEWER_URL) {
 
 function loadViewerUrl() {
   noViewerSchedulePlayer.stop();
+  viewerWindowBindings.sendToRenderer("stop-substituting-viewer-pings-to-watchdog");
 
   return createViewerUrl()
     .then(url => loadUrl(url))
@@ -242,6 +243,7 @@ function loadContent(content) {
   if (scheduleParser.hasOnlyRiseStorageURLItems()) {
     logClientInfo();
     dataHandlerRegistered = false;
+    viewerWindowBindings.sendToRenderer("begin-substituting-viewer-pings-to-watchdog");
     return Promise.resolve(noViewerSchedulePlayer.start());
   }
 
