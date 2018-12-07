@@ -2,7 +2,6 @@ const assert = require("assert");
 const simple = require("simple-mock");
 const schedulePlayer = require("../../../main/scheduling/schedule-player");
 const scheduleParser = require("../../../main/scheduling/schedule-parser");
-const FALLBACK_URL = schedulePlayer.getFallbackUrl();
 const ONE_MINUTE_MILLIS = 60000;
 
 describe("Schedule Player", ()=>{
@@ -29,14 +28,17 @@ describe("Schedule Player", ()=>{
       {content: {schedule: {items: ['should be an object']}}},
     ];
 
+    const nothingPlayingListener = simple.spy();
+
     testData.forEach(test=>{
-      it(`plays fallback url and logs external for ${JSON.stringify(test)}`, ()=>{
+      it(`calls nothing playing handler and logs external for ${JSON.stringify(test)}`, ()=>{
         scheduleParser.setContent(testData);
+        schedulePlayer.listenForNothingPlaying(nothingPlayingListener);
 
         schedulePlayer.start();
 
         assert.equal(global.log.external.lastCall.args[0], "invalid schedule data");
-        assert.equal(played[0], FALLBACK_URL);
+        assert(nothingPlayingListener.called);
       });
     });
   });

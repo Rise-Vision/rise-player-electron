@@ -1,6 +1,5 @@
 const scheduleParser = require("./schedule-parser");
 const util = require("util");
-const FALLBACK_URL = "about:blank";
 
 const nothingPlayingListeners = [];
 const timers = {
@@ -20,8 +19,7 @@ module.exports = {
     if (!scheduleParser.validateContent()) {
       logWithScheduleData("invalid schedule data");
 
-      nothingPlaying();
-      return playUrl(FALLBACK_URL);
+      return nothingPlaying();
     }
 
     const now = new Date();
@@ -29,7 +27,6 @@ module.exports = {
     playCurrentlyPlayableItems(now);
   },
   setPlayUrlHandler(fn) {playUrlHandler = fn;},
-  getFallbackUrl() {return FALLBACK_URL;},
   listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);},
   stop() {
     Object.values(timers).forEach(clearTimeout);
