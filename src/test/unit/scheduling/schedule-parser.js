@@ -13,29 +13,29 @@ describe("Schedule Parser", () => {
     timeline = { timeDefined: true, startDate, endDate, startTime, endTime };
 
   it("it can play if not time defined", () => {
-    assert.equal(scheduleParser.canPlay({ timeDefined: false }), true);
+    assert.equal(scheduleParser.scheduledToPlay({ timeDefined: false }), true);
   });
 
   it("it can play if start time is not defined", () => {
-    assert.equal(scheduleParser.canPlay({}), true);
+    assert.equal(scheduleParser.scheduledToPlay({}), true);
   });
 
   it("it cannot play if date is before startDate", () => {
     const beforeDate = new Date(2016, JAN, 1);
-    assert.equal(scheduleParser.canPlay(timeline, beforeDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, beforeDate), false);
   });
 
   it("it cannot play if date is after endDate", () => {
     const afterDate = new Date(2016, JUL, 1);
-    assert.equal(scheduleParser.canPlay(timeline, afterDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, afterDate), false);
   });
 
   it("it cannot play if time is before startTime, with startTime < endTime", () => {
     const beforeTime = new Date(2016, FEB, 3, 11, 30);
     const afterTime = new Date(2016, FEB, 3, 19, 30);
 
-    assert.equal(scheduleParser.canPlay(timeline, beforeTime), false);
-    assert.equal(scheduleParser.canPlay(timeline, afterTime), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, beforeTime), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, afterTime), false);
   });
 
   it("it cannot play if time is out of range, with endTime < startTime", () => {
@@ -45,8 +45,8 @@ describe("Schedule Parser", () => {
     const beforeTime = new Date(2016, FEB, 3, 16, 30);
     const afterTime = new Date(2016, FEB, 3, 12, 30);
 
-    assert.equal(scheduleParser.canPlay(timeline, beforeTime), false);
-    assert.equal(scheduleParser.canPlay(timeline, afterTime), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, beforeTime), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, afterTime), false);
   });
 
   it("it can play if daily recurrence frequency matches", () => {
@@ -54,7 +54,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Daily", recurrenceFrequency: 10 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), true);
   });
 
   it("it cannot play if daily recurrence frequency does not match", () => {
@@ -62,7 +62,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Daily", recurrenceFrequency: 2 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it can play if weekly recurrence frequency matches", () => {
@@ -70,7 +70,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 3, recurrenceDaysOfWeek: "Mon" };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), true);
   });
 
   it("it can play if weekly recurrence frequency matches", () => {
@@ -78,7 +78,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 3, recurrenceDaysOfWeek: ["Mon"] };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), true);
   });
 
   it("it cannot play if weekly recurrence days is not specified", () => {
@@ -86,7 +86,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 3 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if weekly recurrence frequency does not match", () => {
@@ -94,7 +94,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 3 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if weekly day recurrence does not match", () => {
@@ -102,7 +102,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 2, recurrenceDaysOfWeek: "Sun,Wed,Thu" };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if weekly day recurrence does not match", () => {
@@ -110,7 +110,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Weekly", recurrenceFrequency: 2, recurrenceDaysOfWeek: ["Sun", "Wed", "Thu"] };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it can play if absolute monthly recurrence matches", () => {
@@ -118,7 +118,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceAbsolute: true, recurrenceFrequency: 2, recurrenceDayOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), true);
   });
 
   it("it cannot play if absolute monthly recurrence does not match", () => {
@@ -126,7 +126,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceAbsolute: true, recurrenceFrequency: 3, recurrenceDayOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if absolute monthly day recurrence does not match", () => {
@@ -134,7 +134,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceAbsolute: true, recurrenceFrequency: 2, recurrenceDayOfMonth: 3 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it can play if monthly recurrence matches", () => {
@@ -142,7 +142,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceFrequency: 2, recurrenceDayOfWeek: 1, recurrenceWeekOfMonth: 1 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), true);
   });
 
   it("it cannot play if monthly day recurrence does not match", () => {
@@ -150,7 +150,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceFrequency: 3, recurrenceDayOfWeek: 1 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if monthly weekday recurrence does not match", () => {
@@ -158,7 +158,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceFrequency: 2, recurrenceDayOfWeek: 2 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if monthly last week of month recurrence does not match", () => {
@@ -166,7 +166,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceFrequency: 2, recurrenceDayOfWeek: 1, recurrenceWeekOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it cannot play if monthly week of month recurrence does not match", () => {
@@ -174,7 +174,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Monthly", recurrenceFrequency: 2, recurrenceDayOfWeek: 1, recurrenceWeekOfMonth: 2 };
 
-    assert.equal(scheduleParser.canPlay(timeline, duringDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, duringDate), false);
   });
 
   it("it can play if absolute yearly recurrence matches", () => {
@@ -183,7 +183,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceAbsolute: true, recurrenceMonthOfYear: APR, recurrenceDayOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, recurrenceDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, recurrenceDate), true);
   });
 
   it("it cannot play if absolute yearly recurrence does not match", () => {
@@ -193,8 +193,8 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceAbsolute: true, recurrenceMonthOfYear: APR, recurrenceDayOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, diffDayDate), false);
-    assert.equal(scheduleParser.canPlay(timeline, diffMonthDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, diffDayDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, diffMonthDate), false);
   });
 
   it("it can play if yearly recurrence matches", () => {
@@ -203,7 +203,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceMonthOfYear: APR, recurrenceDayOfWeek: 2, recurrenceWeekOfMonth: 1 };
 
-    assert.equal(scheduleParser.canPlay(timeline, recurrenceDate), true);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, recurrenceDate), true);
   });
 
   it("it cannot play if yearly weekday+month recurrence does not match", () => {
@@ -213,8 +213,8 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceMonthOfYear: APR, recurrenceDayOfWeek: 2 };
 
-    assert.equal(scheduleParser.canPlay(timeline, diffDayDate), false);
-    assert.equal(scheduleParser.canPlay(timeline, diffMonthDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, diffDayDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, diffMonthDate), false);
   });
 
   it("it cannot play if yearly last week of month recurrence does not match", () => {
@@ -223,7 +223,7 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceMonthOfYear: APR, recurrenceDayOfWeek: 2, recurrenceWeekOfMonth: 4 };
 
-    assert.equal(scheduleParser.canPlay(timeline, testDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, testDate), false);
   });
 
   it("it cannot play if yearly week of month recurrence does not match", () => {
@@ -232,6 +232,6 @@ describe("Schedule Parser", () => {
     const timeline = { timeDefined: true, startDate, endDate,
       recurrenceType: "Yearly", recurrenceMonthOfYear: APR, recurrenceDayOfWeek: 2, recurrenceWeekOfMonth: 2 };
 
-    assert.equal(scheduleParser.canPlay(timeline, testDate), false);
+    assert.equal(scheduleParser.scheduledToPlay(timeline, testDate), false);
   });
 });

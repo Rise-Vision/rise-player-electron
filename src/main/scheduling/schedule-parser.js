@@ -20,7 +20,7 @@ const DAY_OF_WEEK = {
 const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
 module.exports = {
-  canPlay,
+  scheduledToPlay,
   hasOnlyRiseStorageURLItems(data = scheduleContent) {
     if (!module.exports.validateContent()) {return false;}
 
@@ -50,10 +50,11 @@ module.exports = {
     return sched.items.concat(sched).every(is24x7);
   },
   getCurrentPlayableItems(now, sched = scheduleContent.content.schedule) {
-    if (!canPlay(sched, now)) {return [];}
+    if (!scheduledToPlay(sched, now)) {return [];}
 
     return sched.items.reduce((playable, item)=>{
-      return item.duration && canPlay(item, now) ? playable.concat(item) : playable;
+      return item.duration && scheduledToPlay(item, now) ?
+        playable.concat(item) : playable;
     }, []);
   },
   setContent(data) {scheduleContent = data;},
@@ -76,7 +77,7 @@ function is24x7(item) {
   }
 }
 
-function canPlay(item, d = new Date()) {
+function scheduledToPlay(item, d = new Date()) {
   if (is24x7(item)) {return true;}
 
   const t = _toTime(d),

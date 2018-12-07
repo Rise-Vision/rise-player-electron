@@ -32,7 +32,7 @@ function calculate() {
     checkRendererHealth()
   ])
   .then(([msResult, rendererResult])=>{
-    const shouldBePlaying = scheduleParser.canPlay(schedule);
+    const shouldBePlaying = scheduleParser.scheduledToPlay(schedule);
     const connectedToMS = msResult === 'connected';
     log.file('uptime', JSON.stringify({shouldBePlaying, connectedToMS, rendererResult}));
 
