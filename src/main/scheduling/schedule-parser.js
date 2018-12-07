@@ -53,7 +53,7 @@ module.exports = {
     if (!canPlay(sched, now)) {return [];}
 
     return sched.items.reduce((playable, item)=>{
-      return canPlay(item, now) ? playable.concat(item) : playable;
+      return item.duration && canPlay(item, now) ? playable.concat(item) : playable;
     }, []);
   },
   setContent(data) {scheduleContent = data;},

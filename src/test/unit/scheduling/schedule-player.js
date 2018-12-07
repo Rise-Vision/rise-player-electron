@@ -48,7 +48,8 @@ describe("Schedule Player", ()=>{
           timeDefined: false,
           items: [
             {
-              timeDefined: false
+              timeDefined: false,
+              duration: 10
             }
           ]
         }}};
@@ -70,7 +71,8 @@ describe("Schedule Player", ()=>{
           items: [
             {
               name: "test item 1",
-              timeDefined: false
+              timeDefined: false,
+              duration: 10
             }
           ]
         }
@@ -229,7 +231,41 @@ describe("Schedule Player", ()=>{
             {
               name: "test item 1",
               timeDefined: false,
-              objectReference: "test-url-1"
+              objectReference: "test-url-1",
+              duration: 10
+            },
+            {
+              name: "test item 2",
+              timeDefined: false,
+              objectReference: "test-url-2",
+              duration: 10
+            }
+          ]
+        }
+      }};
+      scheduleParser.setContent(testData);
+      schedulePlayer.start();
+
+      assert(played.includes("test-url-1") && played.includes("test-url-2"));
+    });
+
+    it("doesn't play playable items if they have no duration", ()=>{
+      setTimeout.reset();
+
+      simple.mock(global, "setTimeout")
+      .callbackAtIndex(0)
+      .returnWith();
+
+      const testData = {content: {
+        schedule: {
+          name: "test schedule",
+          timeDefined: false,
+          items: [
+            {
+              name: "test item 1",
+              timeDefined: false,
+              objectReference: "test-url-1",
+              duration: 0,
             },
             {
               name: "test item 2",
@@ -242,7 +278,7 @@ describe("Schedule Player", ()=>{
       scheduleParser.setContent(testData);
       schedulePlayer.start();
 
-      assert(played.includes("test-url-1") && played.includes("test-url-2"));
+      assert.equal(played.length, 0);
     });
 
     it("doesn't reload a url duplicated in multiple schedule items", ()=>{
@@ -260,12 +296,14 @@ describe("Schedule Player", ()=>{
             {
               name: "test item 1",
               timeDefined: false,
-              objectReference: "test-same-url"
+              objectReference: "test-same-url",
+              duration: 10
             },
             {
               name: "test item 2",
               timeDefined: false,
-              objectReference: "test-same-url"
+              objectReference: "test-same-url",
+              duration: 10
             }
           ]
         }
@@ -289,12 +327,14 @@ describe("Schedule Player", ()=>{
             {
               name: "test item 5",
               timeDefined: false,
-              objectReference: "test-url-1"
+              objectReference: "test-url-1",
+              duration: 10
             },
             {
               name: "test item 6",
               timeDefined: false,
-              objectReference: "test-url-2"
+              objectReference: "test-url-2",
+              duration: 10
             }
           ]
         }
