@@ -31,11 +31,11 @@ describe("Screenshot", ()=>{
     screenshot.init(ipcMain, nativeImage);
     viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
-    return viewerController.launch("about:blank")
-    .then((viewerWindow)=>{return (win = viewerWindow);})
-    .then(viewerWindowBindings.setWindow)
-    .then(screenshot.startListener)
-    .then(verifyFileUploaded);
+    win = viewerController.createViewerWindow("about:blank");
+    viewerWindowBindings.setWindow(win);
+    screenshot.startListener();
+
+    return verifyFileUploaded();
   });
 });
 

@@ -198,6 +198,8 @@ function setCertificateHandling(url = VIEWER_URL) {
 }
 
 function loadViewerUrl() {
+  noViewerSchedulePlayer.stop();
+
   return createViewerUrl()
     .then(url => loadUrl(url))
     .then(()=>{
@@ -225,7 +227,6 @@ function loadUrl(url) {
     });
 
     viewerWindow.webContents.on("did-finish-load", ()=>{
-      log.external("finished loading url", url);
       clearTimeout(viewerTimeout);
       res(viewerWindow);
     });
