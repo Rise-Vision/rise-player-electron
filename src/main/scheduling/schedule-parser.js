@@ -52,10 +52,7 @@ module.exports = {
   getCurrentPlayableItems(now, sched = scheduleContent.content.schedule) {
     if (!scheduledToPlay(sched, now)) {return [];}
 
-    return sched.items.reduce((playable, item)=>{
-      return item.duration && scheduledToPlay(item, now) ?
-        playable.concat(item) : playable;
-    }, []);
+    return sched.items.filter(item=>item.duration && scheduledToPlay(item, now));
   },
   setContent(data) {scheduleContent = data;},
   getContent() {return Object.assign({}, scheduleContent);},
