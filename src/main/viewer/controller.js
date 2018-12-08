@@ -200,7 +200,6 @@ function setCertificateHandling(url = VIEWER_URL) {
 
 function loadViewerUrl() {
   noViewerSchedulePlayer.stop();
-  viewerWindowBindings.sendToRenderer("stop-substituting-viewer-pings-to-watchdog");
 
   return createViewerUrl()
     .then(url => loadUrl(url))

@@ -14,7 +14,4 @@
     }, withinThreeMinutesMillis);
   });
 
-  ipc.on("stop-substituting-viewer-pings-to-watchdog", ()=>{
-    clearInterval(intervalId);
-  });
 }());
