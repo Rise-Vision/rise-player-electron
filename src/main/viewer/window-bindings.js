@@ -28,7 +28,9 @@ module.exports = {
   },
   offlineOrOnline() {
     if (viewerWindow && viewerWindow.webContents) {
-      return viewerWindow.webContents.getURL().startsWith("file") ? "offline" : "online";
+      const url = viewerWindow.webContents.getURL();
+      return url.startsWith("file") && !url.endsWith("black-screen.html") ?
+        "offline" : "online";
     }
   }
 };
