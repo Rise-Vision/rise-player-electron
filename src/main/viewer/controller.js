@@ -152,6 +152,7 @@ function createViewerWindow(initialPage = "about:blank") {
   }, customResolutionSettings));
 
   viewerWindow.loadURL(initialPage);
+  viewerWindowBindings.setWindow(viewerWindow);
 
   if (customResolution) {
     viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
@@ -305,9 +306,6 @@ module.exports = {
     })
     .then(scheduleParser.setContent)
     .then(module.exports.launch)
-    .then((viewerWindow)=>{
-      viewerWindowBindings.setWindow(viewerWindow);
-    })
     .then(()=>{
       return gcs.getCachedFileContents(viewerContentLoader.contentPath())
       .catch((err)=>{

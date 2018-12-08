@@ -10,7 +10,6 @@ const watchdog = require("./watchdog");
 const riseCacheWatchdog = require("../player/rise-cache-watchdog");
 const gcsPolling = require("./gcs-polling");
 const gcs = require("./gcs");
-const viewerWindowBindings = require("../viewer/window-bindings");
 const viewer = require("../viewer");
 const onlineDetection = require("./online-detection");
 const offlineSubscriptionCheck = require("./offline-subscription-check");
@@ -73,9 +72,7 @@ module.exports = {
       scheduleParser.setContent(content);
       return viewer.launch();
     })
-    .then((viewerWindow)=>{
-      viewerWindowBindings.setWindow(viewerWindow);
-
+    .then(()=>{
       log.debug("starting screenshot listener", "", 100);
       screenshot.startListener();
 
