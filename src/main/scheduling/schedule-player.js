@@ -22,7 +22,7 @@ module.exports = {
       return nothingPlaying();
     }
 
-    const now = new Date();
+    const now = module.exports.now();
     considerFutureScheduledItems(now);
     playCurrentlyPlayableItems(now);
   },
@@ -31,7 +31,8 @@ module.exports = {
   stop() {
     Object.values(timers).forEach(clearTimeout);
     playingItem = null;
-  }
+  },
+  now() {return new Date();}
 };
 
 function considerFutureScheduledItems(now) {
