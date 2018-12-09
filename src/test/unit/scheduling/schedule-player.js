@@ -351,10 +351,22 @@ describe("Schedule Player", ()=>{
 
   describe.only("Scenarios", ()=>{
     let timedCalls = [];
+    let simulatedTimeDate;
+    let timerId = 0;
 
     beforeEach(()=>{
       setTimeout.reset();
-      simple.mock(global, "setTimeout").callFn(fn=>timedCalls.push(fn));
+      simple.mock(schedulePlayer, "now").callFn(()=>simulatedTimeDate);
+      simple.mock(global, "setTimeout").callFn((fn, millis)=>{
+        timerId++;
+        timedCalls.push([fn, simulatedTimeDate.getTime() + millis, timerId]);
+        return timerId;
+      });
+      simple.mock(global, "clearTimeout").callFn(clearableId=>{
+        timedCalls = timedCalls.filter(call=>call[2] !== clearableId);
+      });
+
+      schedulePlayer.stop();
     });
 
     describe("24x7 primary schedule with two 24x7 items", ()=>{
@@ -380,20 +392,83 @@ describe("Schedule Player", ()=>{
       }};
 
       it("continuously alternates between the two presentations", ()=>{
+        simulatedTimeDate = new Date("12-23-2018 3:00:00 PM");
+
         scheduleParser.setContent(testData);
         schedulePlayer.start();
 
+        timeTravelTo("12-23-2018 3:00:01 PM");
+        assert.equal(played.length, 1);
         assert.equal(played[played.length - 1], "test-url-1");
 
-        timedCalls.shift()();
+        timeTravelTo("12-23-2018 3:00:11 PM");
+        assert.equal(played.length, 2);
         assert.equal(played[played.length - 1], "test-url-2");
 
-        timedCalls.shift()();
+        timeTravelTo("12-23-2018 3:01:00 PM");
+        assert.equal(played.length, 7);
+        assert.equal(played.filter(url=>url.endsWith("1")).length, 4);
+        assert.equal(played.filter(url=>url.endsWith("2")).length, 3);
         assert.equal(played[played.length - 1], "test-url-1");
-
-        timedCalls.shift()();
-        assert.equal(played[played.length - 1], "test-url-2");
       });
     });
+
+    describe("9 to 5 primary schedule with two 24x7 items", ()=>{
+      const testData = {content: {
+        schedule: {
+          name: "test schedule 9 to 5",
+          timeDefined: true,
+          startDate: "Dec 5, 2018 12:00:00 AM",
+          startTime: "Dec 6, 2018 9:00:00 AM",
+          endTime: "Dec 6, 2018 5:00:00 PM",
+
+          items: [
+            {
+              name: "test item 5",
+              timeDefined: false,
+              objectReference: "test-url-1",
+              duration: 10
+            },
+            {
+              name: "test item 6",
+              timeDefined: false,
+              objectReference: "test-url-2",
+              duration: 10
+            }
+          ]
+        }
+      }};
+
+      it("alternates between the two presentations until outside primary schedule time", ()=>{
+        simulatedTimeDate = new Date("12-05-2018 3:00:00 PM");
+        const tenSecondRotationsinTwoHours = 720;
+
+        scheduleParser.setContent(testData);
+        schedulePlayer.start();
+
+        timeTravelTo("12-05-2018 7:00:00 PM");
+        assert.equal(played.length, tenSecondRotationsinTwoHours);
+      });
+    });
+
+    function timeTravelTo(targetTimeMillis) {
+      if (typeof targetTimeMillis === "string") {targetTimeMillis = Date.parse(targetTimeMillis);}
+      if (typeof targetTime === "object") {targetTimeMillis = targetTimeMillis.getTime();}
+
+      if (targetTimeMillis === simulatedTimeDate.getTime()) {return;}
+      if (targetTimeMillis < simulatedTimeDate.getTime()) {
+        throw Error("Cannot travel backwards through time");
+      }
+
+      while (timedCalls.length) {
+        timedCalls.sort((a, b)=>a[1] - b[1]);
+
+        if (timedCalls[0][1]  > targetTimeMillis) {return;}
+
+        simulatedTimeDate = new Date(timedCalls[0][1]);
+        timedCalls.shift()[0]();
+      }
+    }
   });
+
 });
