@@ -349,7 +349,7 @@ describe("Schedule Player", ()=>{
     });
   });
 
-  describe.only("Scenarios", ()=>{
+  describe("Scenarios", ()=>{
     let timedCalls = [];
     let simulatedTimeDate;
     let timerId = 0;
