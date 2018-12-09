@@ -47,7 +47,8 @@ function considerFutureScheduledItems(now) {
 }
 
 function playCurrentlyPlayableItems(now) {
-  playableItems = scheduleParser.getCurrentPlayableItems(now);
+  const adjustForwardForTimerAccuracy = new Date(now.getTime() + 2000);
+  playableItems = scheduleParser.getCurrentPlayableItems(adjustForwardForTimerAccuracy);
 
   if (playableItems.length === 0) {
     logWithScheduleData("no playable items");
