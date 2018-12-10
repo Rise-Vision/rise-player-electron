@@ -9,13 +9,28 @@ module.exports = {
       viewerWindow.webContents.send("viewer-message-received", message);
     }
   },
+  sendToRenderer(channel) {
+    if (!viewerWindow || viewerWindow.isDestroyed()) {return;}
+
+    const contents = viewerWindow.webContents;
+
+    if (contents.isLoading()) {
+      contents.on("did-finish-load", ()=>{
+        contents.send(channel);
+      });
+    } else {
+      contents.send(channel);
+    }
+  },
   closeWindow() {
     viewerWindow && !viewerWindow.isDestroyed() && viewerWindow.close();
     viewerWindow = null;
   },
   offlineOrOnline() {
     if (viewerWindow && viewerWindow.webContents) {
-      return viewerWindow.webContents.getURL().startsWith("file") ? "offline" : "online";
+      const url = viewerWindow.webContents.getURL();
+      return url.startsWith("file") && !url.endsWith("black-screen.html") ?
+        "offline" : "online";
     }
   }
 };

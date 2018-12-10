@@ -17,6 +17,7 @@ mocks.app = {
 
 mocks.webContents = {
   on: simple.spy((evt, fn)=>{if(evt === "did-finish-load"){fn();}}),
+  isLoading: simple.stub().returnWith(false),
   send: simple.stub(),
   session: {setProxy: simple.stub(), setCertificateVerifyProc: simple.stub()},
   toggleDevTools: simple.stub(),
