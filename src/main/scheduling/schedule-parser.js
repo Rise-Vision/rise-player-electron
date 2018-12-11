@@ -39,11 +39,11 @@ module.exports = {
     return sched.items.concat(sched).reduce((nextMillis, item)=>{
       if (is24x7(item)) {return nextMillis;}
 
-      return Math.min(...[
+      return Math.min(
         nextMillis,
         millisUntilTime(now, item.startTime),
         millisUntilTime(now, item.endTime)
-      ]);
+      );
     }, Number.MAX_VALUE);
   },
   entireScheduleIs24x7(sched = scheduleContent.content.schedule) {

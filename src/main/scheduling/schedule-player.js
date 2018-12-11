@@ -22,7 +22,7 @@ module.exports = {
       return nothingPlaying();
     }
 
-    const now = new Date();
+    const now = module.exports.now();
     considerFutureScheduledItems(now);
     playCurrentlyPlayableItems(now);
   },
@@ -31,7 +31,8 @@ module.exports = {
   stop() {
     Object.values(timers).forEach(clearTimeout);
     playingItem = null;
-  }
+  },
+  now() {return new Date();}
 };
 
 function considerFutureScheduledItems(now) {
@@ -46,7 +47,8 @@ function considerFutureScheduledItems(now) {
 }
 
 function playCurrentlyPlayableItems(now) {
-  playableItems = scheduleParser.getCurrentPlayableItems(now);
+  const adjustForwardForTimerAccuracy = new Date(now.getTime() + 2000);
+  playableItems = scheduleParser.getCurrentPlayableItems(adjustForwardForTimerAccuracy);
 
   if (playableItems.length === 0) {
     logWithScheduleData("no playable items");
