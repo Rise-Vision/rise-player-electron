@@ -451,6 +451,122 @@ describe("Schedule Player", ()=>{
       });
     });
 
+    describe("9 to 5 primary schedule with one off-day item and one off-time item", ()=>{
+      const testData = {content: {
+        schedule: {
+          name: "test schedule 9 to 5",
+          timeDefined: true,
+          startDate: "Dec 5, 2018 12:00:00 AM",
+          startTime: "Dec 6, 2018 9:00:00 AM",
+          endTime: "Dec 6, 2018 5:00:00 PM",
+
+          items: [
+            {
+              name: "test item 5",
+              timeDefined: true,
+              startDate: "Dec 5, 2018 12:00:00 AM",
+              startTime: "Dec 6, 2018 7:00:00 PM",
+              endTime: "Dec 6, 2018 9:00:00 PM",
+              objectReference: "test-url-1",
+              duration: 10
+            },
+            {
+              name: "test item 6",
+              timeDefined: true,
+              startDate: "Dec 5, 2018 12:00:00 AM",
+              startTime: "Dec 6, 2018 4:00:00 PM",
+              endTime: "Dec 6, 2018 9:00:00 PM",
+              recurrenceType: "Weekly",
+              recurrenceFrequency: 1,
+              recurrenceAbsolute: true,
+              recurrenceDaysOfWeek: [
+                "Tue"
+              ],
+              recurrenceDayOfWeek: 0,
+              recurrenceDayOfMonth: 1,
+              recurrenceWeekOfMonth: 0,
+              recurrenceMonthOfYear: 0,
+              objectReference: "test-url-2",
+              duration: 10
+            }
+          ]
+        }
+      }};
+
+      it("plays nothing as both items are off schedule", ()=>{
+        simulatedTimeDate = new Date("12-05-2018 3:00:00 PM");
+
+        scheduleParser.setContent(testData);
+        schedulePlayer.start();
+
+        timeTravelTo("12-09-2018 9:00:00 PM");
+        assert.equal(played.length, 0);
+      });
+    });
+
+    describe("9 to 5 primary schedule with one on-day item and one off-time item", ()=>{
+      const testData = {content: {
+        schedule: {
+          name: "test schedule 9 to 5",
+          timeDefined: true,
+          startDate: "Dec 5, 2018 12:00:00 AM",
+          startTime: "Dec 6, 2018 9:00:00 AM",
+          endTime: "Dec 6, 2018 5:00:00 PM",
+
+          items: [
+            {
+              name: "test item 5",
+              timeDefined: true,
+              startDate: "Dec 5, 2018 12:00:00 AM",
+              startTime: "Dec 6, 2018 7:00:00 PM",
+              endTime: "Dec 6, 2018 9:00:00 PM",
+              objectReference: "test-url-1",
+              duration: 10
+            },
+            {
+              name: "test item 6",
+              timeDefined: true,
+              startDate: "Dec 5, 2018 12:00:00 AM",
+              startTime: "Dec 6, 2018 4:00:00 PM",
+              endTime: "Dec 6, 2018 9:00:00 PM",
+              recurrenceType: "Weekly",
+              recurrenceFrequency: 1,
+              recurrenceAbsolute: true,
+              recurrenceDaysOfWeek: [
+                "Wed"
+              ],
+              recurrenceDayOfWeek: 0,
+              recurrenceDayOfMonth: 1,
+              recurrenceWeekOfMonth: 0,
+              recurrenceMonthOfYear: 0,
+              objectReference: "test-url-2",
+              duration: 10
+            }
+          ]
+        }
+      }};
+
+      it("plays the on-day item once as time passes over the correct day", ()=>{
+        simulatedTimeDate = new Date("12-05-2018 3:00:00 PM");
+
+        scheduleParser.setContent(testData);
+        schedulePlayer.start();
+
+        timeTravelTo("12-09-2018 9:00:00 PM");
+        assert.equal(played.length, 1);
+      });
+
+      it("plays the on-day item 3 times as over 2 weeks go by", ()=>{
+        simulatedTimeDate = new Date("12-05-2018 3:00:00 PM");
+
+        scheduleParser.setContent(testData);
+        schedulePlayer.start();
+
+        timeTravelTo("12-21-2018 9:00:00 PM");
+        assert.equal(played.length, 3);
+      });
+    });
+
     function timeTravelTo(targetTimeMillis) {
       if (typeof targetTimeMillis === "string") {targetTimeMillis = Date.parse(targetTimeMillis);}
       if (typeof targetTime === "object") {targetTimeMillis = targetTimeMillis.getTime();}
@@ -470,5 +586,4 @@ describe("Schedule Player", ()=>{
       }
     }
   });
-
 });
