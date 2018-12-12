@@ -140,7 +140,7 @@ function createViewerWindow(initialPage = "about:blank") {
   viewerWindow = new BrowserWindow(Object.assign({
     "center": !customResolution,
     "fullscreen": !customResolution,
-    "alwaysOnTop": false,
+    "alwaysOnTop": true,
     "frame": false,
     "icon": path.join(app.getAppPath(), "installer", "ui", "img", "icon.png"),
     "webPreferences": {
