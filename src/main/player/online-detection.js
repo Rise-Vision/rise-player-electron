@@ -10,6 +10,7 @@ module.exports = {
       onlineDetectionWindow = new BrowserWindow({ width: 0, height: 0, show: false });
       onlineDetectionWindow.loadURL(`file://${dirnameUrl}/online-detection.html`);
       ipcMain.on("online-status-changed", (evt, status)=>{
+        log.file(`online-status-changed ${status}`);
         onlineStatus = status;
         res();
       });
@@ -18,6 +19,7 @@ module.exports = {
     });
   },
   isOnline() {
+    log.file(`isOnline ${onlineStatus}`);
     return onlineStatus === "online";
   },
   closeWindow() {
