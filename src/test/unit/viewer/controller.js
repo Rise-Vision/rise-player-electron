@@ -182,7 +182,7 @@ describe("viewerController", ()=>{
 
     it("creates a no-viewer window", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
-      simple.mock(scheduleParser, "hasOnlyRiseStorageURLItems").returnWith(true);
+      simple.mock(scheduleParser, "hasOnlyURLItems").returnWith(true);
       simple.mock(noViewerSchedulePlayer, "start").returnWith(true);
 
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({
@@ -387,7 +387,7 @@ describe("viewerController", ()=>{
       simple.mock(viewerController, "launch").resolveWith(mocks.viewerWindow);
       simple.mock(viewerContentLoader, "sendContentToViewer").returnWith();
       simple.mock(scheduleParser, "setContent").resolveWith({});
-      simple.mock(scheduleParser, "hasOnlyRiseStorageURLItems").returnWith(false);
+      simple.mock(scheduleParser, "hasOnlyURLItems").returnWith(false);
 
       return viewerController.reload().then(()=>{
         assert.equal(gcs.getFileContents.lastCall.args[0], "test/path");
