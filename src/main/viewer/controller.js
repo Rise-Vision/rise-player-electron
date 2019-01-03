@@ -165,6 +165,10 @@ function createViewerWindow(initialPage = "about:blank") {
 
   log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
 
+  electron.screen.on("display-added", (event, display)=>{
+    log.all("display added", JSON.stringify(display));
+  });
+
   registerEvents(viewerWindow);
 
   viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{

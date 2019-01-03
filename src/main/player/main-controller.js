@@ -76,6 +76,7 @@ module.exports = {
 
     protocol.registerStandardSchemes(["rchttp", "rchttps"], {secure: true});
 
+    app.commandLine.appendSwitch("touch-events", "enabled");
     app.on("ready", readyHandler);
     app.on("window-all-closed", module.exports.allClosed);
   },
