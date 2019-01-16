@@ -9,17 +9,17 @@ module.exports = {
       viewerWindow.webContents.send("viewer-message-received", message);
     }
   },
-  sendToRenderer(channel) {
+  sendToRenderer(channel, detail) {
     if (!viewerWindow || viewerWindow.isDestroyed()) {return;}
 
     const contents = viewerWindow.webContents;
 
     if (contents.isLoading()) {
       contents.on("did-finish-load", ()=>{
-        contents.send(channel);
+        contents.send(channel, detail);
       });
     } else {
-      contents.send(channel);
+      contents.send(channel, detail);
     }
   },
   closeWindow() {
