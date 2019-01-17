@@ -206,11 +206,7 @@ function loadViewerUrl() {
   noViewerSchedulePlayer.stop();
 
   return createViewerUrl()
-    .then(url => prepareUrlLoad(url))
-    .then(url => {
-      viewerWindow.loadURL(url);
-      return confirmUrlLoad(url);
-    })
+    .then(url => loadUrl(url))
     .then(()=>{
       return new Promise((res)=>{
         if (dataHandlerRegistered) {return res();}
@@ -219,19 +215,12 @@ function loadViewerUrl() {
     });
 }
 
-function loadUrlNoViewer(url) {
-  prepareUrlLoad(url);
-  viewerWindowBindings.sendToRenderer("load-url", url);
-  return confirmUrlLoad(url);
-}
-
-function prepareUrlLoad(url) {
+function loadUrl(url) {
   log.external("loading url", url);
-  setCertificateHandling(url);
-  return url;
-}
 
-function confirmUrlLoad(url) {
+  setCertificateHandling(url);
+  viewerWindow.loadURL(url);
+
   return new Promise((res)=>{
     let viewerTimeout = setTimeout(()=>{
       log.external("url load timeout", url);
@@ -283,10 +272,9 @@ module.exports = {
     ipc = _ipc;
     electron = _electron;
 
-    noViewerSchedulePlayer.setPlayUrlHandler(loadUrlNoViewer);
+    noViewerSchedulePlayer.setPlayUrlHandler(loadUrl);
     noViewerSchedulePlayer.listenForNothingPlaying(()=>{
-      log.external("loading black screen");
-      viewerWindow.loadURL(`file://${__dirname}/black-screen.html`);
+      loadUrl(`file://${__dirname}/black-screen.html`);
     });
 
     messaging.on("content-update", ()=>{
