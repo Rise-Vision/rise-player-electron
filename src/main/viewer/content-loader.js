@@ -91,7 +91,7 @@ module.exports = {
     uptime.setSchedule(content);
   },
   sendContentToViewer(content) {
-    if (scheduleParser.hasOnlyURLItems()) {
+    if (scheduleParser.hasOnlyRiseStorageURLItems()) {
       return;
     }
     expectedReady = countWidgets(content);

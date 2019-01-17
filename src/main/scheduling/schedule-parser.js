@@ -21,13 +21,16 @@ const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
 module.exports = {
   scheduledToPlay,
-  hasOnlyURLItems(data = scheduleContent) {
+  hasOnlyRiseStorageURLItems(data = scheduleContent) {
     if (!module.exports.validateContent()) {return false;}
+
+    const expectedURLStart = "https://storage.googleapis.com/risemedialibrary";
 
     return data.content.schedule.items.every(item=>{
       if (item.type !== "url") {return false;}
       if (!item.objectReference) {return false;}
       if (typeof item.objectReference !== "string") {return false;}
+      if (!item.objectReference.startsWith(expectedURLStart)) {return false;}
 
       return true;
     });

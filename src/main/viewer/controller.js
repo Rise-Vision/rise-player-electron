@@ -244,7 +244,7 @@ function isViewerLoaded() {
 }
 
 function loadContent(content) {
-  if (scheduleParser.hasOnlyURLItems()) {
+  if (scheduleParser.hasOnlyRiseStorageURLItems()) {
     logClientInfo();
     dataHandlerRegistered = false;
     viewerWindowBindings.sendToRenderer("begin-substituting-viewer-pings-to-watchdog");
