@@ -21,7 +21,7 @@ const DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
 module.exports = {
   scheduledToPlay,
-  hasOnlyRiseStorageURLItems(data = scheduleContent) {
+  hasOnlyNoViewerURLItems(data = scheduleContent) {
     if (!module.exports.validateContent()) {return false;}
 
     const expectedURLStart = "https://storage.googleapis.com/risemedialibrary";
