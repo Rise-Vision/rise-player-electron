@@ -2,15 +2,23 @@ const moduleCommon = require("common-display-module");
 const {join: pathJoin, dirname} = require("path");
 const cacheVersion = require(pathJoin(dirname(require.resolve("rise-cache-v2")), "package.json")).version;
 const platform = require("rise-common-electron").platform;
-let serialNumber;
 
-const SERIAL_FILE = "/bookpc/serial-number";
+const systemInfo = {
+  serial: "",
+  hostname: "",
+  cpu: "",
+  manufacturer: "",
+  productname: ""
+};
+
+const BOOKPC_SERIAL_FILE = "/bookpc/serial-number";
+const SYSTEM_DETAILS_FILE = "system-details.txt";
 
 function getSerialFileName(app) {
   let name;
 
   try {
-    name = pathJoin(app.getPath("appData"), SERIAL_FILE);
+    name = pathJoin(app.getPath("appData"), BOOKPC_SERIAL_FILE);
     return name;
   }
   catch (err) {
@@ -27,7 +35,19 @@ module.exports = {
     return pathJoin(moduleCommon.getInstallDir(), "uncaught-exception.json");
   },
   getSerialNumber() {
-    return serialNumber || "";
+    return systemInfo.serial;
+  },
+  getHostname() {
+    return systemInfo.hostname;
+  },
+  getManufacturer() {
+    return systemInfo.manufacturer;
+  },
+  getProductName() {
+    return systemInfo.productname;
+  },
+  getCpu() {
+    return systemInfo.cpu;
   },
   noNetworkCountdownSeconds: 60,
   getPlayerGracefulShutdownPath() {
@@ -36,12 +56,24 @@ module.exports = {
   setGracefulShutdownFlag() {
     moduleCommon.writeFile("graceful_shutdown_flag", "");
   },
-  setSerialNumber(app) {
+  setBookPCSerialNumber(app) {
     if (!app) {
       return;
     }
 
-    serialNumber = platform.readTextFileSync(getSerialFileName(app));
-    log.debug(`set serial number: ${serialNumber}`);
+    systemInfo.serial = platform.readTextFileSync(getSerialFileName(app));
+    log.debug(`set serial number: ${systemInfo.serial}`);
+  },
+  setSystemInfo(app) {
+    if (!app) {return;}
+
+    Object.keys(systemInfo).forEach(key=>(systemInfo[key] = ""));
+
+    module.exports.setBookPCSerialNumber(app);
+
+    if (systemInfo.serial !== "") {return;}
+
+    const detailsPath = pathJoin(platform.getHomeDir(), "rvplayer", SYSTEM_DETAILS_FILE);
+    Object.assign(systemInfo, platform.parsePropertyList(platform.readTextFileSync(detailsPath)));
   }
 };

@@ -35,6 +35,10 @@ module.exports = {
         local_ip: localIP,
         mac: network.getMAC(),
         serial_number: config.getSerialNumber(),
+        hostname: config.getHostname(),
+        cpu: config.getCpu(),
+        product_name: config.getProductName(),
+        manufacturer: config.getManufacturer(),
         time_zone: moment.tz.guess(),
         utc_offset: moment().format("Z")
       };
