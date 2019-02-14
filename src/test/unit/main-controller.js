@@ -137,7 +137,7 @@ describe("mainController", ()=>{
 
   describe("ready", ()=>{
     beforeEach(()=>{
-      simple.mock(config, "setSerialNumber").returnWith();
+      simple.mock(config, "setSystemInfo").returnWith();
       simple.mock(mainController, "bindQuitAccelerator");
       simple.mock(log, "external");
       simple.mock(platform, "getHomeDir").returnWith("homedir");

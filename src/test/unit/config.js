@@ -9,6 +9,8 @@ config = require("../../main/player/config.js");
 mock(network, "registerProxyUpdatedObserver");
 
 describe("Config", ()=>{
+  let testSystemInfo = "hostname=testhost\ncpu=testcpu\nserial=testserial";
+
   afterEach(()=>{
     simpleMock.restore();
   });
@@ -17,7 +19,7 @@ describe("Config", ()=>{
     assert(/\d\.\d\./.test(config.cacheVersion));
   });
 
-  it("sets and retrieves serial number", ()=> {
+  it("sets and retrieves book pc serial number", ()=> {
     let app = {
       on: simpleMock.stub(),
       makeSingleInstance: simpleMock.stub(),
@@ -26,8 +28,49 @@ describe("Config", ()=>{
       commandLine: {appendSwitch() {}, reset() {}}
     };
     mock(platform, "readTextFileSync").returnWith("CYN123123123");
-    config.setSerialNumber(app);
+    config.setSystemInfo(app);
     assert(config.getSerialNumber(), "CYN123123123");
+  });
+
+  it("sets and retrieves system info serial number", ()=> {
+    let app = {
+      on: simpleMock.stub(),
+      makeSingleInstance: simpleMock.stub(),
+      getAppPath: simpleMock.stub().returnWith("/fake/app/path"),
+      quit: simpleMock.stub(),
+      commandLine: {appendSwitch() {}, reset() {}}
+    };
+    mock(platform, "readTextFileSync").returnWith(testSystemInfo);
+    config.setSystemInfo(app);
+    assert(config.getSerialNumber(), "testserial");
+  });
+  it("sets and retrieves hostname", ()=> {
+    let app = {
+      on: simpleMock.stub(),
+      makeSingleInstance: simpleMock.stub(),
+      getAppPath: simpleMock.stub().returnWith("/fake/app/path"),
+      quit: simpleMock.stub(),
+      commandLine: {appendSwitch() {}, reset() {}}
+    };
+    mock(config, "setBookPCSerialNumber").returnWith("");
+    mock(platform, "readTextFileSync").returnWith(testSystemInfo);
+    config.setSystemInfo(app);
+    console.log(config.getHostname());
+    assert(config.getHostname(), "testhostname");
+  });
+
+  it("sets and retrieves cpu", ()=> {
+    let app = {
+      on: simpleMock.stub(),
+      makeSingleInstance: simpleMock.stub(),
+      getAppPath: simpleMock.stub().returnWith("/fake/app/path"),
+      quit: simpleMock.stub(),
+      commandLine: {appendSwitch() {}, reset() {}}
+    };
+    mock(config, "setBookPCSerialNumber").returnWith("");
+    mock(platform, "readTextFileSync").returnWith(testSystemInfo);
+    config.setSystemInfo(app);
+    assert(config.getCpu(), "testcpu");
   });
 
   it("returns player graceful shutdown flag path", ()=>{
