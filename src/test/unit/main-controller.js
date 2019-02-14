@@ -51,7 +51,7 @@ mocks.globalShortcut = {
 };
 
 mocks.BrowserWindow = function() {
-  return {loadURL(){}};
+  return {on(){}, loadURL(){}};
 };
 
 mocks.protocol = {

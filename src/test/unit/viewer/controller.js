@@ -11,6 +11,8 @@ const noViewerSchedulePlayer = require("../../../main/scheduling/schedule-player
 const messaging = require("../../../main/player/messaging.js");
 const mocks = {};
 
+let viewerMessageHandler;
+
 mocks.app = {
   getAppPath: simple.stub().returnWith("/fake/app/path")
 };
@@ -54,7 +56,7 @@ mocks.globalShortcut = {
 
 mocks.ipc = {
   on(evt, handler) {
-    handler("test", {message: "data-handler-registered"});
+    if (evt === "viewer-message") {viewerMessageHandler = handler;}
   }
 };
 
@@ -129,6 +131,15 @@ describe("viewerController", ()=>{
     });
   });
 
+  function launchViewer(launchFn = viewerController.launch) {
+    const launchPromise = launchFn();
+
+    setImmediate(()=>{
+      viewerMessageHandler("test", {message: "data-handler-registered"});
+    });
+
+    return launchPromise;
+  }
   describe("launch", ()=>{
     beforeEach(()=>{
       simple.mock(mocks.webContents, "executeJavaScript").callbackWith(true);
@@ -145,7 +156,7 @@ describe("viewerController", ()=>{
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         console.log(mocks.viewerWindow.loadURL.calls);
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl));
@@ -158,7 +169,7 @@ describe("viewerController", ()=>{
       let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html";
       simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl + "?"));
       });
@@ -173,7 +184,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].includes("fakedisplay"));
@@ -191,7 +202,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(noViewerSchedulePlayer.start.called);
@@ -207,7 +218,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert.equal(mocks.electron.BrowserWindow.lastCall.args[0].fullscreen, true);
@@ -230,7 +241,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert.equal(mocks.electron.BrowserWindow.lastCall.args[0].fullscreen, false);
@@ -255,7 +266,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         const call = mocks.screen.on.calls.filter((call)=> call.args[0] === "display-added")[0];
         const handler = call.args[1];
@@ -268,7 +279,7 @@ describe("viewerController", ()=>{
 
     it("restarts viewer if it's unresponsive", ()=>{
       simple.mock(log, "external");
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         var call = mocks.viewerWindow.on.calls.filter((call)=> call.args[0] === "unresponsive")[0];
         var handler = call.args[1];
@@ -282,7 +293,7 @@ describe("viewerController", ()=>{
 
     it("registers closed handler", ()=>{
       simple.mock(log, "debug");
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         var call = mocks.viewerWindow.on.calls.filter((call)=> call.args[0] === "closed")[0];
         var handler = call.args[1];
@@ -294,7 +305,7 @@ describe("viewerController", ()=>{
 
     it("registers crashed event", ()=>{
       simple.mock(log, "external");
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         var call = mocks.webContents.on.calls.filter((call)=> call.args[0] === "crashed")[0];
         var handler = call.args[1];
@@ -306,7 +317,7 @@ describe("viewerController", ()=>{
 
     it("registers destroyed event", ()=>{
       simple.mock(log, "all");
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         var call = mocks.webContents.on.calls.filter((call)=>call.args[0] === "destroyed")[0];
         var handler = call.args[1];
@@ -318,14 +329,14 @@ describe("viewerController", ()=>{
 
     it("launches the no-network screen when not connected", ()=>{
       simple.mock(mocks.webContents, "executeJavaScript").callbackWith(false);
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert.ok(mocks.viewerWindow.loadURL.lastCall.args[0].includes("file://"));
       });
     });
 
     it("binds dev-tools hotkey", ()=>{
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         var call = mocks.globalShortcut.register.calls.filter((call)=>call.args[0] === "CommandOrControl+Shift+.")[0];
         var handler = call.args[1];
@@ -355,7 +366,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.reload()
+      return launchViewer(viewerController.reload)
       .then(()=>{
         assert(mocks.electron.BrowserWindow.called);
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].includes("fakedisplay"));
@@ -371,7 +382,7 @@ describe("viewerController", ()=>{
 
       simple.mock(network, "getLocalIP").resolveWith("test");
 
-      return viewerController.reload()
+      return launchViewer(viewerController.reload)
         .then(()=>{
           assert(mocks.electron.BrowserWindow.called);
         });
@@ -398,7 +409,7 @@ describe("viewerController", ()=>{
 
   describe("ShowDuplicateError", ()=>{
     it("loads the duplicate url", ()=>{
-      return viewerController.launch()
+      return launchViewer()
       .then(()=>{
         assert(mocks.viewerWindow.loadURL.called);
       });
