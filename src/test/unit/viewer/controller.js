@@ -153,25 +153,25 @@ describe("viewerController", ()=>{
     it("uses the url from the config file", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
 
-      let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
-      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
+      let debugviewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({debugviewerurl});
 
       return launchViewer()
       .then(()=>{
         console.log(mocks.viewerWindow.loadURL.calls);
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl));
+        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(debugviewerurl));
       });
     });
 
     it("uses the url from the config file correctly when it doesn't end with a question mark", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
 
-      let viewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html";
-      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({viewerurl});
+      let debugviewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html";
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({debugviewerurl});
 
       return launchViewer()
       .then(()=>{
-        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(viewerurl + "?"));
+        assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(debugviewerurl + "?"));
       });
     });
 

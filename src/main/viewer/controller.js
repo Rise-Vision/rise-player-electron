@@ -111,7 +111,7 @@ function logClientInfo(data) {
 
 function createViewerUrl() {
   const displaySettings = commonConfig.getDisplaySettingsSync();
-  const overrideUrl = displaySettings.viewerurl;
+  const overrideUrl = displaySettings.debugviewerurl;
   const id = displaySettings.displayid || "";
 
   let url = overrideUrl || VIEWER_URL;
