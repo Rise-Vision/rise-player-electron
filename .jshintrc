@@ -20,6 +20,7 @@
     "done": false,
     "chrome": false,
     "setTimeout": false,
+    "setImmediate": false,
     "setInterval": false,
     "clearInterval": false,
     "clearTimeout": false,

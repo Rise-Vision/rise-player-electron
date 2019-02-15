@@ -62,8 +62,6 @@ function registerEvents(window) {
       if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
         dataHandlerRegistered();
       }
-
-      dataHandlerRegistered = true;
     } else if (data.message === "widget-ready") {
       viewerContentLoader.incrementReady(data.widgetUrl);
     } else if (data.message === "widget-log") {
@@ -81,7 +79,6 @@ function registerEvents(window) {
         log.all("switching from offline to online viewer");
 
         window.destroy();
-        dataHandlerRegistered = false;
         globalShortcut.unregister("CommandOrControl+Shift+.");
         module.exports.reload();
 
@@ -114,7 +111,7 @@ function logClientInfo(data) {
 
 function createViewerUrl() {
   const displaySettings = commonConfig.getDisplaySettingsSync();
-  const overrideUrl = displaySettings.viewerurl;
+  const overrideUrl = displaySettings.debugviewerurl;
   const id = displaySettings.displayid || "";
 
   let url = overrideUrl || VIEWER_URL;
@@ -188,6 +185,7 @@ function createViewerWindow(initialPage = "about:blank") {
 }
 
 function setCertificateHandling(url = VIEWER_URL) {
+  if (!viewerWindow) {return;}
   viewerWindow.webContents.session.setCertificateVerifyProc((request, callback) => {
     const {hostname, certificate, verificationResult, errorCode} = request;
     if (hostname === "localhost" && certificate.issuer.organizations[0] === "Rise Vision") {
@@ -209,13 +207,13 @@ function loadViewerUrl() {
     .then(url => loadUrl(url))
     .then(()=>{
       return new Promise((res)=>{
-        if (dataHandlerRegistered) {return res();}
         dataHandlerRegistered = res;
       });
     });
 }
 
 function loadUrl(url) {
+  if (!viewerWindow) {return;}
   log.external("loading url", url);
 
   setCertificateHandling(url);
@@ -246,7 +244,6 @@ function isViewerLoaded() {
 function loadContent(content) {
   if (scheduleParser.hasOnlyNoViewerURLItems()) {
     logClientInfo();
-    dataHandlerRegistered = false;
     viewerWindowBindings.sendToRenderer("begin-substituting-viewer-pings-to-watchdog");
     return Promise.resolve(noViewerSchedulePlayer.start());
   }
