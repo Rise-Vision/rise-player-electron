@@ -62,6 +62,7 @@ function registerEvents(window) {
       if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
         dataHandlerRegistered();
       }
+      dataHandlerRegistered = true;
     } else if (data.message === "widget-ready") {
       viewerContentLoader.incrementReady(data.widgetUrl);
     } else if (data.message === "widget-log") {
@@ -79,6 +80,7 @@ function registerEvents(window) {
         log.all("switching from offline to online viewer");
 
         window.destroy();
+        dataHandlerRegistered = false;
         globalShortcut.unregister("CommandOrControl+Shift+.");
         module.exports.reload();
 
@@ -207,6 +209,7 @@ function loadViewerUrl() {
     .then(url => loadUrl(url))
     .then(()=>{
       return new Promise((res)=>{
+        if (dataHandlerRegistered) {return res();}
         dataHandlerRegistered = res;
       });
     });
@@ -244,6 +247,7 @@ function isViewerLoaded() {
 function loadContent(content) {
   if (scheduleParser.hasOnlyNoViewerURLItems()) {
     logClientInfo();
+    dataHandlerRegistered = false;
     viewerWindowBindings.sendToRenderer("begin-substituting-viewer-pings-to-watchdog");
     return Promise.resolve(noViewerSchedulePlayer.start());
   }
