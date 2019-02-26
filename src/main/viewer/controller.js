@@ -22,7 +22,6 @@ let app;
 let globalShortcut;
 let ipc;
 let viewerWindow;
-let dataHandlerRegistered;
 let reloadTimeout;
 let electron;
 
@@ -58,10 +57,6 @@ function registerEvents(window) {
       watchdog.send(data);
     } else if(data.message === "viewer-config") {
       logClientInfo(data);
-    } else if(data.message === "data-handler-registered") {
-      if (dataHandlerRegistered && typeof dataHandlerRegistered === "function") {
-        dataHandlerRegistered();
-      }
     } else if (data.message === "widget-ready") {
       viewerContentLoader.incrementReady(data.widgetUrl);
     } else if (data.message === "widget-log") {
@@ -203,13 +198,28 @@ function setCertificateHandling(url = VIEWER_URL) {
 function loadViewerUrl() {
   noViewerSchedulePlayer.stop();
 
+  let viewerMessagingReady = () => {};
+  const viewerMessagingPromise = new Promise(res => viewerMessagingReady = res);
+
+  let viewerTimeout = setTimeout(()=>{
+    log.external("data handler registered timeout");
+    viewerMessagingReady(viewerWindow);
+  }, 2.5 * 60 * 1000);
+
+  ipc.on('viewer-message', (evt, data) => {
+    if(data.message === "data-handler-registered") {
+      clearTimeout(viewerTimeout);
+      viewerMessagingReady();
+    }
+  });
+
   return createViewerUrl()
-    .then(url => loadUrl(url))
-    .then(()=>{
-      return new Promise((res)=>{
-        dataHandlerRegistered = res;
-      });
-    });
+  .then(url=>{
+
+    loadUrl(url);
+
+    return viewerMessagingPromise;
+  });
 }
 
 function loadUrl(url) {
@@ -219,21 +229,15 @@ function loadUrl(url) {
   setCertificateHandling(url);
   viewerWindow.loadURL(url);
 
-  return new Promise((res)=>{
-    let viewerTimeout = setTimeout(()=>{
-      log.external("url load timeout", url);
-      res(viewerWindow);
-    }, 2.5 * 60 * 1000);
+  let viewerTimeout = setTimeout(()=>{
+    log.external("url load timeout", url);
+  }, 2.5 * 60 * 1000);
 
-    viewerWindow.webContents.on("did-fail-load", (evt, errorCode)=>{
-      log.error(JSON.stringify({url, errorCode}), "fail to load url");
-    });
-
-    viewerWindow.webContents.on("did-finish-load", ()=>{
-      clearTimeout(viewerTimeout);
-      res(viewerWindow);
-    });
+  viewerWindow.webContents.on("did-fail-load", (evt, errorCode)=>{
+    log.error(JSON.stringify({url, errorCode}), "fail to load url");
   });
+
+  viewerWindow.webContents.on("did-finish-load", ()=>clearTimeout(viewerTimeout));
 }
 
 function isViewerLoaded() {
