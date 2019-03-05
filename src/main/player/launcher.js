@@ -17,6 +17,7 @@ const viewerContentLoader = require("../viewer/content-loader");
 const heartbeat = require("common-display-module/heartbeat");
 const uncaughtExceptions = require("./uncaught-exceptions");
 const scheduleParser = require("../scheduling/schedule-parser");
+const whiteScreenAnalyser = require("./white-screen-analyser");
 
 module.exports = {
   launch() {
@@ -79,6 +80,7 @@ module.exports = {
       log.debug("setting up restart and reboot listeners");
       restart.startListener();
       reboot.startListener();
+      whiteScreenAnalyser.init();
     })
     .then(()=>{
       return gcs.getCachedFileContents(viewerContentLoader.contentPath())

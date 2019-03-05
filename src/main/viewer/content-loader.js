@@ -6,6 +6,7 @@ const viewerWindowBindings = require("./window-bindings");
 const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
 const scheduleParser = require('../scheduling/schedule-parser');
+const whiteScreenAnalyser = require('../player/white-screen-analyser');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
@@ -89,6 +90,7 @@ module.exports = {
     scheduledReboot.scheduleRebootFromViewerContents(content);
     updateFrequencyLogger.logContentChanges(content);
     uptime.setSchedule(content);
+    whiteScreenAnalyser.setContent(content);
   },
   sendContentToViewer(content) {
     if (scheduleParser.hasOnlyNoViewerURLItems()) {
