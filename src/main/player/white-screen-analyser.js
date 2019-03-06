@@ -5,15 +5,17 @@ let contentData;
 
 function checkURL(url) {
   const request = net.request(url);
-  request.on('response', response => {
-    console.log(`STATUS: ${response.statusCode}`);
-    console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
-    response.on('data', (chunk) => {
-      console.log(`BODY: ${chunk}`);
-    });
-    response.on('end', () => {
-      console.log('No more data in response.');
-    });
+  request.on("error", error => {
+    log.external("white screen external URL check error", JSON.stringify({url, error: error.message}));
+  });
+
+  request.on("login", (authInfo, callback) => {
+    log.external("white screen external URL check login", JSON.stringify(Object.assign({}, authInfo, {url})));
+    callback();
+  });
+
+  request.on("response", response => {
+    log.external("white screen external URL check response", JSON.stringify({url, statusCode: response.statusCode}));
   });
   request.end();
 }
@@ -25,7 +27,7 @@ function checkExternalContent() {
 
   const riseVisionURLs = /(http(s)?:\/\/)?storage\.googleapis\.com\/risemedialibrary.+|(http(s)?:\/\/)?widgets\.risevision\.com\/.+/;
   const scheduleItems = contentData.content.schedule.items;
-  const externalURLs = scheduleItems.filter(item => item.type === "url" && !riseVisionURLs.test(item.objectReference));
+  const externalURLs = scheduleItems.filter(item => item.type === "url" && !riseVisionURLs.test(item.objectReference)).map(item => item.objectReference);
   externalURLs.forEach(url => checkURL(url));
 }
 
