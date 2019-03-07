@@ -3,6 +3,26 @@ const {net} = require("electron");
 
 let contentData;
 
+module.exports = {
+  init() {
+    messaging.onEvent("white-screen-detected", checkExternalContent);
+  },
+  setContent(data) {
+    contentData = data;
+  }
+};
+
+function checkExternalContent() {
+  if (!contentData) {
+    return;
+  }
+
+  const riseVisionURLs = /(http(s)?:\/\/)?storage\.googleapis\.com\/risemedialibrary.+|(http(s)?:\/\/)?widgets\.risevision\.com\/.+/;
+  const scheduleItems = contentData.content.schedule.items;
+  const externalURLs = scheduleItems.filter(item => item.type === "url" && !riseVisionURLs.test(item.objectReference)).map(item => item.objectReference);
+  externalURLs.forEach(url => checkURL(url));
+}
+
 function checkURL(url) {
   const request = net.request(url);
   request.on("error", error => {
@@ -19,23 +39,3 @@ function checkURL(url) {
   });
   request.end();
 }
-
-function checkExternalContent() {
-  if (!contentData) {
-    return;
-  }
-
-  const riseVisionURLs = /(http(s)?:\/\/)?storage\.googleapis\.com\/risemedialibrary.+|(http(s)?:\/\/)?widgets\.risevision\.com\/.+/;
-  const scheduleItems = contentData.content.schedule.items;
-  const externalURLs = scheduleItems.filter(item => item.type === "url" && !riseVisionURLs.test(item.objectReference)).map(item => item.objectReference);
-  externalURLs.forEach(url => checkURL(url));
-}
-
-module.exports = {
-  init() {
-    messaging.onEvent("white-screen-detected", checkExternalContent);
-  },
-  setContent(data) {
-    contentData = data;
-  }
-};
