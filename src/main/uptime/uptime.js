@@ -1,4 +1,5 @@
 const messaging = require("common-display-module/messaging");
+const investigation = require("./investigation");
 const uptimeLogger = require("../loggers/uptime-logger");
 const scheduleParser = require("../scheduling/schedule-parser");
 const pingTimeout = 3000;
@@ -36,6 +37,7 @@ function calculate() {
     const connectedToMS = msResult === 'connected';
     log.file('uptime', JSON.stringify({shouldBePlaying, connectedToMS, rendererResult}));
 
+    if (!connectedToMS) {investigation.reportConnectivity();}
     uptimeLogger.log(connectedToMS, rendererResult, shouldBePlaying);
   })
   .catch((e)=>{
