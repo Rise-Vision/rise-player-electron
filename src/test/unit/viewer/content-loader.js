@@ -88,7 +88,75 @@ describe("Viewer Content Loader", ()=>{
       contentLoader.sendContentToViewer(testContent);
       assert.deepEqual(viewerWindowBindings.sendToViewer.lastCall.args[0].newContent, expected);
     });
+
+    it("converts HTML Template presentations to URL Items", ()=>{
+      simple.mock(onlineDetection, "isOnline").returnWith(true);
+      simple.mock(commonConfig, "isBetaLauncher").returnWith(false);
+      const testObjRef = "test-obj-ref";
+      const testPCode = "test-p-code";
+      const computedTemplateURL = `https://widgets.risevision.com/stable/templates/${testPCode}/src/template.html?presentationId=${testObjRef}`;
+
+      let testContent = {
+        content: {
+          schedule: {
+            items: [
+              {
+                "type":"presentation",
+                "presentationType":"HTML Template",
+                "objectReference": testObjRef
+              },
+              {
+                "type":"presentation",
+                "presentationType":"NOT HTML Template",
+                "objectReference":"other-obj-ref",
+              }
+            ]
+          },
+          presentations: [
+            {
+              "id": testObjRef,
+              "productCode": testPCode
+            },
+            {
+              "id": "other-obj-ref",
+              "productCode": "other-p-code"
+            },
+          ]
+        }
+      };
+      let expected = {
+        content: {
+          "presentations": [
+            {
+              "id": "test-obj-ref",
+              "productCode": "test-p-code"
+            },
+            {
+              "id": "other-obj-ref",
+              "productCode": "other-p-code"
+            }
+          ],
+          schedule: {
+            items: [
+              {
+                "type":"url",
+                "presentationType": "HTML Template",
+                "objectReference": computedTemplateURL
+              },
+              {
+                "type": "presentation",
+                "presentationType": "NOT HTML Template",
+                "objectReference": "other-obj-ref",
+              }
+            ]
+          }
+        }
+      };
+      contentLoader.sendContentToViewer(testContent);
+      assert.deepEqual(viewerWindowBindings.sendToViewer.lastCall.args[0].newContent, expected);
+    });
   });
+
   describe("expected count", ()=>{
     it("counts widgets for which a ready event will be expected", ()=>{
       let widget1 = "http://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html";

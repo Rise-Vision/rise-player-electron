@@ -48,6 +48,7 @@ function rewritePresentationData(content, isOnline) {
   log.debug(`rewriting ${statusText} presentation data`);
   Object.keys(findReplaceMap).forEach((rewriteKey)=>{
     content.content.presentations.forEach((presntn)=>{
+      if (!presntn.layout) {return;}
       let search = RegExp(rewriteKey, "g");
       let replace = findReplaceMap[rewriteKey];
 
@@ -55,7 +56,36 @@ function rewritePresentationData(content, isOnline) {
     });
   });
 
+  return restructureHTMLTemplatesToURLItems(content);
+}
+
+function restructureHTMLTemplatesToURLItems(content) {
+  if (!content || !content.content || !content.content.schedule ||
+  !content.content.schedule.items) {return content;}
+
+  content = Object.assign({}, content);
+
+  const HTMLTemplateURL = "https://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
+  const isBeta = commonConfig.isBetaLauncher();
+
+  content.content.schedule.items
+  .filter(item=>item.presentationType === "HTML Template")
+  .forEach(item=>{
+    item.type = "url";
+    item.objectReference = HTMLTemplateURL
+    .replace("STAGE", isBeta ? "beta" : "stable")
+    .replace("PCODE", getPCode(item.objectReference))
+    .replace("PID", item.objectReference);
+  });
+
   return content;
+
+  function getPCode(objectReference) {
+    const pres = content.content.presentations
+    .filter(pres=>pres.id === objectReference);
+
+    return pres[0] && pres[0].productCode;
+  }
 }
 
 function countWidgets(content) {
