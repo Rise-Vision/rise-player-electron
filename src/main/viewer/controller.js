@@ -233,8 +233,8 @@ function loadUrl(url) {
     log.external("url load timeout", url);
   }, 2.5 * 60 * 1000);
 
-  viewerWindow.webContents.on("did-fail-load", (evt, errorCode)=>{
-    log.error(JSON.stringify({url, errorCode}), "fail to load url");
+  viewerWindow.webContents.on("did-fail-load", (evt, errorCode, errorDescription, validatedURL, isMainFrame)=>{
+    log.external("error loading url", JSON.stringify({url: validatedURL, errorCode, errorDescription, isMainFrame}));
   });
 
   viewerWindow.webContents.on("did-finish-load", ()=>clearTimeout(viewerTimeout));
