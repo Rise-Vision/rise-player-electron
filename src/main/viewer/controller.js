@@ -54,7 +54,7 @@ function registerEvents(window) {
 
   ipc.on("viewer-message", (evt, data)=>{
     if (data.message === "ping") {
-      watchdog.send(data);
+      // watchdog.send(data);
     } else if(data.message === "viewer-config") {
       logClientInfo(data);
     } else if (data.message === "widget-ready") {
