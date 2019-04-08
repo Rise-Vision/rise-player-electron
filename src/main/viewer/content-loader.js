@@ -15,12 +15,19 @@ const presentationRewrites = {
   },
   "offline": {
     "http://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html": "../widgets/image/widget.html",
+    "https://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html": "../widgets/image/widget.html",
     "http://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html" : "../widgets/video/widget.html",
+    "https://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html" : "../widgets/video/widget.html",
     "http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html": "../widgets/text/widget.html",
+    "https://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html": "../widgets/text/widget.html",
     "http://s3.amazonaws.com/widget-google-spreadsheet/2.0.0/dist/widget.html": "../widgets/spreadsheet/widget.html",
+    "https://s3.amazonaws.com/widget-google-spreadsheet/2.0.0/dist/widget.html": "../widgets/spreadsheet/widget.html",
     "http://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html": "../widgets/webpage/widget.html",
+    "https://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html": "../widgets/webpage/widget.html",
     "http://s3.amazonaws.com/widget-time-date/1.0.0/dist/widget.html": "../widgets/time-date/widget.html",
+    "https://s3.amazonaws.com/widget-time-date/1.0.0/dist/widget.html": "../widgets/time-date/widget.html",
     "http://s3.amazonaws.com/widget-rss/1.0.0/dist/widget.html": "../widgets/rss/widget.html",
+    "https://s3.amazonaws.com/widget-rss/1.0.0/dist/widget.html": "../widgets/rss/widget.html",
     "https://widgets.risevision.com/stable/components/rise-twitter/rise-twitter-widget.html": "../components/rise-twitter/rise-twitter-widget.html"
   }
 };
