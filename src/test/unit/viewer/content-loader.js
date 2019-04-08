@@ -59,6 +59,36 @@ describe("Viewer Content Loader", ()=>{
       assert.deepEqual(viewerWindowBindings.sendToViewer.lastCall.args[0].newContent, expected);
     });
 
+    it("rewrites HTTPS offline content when offline", ()=>{
+      simple.mock(onlineDetection, "isOnline").returnWith(false);
+      let testContent = {
+        content: {
+          presentations: [
+            {
+              layout: "abcd"
+            },
+            {
+              layout: "XXXXhttps://s3.amazonaws.com/widget-image/0.1.1/dist/widget.htmlXXXX"
+            }
+          ]
+        }
+      };
+      let expected = {
+        content: {
+          presentations: [
+            {
+              layout: "abcd"
+            },
+            {
+              layout: "XXXX../widgets/image/widget.htmlXXXX"
+            }
+          ]
+        }
+      };
+      contentLoader.sendContentToViewer(testContent);
+      assert.deepEqual(viewerWindowBindings.sendToViewer.lastCall.args[0].newContent, expected);
+    });
+
     it("rewrites online content when online", ()=>{
       simple.mock(onlineDetection, "isOnline").returnWith(true);
       let testContent = {
