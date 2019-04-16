@@ -16,11 +16,8 @@ let messageHandlers = [];
 
 if(displaySettings.enablepinchtozoom !== "true") {
   // Disable pinch-to-zoom
-  webFrame.setZoomLevelLimits(1, 1);
+  webFrame.setVisualZoomLevelLimits(1, 1);
 }
-
-webFrame.registerURLSchemeAsPrivileged("rchttp");
-webFrame.registerURLSchemeAsPrivileged("rchttps");
 
 window.postToPlayer = (message, overrideChannel)=>{
   if (overrideChannel) {
@@ -29,7 +26,6 @@ window.postToPlayer = (message, overrideChannel)=>{
     ipc.send("viewer-message", message);
   }
 };
-
 
 window.receiveFromPlayer = function receiveFromPlayer(msg, handler) {
   messageHandlers.push((message)=>{
