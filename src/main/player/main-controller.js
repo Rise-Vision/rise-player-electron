@@ -74,10 +74,7 @@ module.exports = {
     BrowserWindow = imports.BrowserWindow;
     protocol = imports.protocol;
 
-    protocol.registerSchemesAsPrivileged([
-      {scheme: "rchttp", privileges: {standard: true, secure: true}},
-      {scheme: "rchttps", privileges: {standard: true, secure: true}}
-    ]);
+    protocol.registerStandardSchemes(["rchttp", "rchttps"], {secure: true});
 
     app.commandLine.appendSwitch("touch-events", "enabled");
     app.on("ready", readyHandler);

@@ -149,16 +149,16 @@ function createViewerWindow(initialPage = "about:blank") {
 
   if (customResolution) {
     viewerWindow.setSize(Number(displaySettings.screenwidth), Number(displaySettings.screenheight));
-    electron.remote.screen.on("display-added", (event, newDisplay) => {
+    electron.screen.on("display-added", (event, newDisplay) => {
       const bounds = {x: 0, y: 0, width: Number(displaySettings.screenwidth), height: Number(displaySettings.screenheight)};
       log.all("window bounds reset", `display added ${JSON.stringify(newDisplay)} window bounds ${JSON.stringify(viewerWindow.getBounds())}`);
       viewerWindow.setBounds(bounds);
     });
   }
 
-  log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.remote.screen.getAllDisplays())}`);
+  log.all("initial window bounds", `bounds: ${JSON.stringify(viewerWindow.getBounds())} displays: ${JSON.stringify(electron.screen.getAllDisplays())}`);
 
-  electron.remote.screen.on("display-added", (event, display)=>{
+  electron.screen.on("display-added", (event, display)=>{
     log.all("display added", JSON.stringify(display));
   });
 
