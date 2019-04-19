@@ -19,6 +19,9 @@ if(displaySettings.enablepinchtozoom !== "true") {
   webFrame.setVisualZoomLevelLimits(1, 1);
 }
 
+webFrame.registerURLSchemeAsPrivileged("rchttp");
+webFrame.registerURLSchemeAsPrivileged("rchttps");
+
 window.postToPlayer = (message, overrideChannel)=>{
   if (overrideChannel) {
     ipc.send(message.msg, message);
