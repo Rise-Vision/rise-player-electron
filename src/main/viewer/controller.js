@@ -144,6 +144,11 @@ function createViewerWindow(initialPage = "about:blank") {
     }
   }, customResolutionSettings));
 
+  if (proxy.configuration().hostname) {
+    viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
+    log.debug("using pac: " + proxy.pacScriptURL());
+  }
+
   viewerWindow.loadURL(initialPage);
   viewerWindowBindings.setWindow(viewerWindow);
 
@@ -171,11 +176,6 @@ function createViewerWindow(initialPage = "about:blank") {
       cb(proxy.configuration().username, proxy.configuration().password);
     }
   });
-
-  if (proxy.configuration().hostname) {
-    viewerWindow.webContents.session.setProxy({pacScript: proxy.pacScriptURL(), proxyBypassRules: "localhost"}, ()=>{});
-    log.debug("using pac: " + proxy.pacScriptURL());
-  }
 
   return viewerWindow;
 }
