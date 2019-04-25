@@ -207,6 +207,7 @@ describe("Proxy Integration", function() {
     it("handles auth with a login response", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
 
+      proxy.setSaveDir(commonConfig.getInstallDir());
       proxy.setEndpoint({
         hostname: "localhost",
         port: proxyPortWithChallenge,
