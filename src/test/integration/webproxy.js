@@ -158,19 +158,22 @@ describe("Proxy Integration", function() {
 
     it("uses a proxy with browser configuration", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
-      return session.defaultSession.setProxy("localhost:9090", ()=>{
-        viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
-        return viewerController.launch("about:blank")
-          .then((viewerWindow)=>{
-          return new Promise((res)=>{
-            proxyCallback = res;
+
+      return new Promise(res=>{
+        proxyCallback = res;
+
+        return session.defaultSession.setProxy({proxyRules: "localhost:9090"}, ()=>{
+          viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
+
+          viewerController.launch("about:blank")
+          .then(viewerWindow=>{
             viewerWindow.loadURL("http://www.google.com");
             win = viewerWindow;
-            });
           })
-          .then(()=>{
-            assert.ok(proxied.some((prox)=>{return prox.includes("www.google.com");}));
-          });
+        });
+      })
+      .then(()=>{
+        assert.ok(proxied.some(prox=>{return prox.includes("www.google.com");}));
       });
     });
 
