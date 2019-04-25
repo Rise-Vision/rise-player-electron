@@ -1,4 +1,5 @@
 ;!@Install@!UTF-8!
 Title="Rise Vision Player"
 InstallPath="%LOCALAPPDATA%\\rvplayer"
+RunProgram="initial_run.bat"
 ;!@InstallEnd@!
