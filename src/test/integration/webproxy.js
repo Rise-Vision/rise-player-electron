@@ -176,7 +176,7 @@ describe("Proxy Integration", function() {
           .then(viewerWindow=>{
             viewerWindow.loadURL("http://www.google.com");
             win = viewerWindow;
-          })
+          });
         });
       })
       .then(()=>{
@@ -214,7 +214,7 @@ describe("Proxy Integration", function() {
     it("handles auth with a login response", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
 
-      proxy.setSaveDir(require("os").tmpdir())
+      proxy.setSaveDir(require("os").tmpdir());
       proxy.setEndpoint({
         hostname: "localhost",
         port: proxyPortWithChallenge,
