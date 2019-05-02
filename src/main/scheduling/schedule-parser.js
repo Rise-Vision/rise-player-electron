@@ -1,3 +1,5 @@
+const htmlTemplateURLParser = require("../player/html-template-url-parser.js");
+
 let scheduleContent;
 
 const RECURRENCE_TYPE = {
@@ -27,6 +29,8 @@ module.exports = {
     const noViewerURLs = /(http(s)?:\/\/)?storage\.googleapis\.com\/risemedialibrary.+|(http(s)?:\/\/)?widgets\.risevision\.com\/.+/;
 
     return data.content.schedule.items.every(item=>{
+      if (item.presentationType === "HTML Template") {return true;}
+
       if (item.type !== "url") {return false;}
       if (!item.objectReference) {return false;}
       if (typeof item.objectReference !== "string") {return false;}
@@ -54,7 +58,9 @@ module.exports = {
 
     return sched.items.filter(item=>item.duration && scheduledToPlay(item, now));
   },
-  setContent(data) {scheduleContent = data;},
+  setContent(data) {
+    scheduleContent = htmlTemplateURLParser.restructureHTMLTemplatesToURLItems(data);
+  },
   getContent() {return Object.assign({}, scheduleContent);},
   validateContent(data = scheduleContent) {
     if (!data) {return false;}

@@ -7,6 +7,7 @@ const updateFrequencyLogger = require('../player/update-frequency-logger');
 const uptime = require('../uptime/uptime');
 const scheduleParser = require('../scheduling/schedule-parser');
 const whiteScreenAnalyser = require('../player/white-screen-analyser');
+const htmlTemplateURLParser = require('../player/html-template-url-parser');
 
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
@@ -63,36 +64,7 @@ function rewritePresentationData(content, isOnline) {
     });
   });
 
-  return restructureHTMLTemplatesToURLItems(content);
-}
-
-function restructureHTMLTemplatesToURLItems(content) {
-  if (!content || !content.content || !content.content.schedule ||
-  !content.content.schedule.items) {return content;}
-
-  content = Object.assign({}, content);
-
-  const HTMLTemplateURL = "https://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
-  const isBeta = commonConfig.isBetaLauncher();
-
-  content.content.schedule.items
-  .filter(item=>item.presentationType === "HTML Template")
-  .forEach(item=>{
-    item.type = "url";
-    item.objectReference = HTMLTemplateURL
-    .replace("STAGE", isBeta ? "beta" : "stable")
-    .replace("PCODE", getPCode(item.objectReference))
-    .replace("PID", item.objectReference);
-  });
-
-  return content;
-
-  function getPCode(objectReference) {
-    const pres = content.content.presentations
-    .filter(pres=>pres.id === objectReference);
-
-    return pres[0] && pres[0].productCode;
-  }
+  return htmlTemplateURLParser.restructureHTMLTemplatesToURLItems(content);
 }
 
 function countWidgets(content) {
