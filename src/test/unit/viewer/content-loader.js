@@ -110,7 +110,7 @@ describe("Viewer Content Loader", ()=>{
               layout: "abcd"
             },
             {
-              layout: "XXXXhttps://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.htmlXXXX"
+              layout: "XXXXhttps://widgets.risevision.com/widget-web-page/1.0.0/dist/widget.htmlXXXX"
             }
           ]
         }

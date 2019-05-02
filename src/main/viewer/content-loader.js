@@ -11,7 +11,7 @@ const whiteScreenAnalyser = require('../player/white-screen-analyser');
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
   "online": {
-    "http://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html": "https://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html"
+    "http://s3.amazonaws.com/widget-": "https://widgets.risevision.com/widget-"
   },
   "offline": {
     "http://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html": "../widgets/image/widget.html",
@@ -148,8 +148,7 @@ module.exports = {
   incrementReady(widgetUrl) {
     let validWidgetURLs = viewerWindowBindings.offlineOrOnline() === "offline" ?
     Object.values(presentationRewrites.offline) :
-    Object.keys(presentationRewrites.offline)
-    .concat(Object.values(presentationRewrites.online));
+    Object.keys(presentationRewrites.offline);
 
     if (!validWidgetURLs.includes(widgetUrl)) {return;}
     readyReceived += 1;
