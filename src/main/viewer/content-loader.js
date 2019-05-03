@@ -12,7 +12,8 @@ const htmlTemplateURLParser = require('../player/html-template-url-parser');
 if (!Object.values) {require("object.values").shim();}
 const presentationRewrites = {
   "online": {
-    "http://s3.amazonaws.com/widget-": "https://widgets.risevision.com/widget-"
+    "http://s3.amazonaws.com/widget-": "https://widgets.risevision.com/widget-",
+    "https://s3.amazonaws.com/widget-": "https://widgets.risevision.com/widget-"
   },
   "offline": {
     "http://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html": "../widgets/image/widget.html",
