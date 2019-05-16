@@ -11,13 +11,14 @@ module.exports = {
     const isBeta = commonConfig.isBetaLauncher();
 
     content.content.schedule.items
-    .filter(item=>item.presentationType === "HTML Template")
+    .filter(item=>item.presentationType === "HTML Template" && item.type === "presentation")
     .forEach(item=>{
       item.type = "url";
+      const objectReference = item.objectReference;
       item.objectReference = HTMLTemplateURL
       .replace("STAGE", isBeta ? "beta" : "stable")
-      .replace("PCODE", getPCode(item.objectReference))
-      .replace("PID", item.objectReference);
+      .replace("PCODE", getPCode(objectReference))
+      .replace("PID", objectReference);
     });
 
     return content;
