@@ -41,13 +41,15 @@ describe.only("HTML Template Url Parser", ()=>{
     }
   };
 
-  it("Sets html template presentations to url items with template url", ()=>{
+  it("Idempotently sets html template presentations to url items with template url", ()=>{
     const expectedChangedType = "url";
     const HTMLTemplatePresentationId = "DEF456";
     const HTMLTemplatePresentationProductCode = "test-pcode";
     const expectedChangedObjectReference = `https://widgets.risevision.com/stable/templates/${HTMLTemplatePresentationProductCode}/src/template.html?presentationId=${HTMLTemplatePresentationId}`;
 
-    const newContent = parser.restructureHTMLTemplatesToURLItems(content);
+    const newContent = parser.restructureHTMLTemplatesToURLItems(
+                       parser.restructureHTMLTemplatesToURLItems(
+                       parser.restructureHTMLTemplatesToURLItems(content)));
 
     assert.deepEqual(newContent, {
       content: {

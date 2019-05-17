@@ -12,7 +12,7 @@ module.exports = {
     const originalItems = content.content.schedule.items;
 
     content.content.schedule.items = originalItems.map(item=>{
-      return item.presentationType !== "HTML Template" ? item :
+      return !needsRewrite(item) ? item :
         Object.assign({}, item, {
           type: "url",
           objectReference: setNewReference(item.objectReference)
@@ -20,6 +20,10 @@ module.exports = {
     });
 
     return content;
+
+    function needsRewrite(item) {
+      return item.type === "presentation" && item.presentationType === "HTML Template";
+    }
 
     function setNewReference(oldReference) {
       return HTMLTemplateURL
