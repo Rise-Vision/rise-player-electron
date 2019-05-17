@@ -9,18 +9,24 @@ module.exports = {
 
     const HTMLTemplateURL = "https://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
     const isBeta = commonConfig.isBetaLauncher();
+    const originalItems = content.content.schedule.items;
 
-    content.content.schedule.items
-    .filter(item=>item.presentationType === "HTML Template")
-    .forEach(item=>{
-      item.type = "url";
-      item.objectReference = HTMLTemplateURL
-      .replace("STAGE", isBeta ? "beta" : "stable")
-      .replace("PCODE", getPCode(item.objectReference))
-      .replace("PID", item.objectReference);
+    content.content.schedule.items = originalItems.map(item=>{
+      return item.presentationType !== "HTML Template" ? item :
+        Object.assign({}, item, {
+          type: "url",
+          objectReference: setNewReference(item.objectReference)
+        });
     });
 
     return content;
+
+    function setNewReference(oldReference) {
+      return HTMLTemplateURL
+      .replace("STAGE", isBeta ? "beta" : "stable")
+      .replace("PCODE", getPCode(oldReference))
+      .replace("PID", oldReference);
+    }
 
     function getPCode(objectReference) {
       const pres = content.content.presentations
