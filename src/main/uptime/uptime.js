@@ -8,6 +8,7 @@ const uptimeInterval = 300000;
 let schedule = null;
 let ipcMain = null;
 let rendererWindow = null;
+let _isActive = false;
 
 function setSchedule(data) {
   if (data && data.content && data.content.schedule) {
@@ -39,6 +40,8 @@ function calculate() {
 
     if (!connectedToMS) {investigation.reportConnectivity();}
     uptimeLogger.log(connectedToMS, rendererResult, shouldBePlaying);
+
+    _isActive = connectedToMS && rendererResult && shouldBePlaying && connectedToMS;
   })
   .catch((e)=>{
     log.error(e.message);
@@ -71,8 +74,13 @@ function checkRendererHealth() {
   });
 }
 
+function isActive() {
+  return _isActive;
+}
+
 module.exports = {
   setSchedule,
   init,
-  setRendererWindow
+  setRendererWindow,
+  isActive
 };
