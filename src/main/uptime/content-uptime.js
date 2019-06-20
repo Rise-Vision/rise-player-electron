@@ -1,7 +1,7 @@
 const commonMessaging = require("common-display-module/messaging");
 const messaging = require("../player/messaging");
 const uptime = require("./uptime");
-const templateUptimeLogger = require("../loggers/template-uptime-logger");
+// const templateUptimeLogger = require("../loggers/template-uptime-logger");
 
 const uptimeInterval = 10000;
 const responseTimeout = 3000;
