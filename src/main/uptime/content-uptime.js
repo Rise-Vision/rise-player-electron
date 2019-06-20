@@ -41,7 +41,7 @@ function retrieveUptime() {
 
 function handlePlayingItemFromViewer(response) {
   log.file("playing item received from Viewer", response);
-  handlePlayingItem(response.item);
+  response && response.item && handlePlayingItem(response.item);
 }
 
 function handlePlayingItem(item) {
