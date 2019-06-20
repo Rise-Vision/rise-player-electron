@@ -9,7 +9,6 @@ const nativeImage = require('electron').nativeImage;
 const mainController = require("./player/main-controller");
 const screenshot = require("./player/screenshot");
 const uptime = require("./uptime/uptime");
-const contentUptime = require("./uptime/content-uptime");
 const config = require("./player/config");
 const preventBQLog = process.env.RISE_PREVENT_BQ_LOG;
 const viewerController = require("./viewer/controller");
@@ -62,4 +61,3 @@ mainController.init({ app, displaySettings, ipc, globalShortcut, BrowserWindow, 
 screenshot.init(ipc, nativeImage);
 
 uptime.init(ipc);
-contentUptime.init();

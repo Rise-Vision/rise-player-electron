@@ -1,42 +1,35 @@
 const commonConfig = require("common-display-module");
 
 module.exports = {
-  restructureHTMLTemplatesToURLItems(content) {
-    if (!content || !content.content || !content.content.schedule ||
-    !content.content.schedule.items) {return content;}
+  restructureHTMLTemplatesToURLItems(contentData) {
+    if (!contentData || !contentData.content || !contentData.content.schedule ||
+    !contentData.content.schedule.items) {return contentData;}
 
-    content = Object.assign({}, content);
+    const restructuredData = Object.assign({}, contentData);
 
-    const HTMLTemplateURL = "https://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
+    const HTMLTemplateURL = "http://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
     const isBeta = commonConfig.isBetaLauncher();
-    const originalItems = content.content.schedule.items;
 
-    content.content.schedule.items = originalItems.map(item=>{
-      return !needsRewrite(item) ? item :
-        Object.assign({}, item, {
-          type: "url",
-          objectReference: setNewReference(item.objectReference)
-        });
+    restructuredData.content.schedule.items
+    .filter(item=>(item.type === "presentation" && item.presentationType === "HTML Template"))
+    .forEach(item=>{
+      item.type = "url";
+      item.presentationId = item.objectReference;
+      item.productCode = getPCode(item.objectReference, contentData);
+      item.version = isBeta ? "beta" : "stable";
+      item.objectReference = HTMLTemplateURL
+        .replace("STAGE", item.version)
+        .replace("PCODE", item.productCode)
+        .replace("PID", item.presentationId);
     });
 
-    return content;
-
-    function needsRewrite(item) {
-      return item.type === "presentation" && item.presentationType === "HTML Template";
-    }
-
-    function setNewReference(oldReference) {
-      return HTMLTemplateURL
-      .replace("STAGE", isBeta ? "beta" : "stable")
-      .replace("PCODE", getPCode(oldReference))
-      .replace("PID", oldReference);
-    }
-
-    function getPCode(objectReference) {
-      const pres = content.content.presentations
-      .filter(pres=>pres.id === objectReference);
-
-      return pres[0] && pres[0].productCode;
-    }
+    return restructuredData;
   }
 };
+
+function getPCode(objectReference, contentData) {
+  const referencedPresentation = contentData.content.presentations
+  .filter(pres=>pres.id === objectReference);
+
+  return referencedPresentation[0] && referencedPresentation[0].productCode;
+}
