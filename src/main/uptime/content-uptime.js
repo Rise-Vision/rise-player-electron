@@ -10,10 +10,10 @@ let playingItem = null;
 let expectedTemplate = null;
 
 function handleUptimeResponse(response) {
-  log.file("uptime - result", JSON.stringify(response));
+  log.file("uptime - result", response && JSON.stringify(response));
 
   if (!expectedTemplate || !isValidResponse(response)) {
-    logger.log('uptime - invalid result', JSON.stringify(response));
+    log.file('uptime - invalid result', response && JSON.stringify(response));
     return;
   }
 
