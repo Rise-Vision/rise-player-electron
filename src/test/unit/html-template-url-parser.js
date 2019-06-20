@@ -3,7 +3,7 @@ const commonConfig = require("common-display-module");
 const simple = require("simple-mock");
 const parser = require("../../main/player/html-template-url-parser.js");
 
-describe.only("HTML Template Url Parser", ()=>{
+describe("HTML Template Url Parser", ()=>{
   beforeEach(()=>{
     simple.mock(commonConfig, "isBetaLauncher").returnWith(false);
   });
