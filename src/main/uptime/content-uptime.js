@@ -20,7 +20,7 @@ function handleUptimeResponse(response) {
   clearTimeout(responseTimeoutId);
   expectedTemplate = null;
 
-  templateUptimeLogger.logTemplateUptime(response.presentationId, response.templateProductCode, response.templateVersion, true, response.errorValue);
+  // templateUptimeLogger.logTemplateUptime(response.presentationId, response.templateProductCode, response.templateVersion, true, response.errorValue);
 }
 
 function isValidResponse(response) {
@@ -31,7 +31,7 @@ function isValidResponse(response) {
 function handleNoResponse() {
   log.file("uptime - no response", JSON.stringify(expectedTemplate));
   if (expectedTemplate) {
-    templateUptimeLogger.logTemplateUptime(expectedTemplate.presentationId, expectedTemplate.productCode, expectedTemplate.version, false, null);
+    // templateUptimeLogger.logTemplateUptime(expectedTemplate.presentationId, expectedTemplate.productCode, expectedTemplate.version, false, null);
     expectedTemplate = null;
   }
 }

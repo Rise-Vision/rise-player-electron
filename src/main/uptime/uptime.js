@@ -8,7 +8,7 @@ const uptimeInterval = 300000;
 let schedule = null;
 let ipcMain = null;
 let rendererWindow = null;
-let _isActive = false;
+let _isActive = true;
 
 function setSchedule(data) {
   if (data && data.content && data.content.schedule) {
