@@ -10,7 +10,7 @@ bqController.init();
 module.exports = {
   getBQClient() { return bqController.getBQClient(); },
   pendingEntries() { return bqController.pendingEntries(); },
-  logComponentUptime(presentationId, templateProductCode, templateVersion, componentType, componentId, responding, errorValue) { // eslint-disable-line max-params
+  logComponentUptime(result) {
     const display_id = commonConfig.getDisplaySettingsSync().displayid;
 
     if (!display_id) {
@@ -18,17 +18,10 @@ module.exports = {
       return Promise.reject(Error("missing display id"));
     }
 
-    return bqController.log("events", {
-      display_id,
-      presentation_id: presentationId,
-      template_product_code: templateProductCode,
-      template_version: templateVersion,
-      component_type: componentType,
-      component_id: componentId,
-      responding,
-      error: errorValue,
-      ts: (new Date()).toISOString()
-    })
+    result.display_id = display_id;
+    result.ts = (new Date()).toISOString();
+
+    return bqController.log("events", result)
     .catch(e=>{
       log.file("Could not log to bq " + require("util").inspect(e, { depth: null }));
     });

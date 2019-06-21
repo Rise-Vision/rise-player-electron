@@ -1,7 +1,8 @@
 const commonMessaging = require("common-display-module/messaging");
 const messaging = require("../player/messaging");
 const uptime = require("./uptime");
-// const templateUptimeLogger = require("../loggers/template-uptime-logger");
+const templateUptimeLogger = require("../loggers/template-uptime-logger");
+const componentUptimeLogger = require("../loggers/component-uptime-logger");
 
 const uptimeInterval = 10000;
 const responseTimeout = 3000;
@@ -10,17 +11,21 @@ let playingItem = null;
 let expectedTemplate = null;
 
 function handleUptimeResponse(response) {
-  log.file("uptime - result", response && JSON.stringify(response));
-
   if (!expectedTemplate || !isValidResponse(response)) {
-    log.file('uptime - invalid result', response && JSON.stringify(response));
+    log.file("uptime - invalid result", response && JSON.stringify(response));
     return;
   }
+
+  log.file("uptime - result", JSON.stringify(response));
 
   clearTimeout(responseTimeoutId);
   expectedTemplate = null;
 
-  // templateUptimeLogger.logTemplateUptime(response.presentationId, response.templateProductCode, response.templateVersion, true, response.errorValue);
+  const result = response.template;
+  result.responding = true;
+  templateUptimeLogger.logTemplateUptime(result);
+
+  response.components.forEach(entry=>componentUptimeLogger.logComponentUptime(entry));
 }
 
 function isValidResponse(response) {
@@ -29,9 +34,15 @@ function isValidResponse(response) {
 }
 
 function handleNoResponse() {
-  log.file("uptime - no response", JSON.stringify(expectedTemplate));
   if (expectedTemplate) {
-    // templateUptimeLogger.logTemplateUptime(expectedTemplate.presentationId, expectedTemplate.productCode, expectedTemplate.version, false, null);
+    log.file("uptime - no response", JSON.stringify(expectedTemplate));
+
+    templateUptimeLogger.logTemplateUptime({
+      presentation_id: expectedTemplate.presentationId,
+      template_product_code: expectedTemplate.productCode,
+      template_version: expectedTemplate.version,
+      responding: false
+    });
     expectedTemplate = null;
   }
 }
