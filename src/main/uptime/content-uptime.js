@@ -4,7 +4,7 @@ const uptime = require("./uptime");
 const templateUptimeLogger = require("../loggers/template-uptime-logger");
 const componentUptimeLogger = require("../loggers/component-uptime-logger");
 
-const uptimeInterval = 10000;
+const uptimeInterval = 60000;
 const responseTimeout = 3000;
 let responseTimeoutId = null;
 let playingItem = null;
