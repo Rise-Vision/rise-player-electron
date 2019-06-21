@@ -21,5 +21,6 @@ The following strategy is used to handle scheduling:
  1. At startup, check the primary schedule and all url schedules and begin showing the appropriate sites.
  2. Examine each schedule to see whether there is a change during the day, for example if it is 6am now and an item is scheduled to start at 6:30am, a re-check timer for 1,800,000 milliseconds should be set. A timer need not be set for multiple schedules, only the most immediate one is set.
  3. If no time-based change is found for the current day, set a re-check timer for the start of the next day. This will take into account any schedules that might not be showing today, but are scheduled to show on some other day.
+ 4. If item is set to play until done, a 1 second timer is set to re-check until the 'template-done' event is received.
 
 During any re-check, if a currently playing item is still scheduled to play, it should not be interrupted.
