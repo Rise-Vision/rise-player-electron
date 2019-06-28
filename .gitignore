@@ -13,3 +13,4 @@ external-deps/java-network-test/target/
 !external-deps/shortcut.exe
 /version.txt
 npm-debug.log
+*.DS_Store

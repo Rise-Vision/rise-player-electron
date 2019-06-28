@@ -1,5 +1,6 @@
 const scheduleParser = require("./schedule-parser");
 const util = require("util");
+const playUntilDoneTracker = require("./play-until-done-tracker");
 
 const nothingPlayingListeners = [];
 const playingItemListeners = [];
@@ -67,6 +68,11 @@ function playCurrentlyPlayableItems(now) {
 }
 
 function playItems() {
+  if (playingItem && playingItem.playUntilDone && !playUntilDoneTracker.isDone()) {
+    timers.itemDuration = setTimeout(playItems, 1000);
+    return;
+  }
+
   let nextItem = playableItems.shift();
   playableItems.push(nextItem);
 
@@ -75,10 +81,11 @@ function playItems() {
   notifyPlayingItem();
 
   if (!previousItem || previousItem.objectReference !== nextItem.objectReference) {
+    playUntilDoneTracker.reset();
     playUrl(nextItem.objectReference);
   }
 
-  timers.itemDuration = setTimeout(playItems, nextItem.duration * 1000);
+  timers.itemDuration = setTimeout(playItems, nextItem.playUntilDone ? 1000 : nextItem.duration * 1000);
 }
 
 function playUrl(url) {playUrlHandler(url);}
