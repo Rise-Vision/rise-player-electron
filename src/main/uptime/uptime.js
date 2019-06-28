@@ -41,7 +41,7 @@ function calculate() {
     if (!connectedToMS) {investigation.reportConnectivity();}
     uptimeLogger.log(connectedToMS, rendererResult, shouldBePlaying);
 
-    _isActive = connectedToMS && rendererResult && shouldBePlaying && connectedToMS;
+    _isActive = connectedToMS && rendererResult && shouldBePlaying;
   })
   .catch((e)=>{
     log.error(e.message);

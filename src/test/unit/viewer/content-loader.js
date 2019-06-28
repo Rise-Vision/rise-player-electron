@@ -171,7 +171,11 @@ describe("Viewer Content Loader", ()=>{
               {
                 "type":"url",
                 "presentationType": "HTML Template",
-                "objectReference": computedTemplateURL
+                "objectReference": computedTemplateURL,
+                "presentationId": "test-obj-ref",
+                "productCode": "test-p-code",
+                "version": "stable"
+
               },
               {
                 "type": "presentation",
