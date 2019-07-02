@@ -1,6 +1,5 @@
 const commonMessaging = require("common-display-module/messaging");
 const messaging = require("../player/messaging");
-const uptime = require("./uptime");
 const templateUptimeLogger = require("../loggers/template-uptime-logger");
 const componentUptimeLogger = require("../loggers/component-uptime-logger");
 
@@ -55,7 +54,7 @@ function init() {
 }
 
 function retrieveUptime() {
-  if (playingItem && playingItem.presentationType === "HTML Template" && uptime.isActive()) {
+  if (playingItem && playingItem.presentationType === "HTML Template") {
     commonMessaging.broadcastToLocalWS({
       from: "player-electron",
       topic: "content-uptime", 

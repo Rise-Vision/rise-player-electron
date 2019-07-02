@@ -3,7 +3,6 @@ const simple = require("simple-mock");
 const contentUptime = require("../../../main/uptime/content-uptime.js");
 const commonMessaging = require("common-display-module/messaging");
 const messaging = require("../../../main/player/messaging.js");
-const uptime = require("../../../main/uptime/uptime.js");
 const templateUptimeLogger = require("../../../main/loggers/template-uptime-logger");
 const componentUptimeLogger = require("../../../main/loggers/component-uptime-logger");
 
@@ -16,7 +15,6 @@ describe.only("contentUptime", ()=>{
     simple.mock(global, "clearTimeout").returnWith();
     simple.mock(messaging, "onEvent");
     simple.mock(commonMessaging, "broadcastToLocalWS");
-    simple.mock(uptime, "isActive").returnWith(true);
     simple.mock(templateUptimeLogger, "logTemplateUptime").returnWith();
     simple.mock(componentUptimeLogger, "logComponentUptime").returnWith();
   });
@@ -62,17 +60,6 @@ describe.only("contentUptime", ()=>{
       contentUptime.handlePlayingItem({
         presentationType: "Presentation"
       });
-      contentUptime.init();
-
-      assert(!commonMessaging.broadcastToLocalWS.called);
-    });
-
-    it("does broadcast uptime message if uptime is not Active", ()=>{
-      contentUptime.handlePlayingItem({
-        presentationType: "HTML Template"
-      });
-      uptime.isActive.reset();
-      simple.mock(uptime, "isActive").returnWith(false);
       contentUptime.init();
 
       assert(!commonMessaging.broadcastToLocalWS.called);
