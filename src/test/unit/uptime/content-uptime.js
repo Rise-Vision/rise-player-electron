@@ -96,7 +96,7 @@ describe.only("contentUptime", ()=>{
     });
 
     it("does not handle invalid responses", ()=>{
-      handlePlayingItemFromViewer({});
+      handlePlayingItemFromViewer();
       setInterval.calls[0].args[0]();
 
       assert(!commonMessaging.broadcastToLocalWS.called);
