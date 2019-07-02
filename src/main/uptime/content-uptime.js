@@ -11,11 +11,11 @@ let expectedTemplate = null;
 
 function handleUptimeResponse(response) {
   if (!expectedTemplate || !isValidResponse(response)) {
-    log.file("uptime - invalid result", response && JSON.stringify(response));
+    log.file("content uptime - invalid result", response && JSON.stringify(response));
     return;
   }
 
-  log.file("uptime - result", JSON.stringify(response));
+  log.file("content uptime - result", JSON.stringify(response));
 
   clearTimeout(responseTimeoutId);
   expectedTemplate = null;
@@ -34,7 +34,7 @@ function isValidResponse(response) {
 
 function handleNoResponse() {
   if (expectedTemplate) {
-    log.file("uptime - no response", JSON.stringify(expectedTemplate));
+    log.file("content uptime - no response", JSON.stringify(expectedTemplate));
 
     templateUptimeLogger.logTemplateUptime({
       presentation_id: expectedTemplate.presentationId,
