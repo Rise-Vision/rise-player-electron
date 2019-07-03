@@ -32,6 +32,7 @@
     "ws": "^1.1.1"
   },
   "scripts": {
+    "jshint": "jshint src",
     "test": "jshint src && istanbul cover node_modules/mocha/bin/_mocha -- --exit --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive src/test/unit",
     "test-no-coverage": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 20000 src/test/integration",

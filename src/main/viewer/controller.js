@@ -11,6 +11,7 @@ const viewerLogger = require("./ext-logger.js");
 const viewerWindowBindings = require("./window-bindings");
 const gcs = require("../player/gcs.js");
 const uptime = require('../uptime/uptime');
+const contentUptime = require('../uptime/content-uptime');
 const scheduleParser = require("../scheduling/schedule-parser");
 const noViewerSchedulePlayer = require("../scheduling/schedule-player");
 const messaging = require("../player/messaging");
@@ -277,6 +278,7 @@ module.exports = {
     noViewerSchedulePlayer.listenForNothingPlaying(()=>{
       loadUrl(`file://${__dirname}/black-screen.html`);
     });
+    noViewerSchedulePlayer.listenForPlayingItem(contentUptime.handlePlayingItem);
 
     messaging.on("content-update", ()=>{
       return gcs.getFileContents(viewerContentLoader.contentPath(), {useLocalData: true, useThrottle: false})
@@ -293,6 +295,7 @@ module.exports = {
     createViewerWindow();
 
     uptime.setRendererWindow(viewerWindow);
+    contentUptime.init();
 
     return loadContent().then(()=>{
       log.file("viewer launch complete");

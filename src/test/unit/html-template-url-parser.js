@@ -64,7 +64,10 @@ describe("HTML Template Url Parser", ()=>{
               name: "test-html-presentation",
               presentationType: "HTML Template",
               type: expectedChangedType,
-              objectReference: expectedChangedObjectReference
+              objectReference: expectedChangedObjectReference,
+              presentationId: "DEF456",
+              productCode: "test-pcode",
+              version: "stable"
             }
           ]
         },

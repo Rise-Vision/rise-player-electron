@@ -15,7 +15,7 @@ module.exports = {
         const topic = message.topic && message.topic.toLowerCase();
 
         if (eventHandlers[topic]) {
-          return eventHandlers[topic]();
+          return eventHandlers[topic](message);
         }
 
         log.debug(JSON.stringify(message));

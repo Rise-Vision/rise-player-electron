@@ -3,6 +3,7 @@ const util = require("util");
 const playUntilDoneTracker = require("./play-until-done-tracker");
 
 const nothingPlayingListeners = [];
+const playingItemListeners = [];
 const timers = {
   scheduleCheck: null,
   itemDuration: null
@@ -29,11 +30,14 @@ module.exports = {
   },
   setPlayUrlHandler(fn) {playUrlHandler = fn;},
   listenForNothingPlaying(listener) {nothingPlayingListeners.push(listener);},
+  listenForPlayingItem(listener) {playingItemListeners.push(listener);},
   stop() {
     Object.values(timers).forEach(clearTimeout);
     playingItem = null;
+    notifyPlayingItem();
   },
-  now() {return new Date();}
+  now() {return new Date();},
+  getPlayingItem() {return playingItem;}
 };
 
 function considerFutureScheduledItems(now) {
@@ -74,6 +78,7 @@ function playItems() {
 
   let previousItem = playingItem;
   playingItem = nextItem;
+  notifyPlayingItem();
 
   if (!previousItem || previousItem.objectReference !== nextItem.objectReference) {
     playUntilDoneTracker.reset();
@@ -120,10 +125,15 @@ function millisUntilTomorrow(now) {
 function nothingPlaying() {
   clearTimeout(timers.itemDuration);
   playingItem = null;
+  notifyPlayingItem();
   nothingPlayingListeners.forEach(listener=>listener());
 }
 
 function logWithScheduleData(event) {
   const logData = util.inspect(scheduleParser.getContent(), {depth: 5});
   log.external(event, logData);
+}
+
+function notifyPlayingItem() {
+  playingItemListeners.forEach(listener=>listener(playingItem));
 }
