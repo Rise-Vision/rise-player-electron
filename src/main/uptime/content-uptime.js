@@ -11,11 +11,11 @@ let expectedTemplate = null;
 
 function handleUptimeResponse(response) {
   if (!expectedTemplate || !isValidResponse(response)) {
-    log.file("content uptime - invalid result", response && JSON.stringify(response));
+    log.file("content uptime - invalid result");
     return;
   }
 
-  log.file("content uptime - result", JSON.stringify(response));
+  log.file("content uptime - result");
 
   clearTimeout(responseTimeoutId);
   expectedTemplate = null;
@@ -34,7 +34,7 @@ function isValidResponse(response) {
 
 function handleNoResponse() {
   if (expectedTemplate) {
-    log.file("content uptime - no response", JSON.stringify(expectedTemplate));
+    log.file("content uptime - no response");
 
     templateUptimeLogger.logTemplateUptime({
       presentation_id: expectedTemplate.presentationId,
@@ -55,13 +55,23 @@ function init() {
 
 function retrieveUptime() {
   if (playingItem && playingItem.presentationType === "HTML Template") {
-    commonMessaging.broadcastToLocalWS({
-      from: "player-electron",
-      topic: "content-uptime", 
-      forPresentationId: playingItem.presentationId
+    commonMessaging.checkMessagingServiceConnection()
+    .then(msResult=>{
+      if (msResult !== 'connected') {
+        throw(msResult);
+      }
+
+      commonMessaging.broadcastToLocalWS({
+        from: "player-electron",
+        topic: "content-uptime", 
+        forPresentationId: playingItem.presentationId
+      });
+      expectedTemplate = playingItem;
+      responseTimeoutId = setTimeout(handleNoResponse, responseTimeout);        
+    })
+    .catch(()=>{
+      log.file("content uptime - ms not connected");
     });
-    expectedTemplate = playingItem;
-    responseTimeoutId = setTimeout(handleNoResponse, responseTimeout);
   }
 }
 
