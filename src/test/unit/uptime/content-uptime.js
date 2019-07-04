@@ -6,7 +6,9 @@ const messaging = require("../../../main/player/messaging.js");
 const templateUptimeLogger = require("../../../main/loggers/template-uptime-logger");
 const componentUptimeLogger = require("../../../main/loggers/component-uptime-logger");
 
-describe.only("contentUptime", ()=>{
+describe("contentUptime", ()=>{
+  let nativeTimeout = setTimeout;
+
   beforeEach(()=>{
     simple.mock(global, "setInterval")
       .callbackAtIndex(0)
@@ -15,6 +17,7 @@ describe.only("contentUptime", ()=>{
     simple.mock(global, "clearTimeout").returnWith();
     simple.mock(messaging, "onEvent");
     simple.mock(commonMessaging, "broadcastToLocalWS");
+    simple.mock(commonMessaging, "checkMessagingServiceConnection").resolveWith("connected");
     simple.mock(templateUptimeLogger, "logTemplateUptime").returnWith();
     simple.mock(componentUptimeLogger, "logComponentUptime").returnWith();
   });
@@ -50,37 +53,75 @@ describe.only("contentUptime", ()=>{
   });
 
   describe("retrieveUptime", ()=>{
-    it("does not broadcast uptime message if no item is playing", ()=>{
+    it("does not broadcast uptime message if no item is playing", (done)=>{
       contentUptime.init();
 
-      assert(!commonMessaging.broadcastToLocalWS.called);
+      nativeTimeout(()=>{
+        assert(!commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
     });
 
-    it("does not broadcast uptime message if a presentation item is playing", ()=>{
+    it("does not broadcast uptime message if a presentation item is playing", (done)=>{
       contentUptime.handlePlayingItem({
         presentationType: "Presentation"
       });
       contentUptime.init();
 
-      assert(!commonMessaging.broadcastToLocalWS.called);
+      nativeTimeout(()=>{
+        assert(!commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
     });
 
-    it("broadcasts uptime message", ()=>{
+    it("does not broadcast uptime message if lms is not initialized", (done)=>{
+      simple.mock(commonMessaging, "checkMessagingServiceConnection").rejectWith();
       contentUptime.handlePlayingItem({
         presentationType: "HTML Template"
       });
       contentUptime.init();
 
-      assert(commonMessaging.broadcastToLocalWS.called);
+      nativeTimeout(()=>{
+        assert(!commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
     });
 
-    it("enqueues no response handler", ()=>{
+    it("does not broadcast uptime message if lms is not connected", (done)=>{
+      simple.mock(commonMessaging, "checkMessagingServiceConnection").resolveWith("not connected");
       contentUptime.handlePlayingItem({
         presentationType: "HTML Template"
       });
       contentUptime.init();
 
-      assert.equal(setTimeout.firstCall.args[0].name, "handleNoResponse");
+      nativeTimeout(()=>{
+        assert(!commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
+    });
+
+    it("broadcasts uptime message", (done)=>{
+      contentUptime.handlePlayingItem({
+        presentationType: "HTML Template"
+      });
+      contentUptime.init();
+
+      nativeTimeout(()=>{
+        assert(commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
+    });
+
+    it("enqueues no response handler", (done)=>{
+      contentUptime.handlePlayingItem({
+        presentationType: "HTML Template"
+      });
+      contentUptime.init();
+
+      nativeTimeout(()=>{
+        assert.equal(setTimeout.firstCall.args[0].name, "handleNoResponse");
+        done();
+      }, 10);
     });
   });
 
@@ -95,14 +136,17 @@ describe.only("contentUptime", ()=>{
       handlePlayingItemFromViewer = call2.args[1];
     });
 
-    it("does not handle invalid responses", ()=>{
+    it("does not handle invalid responses", (done)=>{
       handlePlayingItemFromViewer();
       setInterval.calls[0].args[0]();
 
-      assert(!commonMessaging.broadcastToLocalWS.called);
+      nativeTimeout(()=>{
+        assert(!commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
     });
 
-    it("update playlistItem on valid response", ()=>{
+    it("update playlistItem on valid response", (done)=>{
       handlePlayingItemFromViewer({
         item: {
           presentationType: "HTML Template"
@@ -110,7 +154,10 @@ describe.only("contentUptime", ()=>{
       });
       setInterval.calls[0].args[0]();
 
-      assert(commonMessaging.broadcastToLocalWS.called);
+      nativeTimeout(()=>{
+        assert(commonMessaging.broadcastToLocalWS.called);
+        done();
+      }, 10);
     });
   });
 
@@ -225,76 +272,88 @@ describe.only("contentUptime", ()=>{
 
   describe("handleNoResponse", ()=>{
     var handleNoResponse;
-    function getHandleNoResponse(){
+    function getHandleNoResponse(cb){
       contentUptime.init();
 
-      var call1 = setTimeout.calls[0];
-      assert.equal(call1.args[0].name, "handleNoResponse");
+      nativeTimeout(()=>{
+        var call1 = setTimeout.calls[0];
+        assert.equal(call1.args[0].name, "handleNoResponse");
 
-      handleNoResponse = call1.args[0];
+        handleNoResponse = call1.args[0];
+
+        cb();
+      }, 10);
     }
 
-    it("handles no response from the template", ()=>{
+    it("handles no response from the template", (done)=>{
       contentUptime.handlePlayingItem({
         presentationType: "HTML Template",
         presentationId: "id"
       });
 
-      getHandleNoResponse();
+      getHandleNoResponse(()=>{
+        handleNoResponse();
 
-      handleNoResponse();
-
-      assert(templateUptimeLogger.logTemplateUptime.called);
+        assert(templateUptimeLogger.logTemplateUptime.called);
+        
+        done();        
+      });
     });
 
-    it("does not handle if reponse already received", ()=>{
+    it("does not handle if reponse already received", (done)=>{
       contentUptime.handlePlayingItem({
         presentationType: "HTML Template",
         presentationId: "id"
       });
 
-      getHandleNoResponse();
+      getHandleNoResponse(()=>{
+        handleNoResponse();
 
-      var call1 = messaging.onEvent.calls[0];
-      assert.equal(call1.args[1].name, "handleUptimeResponse");
+        var call1 = messaging.onEvent.calls[0];
+        assert.equal(call1.args[1].name, "handleUptimeResponse");
 
-      call1.args[1]({
-        template: {
-          presentation_id: "id"
-        },
-        components: []
+        call1.args[1]({
+          template: {
+            presentation_id: "id"
+          },
+          components: []
+        });
+
+        assert(templateUptimeLogger.logTemplateUptime.called);
+
+        handleNoResponse();
+
+        assert.equal(templateUptimeLogger.logTemplateUptime.callCount, 1);
+        
+        done();        
       });
-
-      assert(templateUptimeLogger.logTemplateUptime.called);
-
-      handleNoResponse();
-
-      assert.equal(templateUptimeLogger.logTemplateUptime.callCount, 1);
     });
 
-    it("does not handle uptime response if no response was logged", ()=>{
+    it("does not handle uptime response if no response was logged", (done)=>{
       contentUptime.handlePlayingItem({
         presentationType: "HTML Template",
         presentationId: "id"
       });
 
-      getHandleNoResponse();
+      getHandleNoResponse(()=>{
+        handleNoResponse();
 
-      handleNoResponse();
+        assert(templateUptimeLogger.logTemplateUptime.called);
 
-      assert(templateUptimeLogger.logTemplateUptime.called);
+        var call1 = messaging.onEvent.calls[0];
+        assert.equal(call1.args[1].name, "handleUptimeResponse");
 
-      var call1 = messaging.onEvent.calls[0];
-      assert.equal(call1.args[1].name, "handleUptimeResponse");
+        call1.args[1]({
+          template: {
+            presentation_id: "id"
+          },
+          components: []
+        });
 
-      call1.args[1]({
-        template: {
-          presentation_id: "id"
-        },
-        components: []
+        assert.equal(templateUptimeLogger.logTemplateUptime.callCount, 1);
+        
+        done();        
       });
-
-      assert.equal(templateUptimeLogger.logTemplateUptime.callCount, 1);
     });
 
   });
