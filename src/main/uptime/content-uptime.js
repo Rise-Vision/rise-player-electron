@@ -58,7 +58,7 @@ function retrieveUptime() {
     commonMessaging.checkMessagingServiceConnection()
     .then(msResult=>{
       if (msResult !== 'connected') {
-        throw(msResult);
+        return Promise.reject();
       }
 
       commonMessaging.broadcastToLocalWS({
