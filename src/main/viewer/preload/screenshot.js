@@ -1,4 +1,5 @@
-const {desktopCapturer, screen} = require("electron");
+const {desktopCapturer} = require("electron");
+const screen = parseInt(process.versions.electron) >= 6 ? require("electron").remote.screen : require("electron").screen;
 const screenSize = screen.getPrimaryDisplay().size;
 
 window.receiveFromPlayer("viewer-screenshot-request", ()=>{
