@@ -23,8 +23,10 @@ if(displaySettings.enablepinchtozoom !== "true") {
   }
 }
 
-webFrame.registerURLSchemeAsPrivileged("rchttp");
-webFrame.registerURLSchemeAsPrivileged("rchttps");
+if (parseInt(process.versions.electron) < 5) {
+  webFrame.registerURLSchemeAsPrivileged("rchttp");
+  webFrame.registerURLSchemeAsPrivileged("rchttps");
+}
 
 window.postToPlayer = (message, overrideChannel)=>{
   if (overrideChannel) {
