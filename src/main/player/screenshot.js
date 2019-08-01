@@ -5,7 +5,7 @@ const fs = require("fs");
 const messaging = require("./messaging");
 const path = require("path");
 const platform = require("rise-common-electron").platform;
-const request = require("request");
+const network = require("rise-common-electron").network;
 const viewerWindowBindings = require("../viewer/window-bindings");
 
 const JPEGQUALITY = 15;
@@ -82,29 +82,18 @@ function captureScreenshot() {
 }
 
 function uploadBuffer(signedUrl, contents) {
-  const {activeproxy} = commonConfig.getDisplaySettingsSync();
-
-  return new Promise((resolve, reject)=>{
-    request.put({
-      url: signedUrl,
-      body: contents,
-      proxy: activeproxy,
-      headers: {
-        "Cache-Control": "public, max-age=0, no-cache, no-store"
-      }
-    }, (err, resp, body)=>{
-      if(!err) {
-        if(resp.statusCode !== 200) {
-          log.file("Error uploading screenshot: " + resp.statusCode + " - " + body);
-          reject(resp.statusCode);
-        }
-        else {
-          resolve();
-        }
-      } else {
-        reject(err);
-      }
-    });
+  return network.httpFetch(signedUrl, {
+    method: 'PUT',
+    body: contents,
+    headers: {
+      "Cache-Control": "public, max-age=0, no-cache, no-store"
+    }
+  })
+  .then((resp)=>{
+    if (resp.statusCode !== 200) {
+      log.file("Error uploading screenshot: " + resp.statusCode + " - " + resp.text());
+      return Promise.reject(resp.statusCode);
+    }
   });
 }
 
