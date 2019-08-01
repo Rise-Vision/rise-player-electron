@@ -40,8 +40,6 @@ describe("Screenshot", ()=>{
 });
 
 function verifyFileUploaded() {
-  screenshot.startListener();
-
   return waitForGCSFile().then(downloadGCSFile).then(confirmValidJPEG);
 }
 
