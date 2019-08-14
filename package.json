@@ -15,7 +15,7 @@
     "electron-mocha": "^8.1.1",
     "fs-extra": "^5.0.0",
     "http-shutdown": "^1.2.0",
-    "istanbul": "^0.4.5",
+    "nyc": "^14.1.1",
     "jshint": "^2.10.2",
     "mocha-junit-reporter": "^1.23.1",
     "simple-mock": "^0.8.0",
@@ -25,14 +25,14 @@
     "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.3.1",
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#v1.0.3",
     "moment-timezone": "^0.5.17",
-    "primus": "^6.0.1",
+    "primus": "^7.3.3",
     "rise-cache-v2": "git://github.com/Rise-Vision/rise-cache-v2.git#4879bca",
-    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.8",
-    "ws": "^1.1.1"
+    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.10",
+    "ws": "^7.1.2"
   },
   "scripts": {
     "jshint": "jshint src",
-    "test": "jshint src && istanbul cover node_modules/mocha/bin/_mocha -- --exit --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive src/test/unit",
+    "test": "jshint src && nyc node_modules/mocha/bin/_mocha -- --exit --recursive src/test/unit",
     "test-no-coverage": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 20000 src/test/integration",
     "ci-integration": "xvfb-run node_modules/.bin/electron-mocha --exit -t 20000 src/test/integration",
