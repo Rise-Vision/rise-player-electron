@@ -4,9 +4,13 @@ This is a Display Module that is responsible for showing all of the playable con
 
 ### Run it
 
-### Install dependencies and launch Electron
+### Install dependencies
 ```
 npm install
+```
+
+### Launch Electron
+```
 npm start
 ```
 
@@ -35,3 +39,6 @@ npm run integration
 ```
 ./deploy.sh
 ```
+
+### Additional info
+[Player Electron Onboarding](https://docs.google.com/document/d/1kEvlsFWUybsbJkYVbZGvIKVCG9eUffT72EieDFFlFnE/edit?usp=sharing) 
