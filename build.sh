@@ -20,13 +20,18 @@ cp -r node_modules build-temp
 rm -rf build
 mkdir -p build
 echo '{"useElectron": true}' >build/package.json
+cp src/electron-compat.txt build
+cp src/initial-run.sh build
+cp src/initial_run.bat build
 asar p build-temp build/player-electron.asar
-makeself --notemp build player-electron.sh "Rise Player"
+makeself --notemp build player-electron.sh "Rise Player" ./initial-run.sh
 mv player-electron.sh build
-cd build && 7z a -mx4 player-electron.7z player-electron.asar package.json
+cd build && 7z a -mx4 player-electron.7z player-electron.asar package.json initial_run.bat electron-compat.txt
 cat ../win-sfx/7zS.sfx ../win-sfx/sfx_config.txt player-electron.7z >player-electron.exe
 rm player-electron.7z
 rm player-electron.asar
 rm package.json
+rm initial*
+rm *.txt
 cd ..
 rm -rf build-temp

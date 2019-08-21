@@ -42,7 +42,6 @@ function restartPlatform(component) {
     detached: true,
     stdio: "ignore"
   }).unref();
-  process.exit(0);
 }
 
 function resetTimer(componentName) {

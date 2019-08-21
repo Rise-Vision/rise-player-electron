@@ -16,7 +16,11 @@ let messageHandlers = [];
 
 if(displaySettings.enablepinchtozoom !== "true") {
   // Disable pinch-to-zoom
-  webFrame.setZoomLevelLimits(1, 1);
+  if (parseInt(process.versions.electron) >= 2) {
+    webFrame.setVisualZoomLevelLimits(1, 1);
+  } else {
+    webFrame.setZoomLevelLimits(1, 1);
+  }
 }
 
 webFrame.registerURLSchemeAsPrivileged("rchttp");
@@ -29,7 +33,6 @@ window.postToPlayer = (message, overrideChannel)=>{
     ipc.send("viewer-message", message);
   }
 };
-
 
 window.receiveFromPlayer = function receiveFromPlayer(msg, handler) {
   messageHandlers.push((message)=>{

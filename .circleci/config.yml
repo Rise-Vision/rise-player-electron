@@ -20,6 +20,9 @@ jobs:
   "test_integration":
     docker: *DOCKERIMAGE
     steps:
+      - run: sudo apt-get -y update || true
+      - run: sudo apt-get -y upgrade || true
+      - run: sudo apt-get -y install libgtk-3-0
       - checkout
       - restore_cache:
           key: node-cache-{{ checksum "package.json" }}

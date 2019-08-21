@@ -135,42 +135,52 @@ describe("Proxy Integration", function() {
       proxyCallback = ()=>{};
     });
 
-    afterEach("close", ()=>{win && !win.isDestroyed() && win.close();});
+    afterEach("close", ()=>{
+      return new Promise(res=>{
+        setTimeout(res, 500);
+      })
+      .then(()=>{
+        win && !win.isDestroyed() && win.close();
+      });
+    });
 
     it("uses a proxy with proxy configuration", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
       proxy.setSaveDir(commonConfig.getInstallDir());
-      proxy.setEndpoint({hostname: "localhost", port: 9090});
+      proxy.setEndpoint({hostname: "localhost", port: proxyPort});
 
       viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
-      return viewerController.launch("about:blank")
-        .then((viewerWindow)=>{
-          return new Promise((res)=>{
-            proxyCallback = res;
-            viewerWindow.loadURL("http://www.google.com");
-            win = viewerWindow;
-          });
-        })
-        .then(()=>{
-          assert.ok(proxied.some((prox)=>{return prox.includes("www.google.com");}));
-        });
+
+      return new Promise(res=>{
+        proxyCallback = res;
+
+        win = viewerController.createViewerWindow("http://www.google.com");
+      })
+      .then(()=>{
+        assert.ok(proxied.some(prox=>prox.includes("www.google.com")));
+      });
     });
 
     it("uses a proxy with browser configuration", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
-      return session.defaultSession.setProxy("localhost:9090", ()=>{
-        viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
-        return viewerController.launch("about:blank")
-          .then((viewerWindow)=>{
-          return new Promise((res)=>{
-            proxyCallback = res;
+
+      proxy.setSaveDir(commonConfig.getInstallDir());
+
+      return new Promise(res=>{
+        proxyCallback = res;
+
+        return session.defaultSession.setProxy({proxyRules: "localhost:9090"}, ()=>{
+          viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
+
+          viewerController.launch("about:blank")
+          .then(viewerWindow=>{
             viewerWindow.loadURL("http://www.google.com");
             win = viewerWindow;
-            });
-          })
-          .then(()=>{
-            assert.ok(proxied.some((prox)=>{return prox.includes("www.google.com");}));
           });
+        });
+      })
+      .then(()=>{
+        assert.ok(proxied.some(prox=>{return prox.includes("www.google.com");}));
       });
     });
 
@@ -185,7 +195,7 @@ describe("Proxy Integration", function() {
       });
     });
 
-    xit("doesn't use a proxy when proxy is cleared", ()=>{
+    it("doesn't use a proxy when proxy is cleared", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
       proxy.setEndpoint();
       viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
@@ -204,6 +214,7 @@ describe("Proxy Integration", function() {
     it("handles auth with a login response", ()=>{
       let {BrowserWindow, app, globalShortcut} = require("electron");
 
+      proxy.setSaveDir(require("os").tmpdir());
       proxy.setEndpoint({
         hostname: "localhost",
         port: proxyPortWithChallenge,
@@ -213,13 +224,11 @@ describe("Proxy Integration", function() {
 
       viewerController.init(BrowserWindow, app, globalShortcut, ipcMain, electron);
 
-      let electronAuthSuppliedCallbackPromise = new Promise((res)=>{
+      return new Promise(res=>{
         electronAuthSuppliedCallback = res;
-      });
 
-      win = viewerController.createViewerWindow("http://www.google.com");
-
-      return electronAuthSuppliedCallbackPromise
+        win = viewerController.createViewerWindow("http://www.google.com");
+      })
       .then(()=>{
         assert.ok(proxied.includes("www.google.com"));
       })
