@@ -172,7 +172,7 @@ describe("viewerController", ()=>{
 
       return launchViewer()
       .then(()=>{
-        // 1: 'crashed', 2: 'destroyed', 3: 'login', 4: 'did-fail-load'
+        // 1: 'crashed', 2: 'destroyed', 3: 'did-fail-load', 4: 'login'
         assert.equal(mocks.viewerWindow.webContents.on.calls.length, 4);
         assert.equal(mocks.viewerWindow.webContents.once.calls.length, 1);
 

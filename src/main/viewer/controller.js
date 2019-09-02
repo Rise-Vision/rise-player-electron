@@ -47,6 +47,10 @@ function registerEvents(window) {
 
   webContents.on('destroyed', ()=> log.all('viewer webContents destroyed'));
 
+  webContents.on("did-fail-load", (evt, errorCode, errorDescription, validatedURL, isMainFrame)=>{
+    log.external("error loading url", JSON.stringify({url: validatedURL, errorCode, errorDescription, isMainFrame}));
+  });
+
   globalShortcut.register("CommandOrControl+Shift+.", ()=>{
     if (window && window.isFocused()) {
       webContents.toggleDevTools();
@@ -175,10 +179,6 @@ function createViewerWindow(initialPage = "about:blank") {
       if (!cb) {cb = authInfo;}
       cb(proxy.configuration().username, proxy.configuration().password);
     }
-  });
-
-  viewerWindow.webContents.on("did-fail-load", (evt, errorCode, errorDescription, validatedURL, isMainFrame)=>{
-    log.external("error loading url", JSON.stringify({url: validatedURL, errorCode, errorDescription, isMainFrame}));
   });
 
   return viewerWindow;
