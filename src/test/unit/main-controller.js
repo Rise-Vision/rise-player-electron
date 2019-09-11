@@ -1,10 +1,10 @@
-var platform = require("rise-common-electron").platform;
-var mainController = require("../../main/player/main-controller.js");
-var config = require("../../main/player/config.js");
-var riseCacheWatchdog = require("../../main/player/rise-cache-watchdog.js");
-var assert = require("assert");
-var simple = require("simple-mock");
-var mocks = {};
+const platform = require("rise-common-electron").platform;
+const mainController = require("../../main/player/main-controller.js");
+const config = require("../../main/player/config.js");
+const riseCacheWatchdog = require("../../main/player/rise-cache-watchdog.js");
+const assert = require("assert");
+const simple = require("simple-mock");
+const mocks = {};
 
 global.secondMillis = 5;
 global.log = require("rise-common-electron").logger();
@@ -60,7 +60,7 @@ mocks.protocol = {
 };
 
 describe("mainController", ()=>{
-  var imports = {
+  const imports = {
     app: mocks.app,
     displaySettings: {},
     globalShortcut: mocks.globalShortcut,
@@ -157,7 +157,7 @@ describe("mainController", ()=>{
     });
 
     it("custom protocol handler for 'rchttp' executes correctly", () => {
-      let handlerFn = mocks.protocol.registerHttpProtocol.calls[0].args[1],
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[0].args[1],
         callback = simple.stub(), bytes = new ArrayBuffer(8);
 
       handlerFn({
@@ -198,8 +198,53 @@ describe("mainController", ()=>{
       });
     });
 
+    it("custom protocol handler for 'rchttp' appends the Rise Cache port to files URL", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[0].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttp://localhost?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "http://localhost:9494?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        method: "GET"
+      });
+    });
+
+    it("custom protocol handler for 'rchttp' appends the Rise Cache port to displays URL", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[0].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttp://localhost/displays",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "http://localhost:9494/displays",
+        method: "GET"
+      });
+    });
+
+    it("custom protocol handler for 'rchttp' works when URL already has Rise Cache port", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[0].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttp://localhost:9494/displays",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "http://localhost:9494/displays",
+        method: "GET"
+      });
+    });
+
     it("protocol handler for 'rchttps' executes correctly", () => {
-      let handlerFn = mocks.protocol.registerHttpProtocol.calls[1].args[1],
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[1].args[1],
         callback = simple.stub(), bytes = new ArrayBuffer(8);
 
       handlerFn({
@@ -236,6 +281,51 @@ describe("mainController", ()=>{
 
       assert.deepEqual(callback.lastCall.args[0], {
         url: "https://test.com?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        method: "GET"
+      });
+    });
+
+    it("custom protocol handler for 'rchttps' appends the Rise Cache port to files URL", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[1].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttps://localhost?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "https://localhost:9494?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        method: "GET"
+      });
+    });
+
+    it("custom protocol handler for 'rchttps' appends the Rise Cache port to displays URL", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[1].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttps://localhost/displays",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "https://localhost:9494/displays",
+        method: "GET"
+      });
+    });
+
+    it("custom protocol handler for 'rchttps' works when URL already has Rise Cache port", () => {
+      const handlerFn = mocks.protocol.registerHttpProtocol.calls[1].args[1],
+        callback = simple.stub();
+
+      handlerFn({
+        url: "rchttps://localhost:9494/displays",
+        method: "GET",
+      }, callback);
+
+      assert.deepEqual(callback.lastCall.args[0], {
+        url: "https://localhost:9494/displays",
         method: "GET"
       });
     });

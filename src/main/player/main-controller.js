@@ -16,10 +16,16 @@ BrowserWindow,
 protocol;
 
 function schemeHandler(request, callback) {
-  let redirect = {
-      method: request.method,
-      url: request.url.slice(2)
-    };
+  let rcUrl = request.url.replace('rchttp', 'http');
+  const regex = /http[s]?:\/\/localhost[\/|?]/g;
+  if (regex.test(rcUrl)) {
+    rcUrl = rcUrl.replace('localhost', 'localhost:9494');
+  }
+
+  const redirect = {
+    method: request.method,
+    url: rcUrl
+  };
 
   if (request.method === "POST" || request.method === "PUT") {
     redirect.uploadData = {
