@@ -19,6 +19,7 @@ mocks.app = {
 
 mocks.webContents = {
   on: simple.spy((evt, fn)=>{if(evt === "did-finish-load"){fn();}}),
+  once: simple.stub(),
   isLoading: simple.stub().returnWith(false),
   send: simple.stub(),
   session: {setProxy: simple.stub(), setCertificateVerifyProc: simple.stub()},
@@ -160,6 +161,27 @@ describe("viewerController", ()=>{
       .then(()=>{
         console.log(mocks.viewerWindow.loadURL.calls);
         assert(mocks.viewerWindow.loadURL.calls[1].args[0].startsWith(debugviewerurl));
+      });
+    });
+
+    it("should not register extra handlers after loading URLs", ()=>{
+      simple.mock(onlineDetection, "isOnline").returnWith(true);
+
+      let debugviewerurl = "http://override-dot-rvaviewer-test.appspot.com/Viewer.html?";
+      simple.mock(commonConfig, "getDisplaySettingsSync").returnWith({debugviewerurl});
+
+      return launchViewer()
+      .then(()=>{
+        // 1: 'crashed', 2: 'destroyed', 3: 'did-fail-load', 4: 'login'
+        assert.equal(mocks.viewerWindow.webContents.on.calls.length, 4);
+        assert.equal(mocks.viewerWindow.webContents.once.calls.length, 1);
+
+        viewerController.loadUrl("blank:");
+
+        // no extra calls should happen here
+        assert.equal(mocks.viewerWindow.webContents.on.calls.length, 4);
+        // an extra once call should happen here
+        assert.equal(mocks.viewerWindow.webContents.once.calls.length, 2);
       });
     });
 

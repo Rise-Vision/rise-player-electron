@@ -47,6 +47,10 @@ function registerEvents(window) {
 
   webContents.on('destroyed', ()=> log.all('viewer webContents destroyed'));
 
+  webContents.on("did-fail-load", (evt, errorCode, errorDescription, validatedURL, isMainFrame)=>{
+    log.external("error loading url", JSON.stringify({url: validatedURL, errorCode, errorDescription, isMainFrame}));
+  });
+
   globalShortcut.register("CommandOrControl+Shift+.", ()=>{
     if (window && window.isFocused()) {
       webContents.toggleDevTools();
@@ -234,11 +238,7 @@ function loadUrl(url) {
     log.external("url load timeout", url);
   }, 2.5 * 60 * 1000);
 
-  viewerWindow.webContents.on("did-fail-load", (evt, errorCode, errorDescription, validatedURL, isMainFrame)=>{
-    log.external("error loading url", JSON.stringify({url: validatedURL, errorCode, errorDescription, isMainFrame}));
-  });
-
-  viewerWindow.webContents.on("did-finish-load", ()=>clearTimeout(viewerTimeout));
+  viewerWindow.webContents.once("did-finish-load", ()=>clearTimeout(viewerTimeout));
 }
 
 function isViewerLoaded() {
@@ -332,5 +332,6 @@ module.exports = {
     let htmlPath = path.join(app.getAppPath(), "/dupe-id.html?" + commonConfig.getDisplaySettingsSync().displayid);
     viewerWindow.loadURL("file://" + htmlPath);
   },
-  createViewerWindow
+  createViewerWindow,
+  loadUrl
 };
