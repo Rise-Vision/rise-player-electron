@@ -19,7 +19,8 @@ function schemeHandler(request, callback) {
   let rcUrl = request.url.replace('rchttp', 'http');
   const regex = /http[s]?:\/\/localhost[\/|?]/g;
   if (regex.test(rcUrl)) {
-    rcUrl = rcUrl.replace('localhost', 'localhost:9494');
+    const port = rcUrl.indexOf('https') === 0 ? '9495' : '9494';
+    rcUrl = rcUrl.replace('localhost', `localhost:${port}`);
   }
 
   const redirect = {
