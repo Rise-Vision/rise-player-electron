@@ -295,7 +295,7 @@ describe("mainController", ()=>{
       }, callback);
 
       assert.deepEqual(callback.lastCall.args[0], {
-        url: "https://localhost:9494?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
+        url: "https://localhost:9495?file=https://storage.googleapis.com/risemedialibrary-abc123/test.webm",
         method: "GET"
       });
     });
@@ -310,7 +310,7 @@ describe("mainController", ()=>{
       }, callback);
 
       assert.deepEqual(callback.lastCall.args[0], {
-        url: "https://localhost:9494/displays",
+        url: "https://localhost:9495/displays",
         method: "GET"
       });
     });
@@ -320,12 +320,12 @@ describe("mainController", ()=>{
         callback = simple.stub();
 
       handlerFn({
-        url: "rchttps://localhost:9494/displays",
+        url: "rchttps://localhost:9495/displays",
         method: "GET",
       }, callback);
 
       assert.deepEqual(callback.lastCall.args[0], {
-        url: "https://localhost:9494/displays",
+        url: "https://localhost:9495/displays",
         method: "GET"
       });
     });
