@@ -26,23 +26,23 @@ let viewerWindow;
 let reloadTimeout;
 let electron;
 
-function registerEvents(window) {
-  const webContents = window.webContents;
+function registerViewerWindowEvents() {
+  const webContents = viewerWindow.webContents;
 
-  window.on('unresponsive', ()=> {
+  viewerWindow.on('unresponsive', ()=> {
     log.external('viewer window unresponsive');
     module.exports.launch();
-    window.destroy();
+    viewerWindow.destroy();
   });
 
-  window.on('closed', ()=> {
-    log.debug('viewer window closed');
-    window = null;
+  viewerWindow.on('closed', ()=> {
+    log.file('viewer window closed');
+    viewerWindow = null;
   });
 
   webContents.on('crashed', ()=> {
     log.external('viewer webContents crashed');
-    window.destroy();
+    viewerWindow.destroy();
   });
 
   webContents.on('destroyed', ()=> log.all('viewer webContents destroyed'));
@@ -52,7 +52,7 @@ function registerEvents(window) {
   });
 
   globalShortcut.register("CommandOrControl+Shift+.", ()=>{
-    if (window && window.isFocused()) {
+    if (viewerWindow && viewerWindow.isFocused()) {
       webContents.toggleDevTools();
     }
   });
@@ -78,7 +78,7 @@ function registerEvents(window) {
       reloadTimeout = setTimeout(()=>{
         log.all("switching from offline to online viewer");
 
-        window.destroy();
+        viewerWindow.destroy();
         globalShortcut.unregister("CommandOrControl+Shift+.");
         module.exports.reload();
 
@@ -171,7 +171,7 @@ function createViewerWindow(initialPage = "about:blank") {
     log.all("display added", JSON.stringify(display));
   });
 
-  registerEvents(viewerWindow);
+  registerViewerWindowEvents();
 
   viewerWindow.webContents.on("login", (event, webContents, request, authInfo, cb)=>{
     if (proxy.configuration().username) {
