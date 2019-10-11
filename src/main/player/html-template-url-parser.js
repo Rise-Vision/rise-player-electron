@@ -16,7 +16,7 @@ module.exports = {
       item.type = "url";
       item.presentationId = item.objectReference;
       item.productCode = getPCode(item.objectReference, contentData);
-      item.version = isBeta ? "beta" : "stable";
+      item.version = isBeta ? "staging" : "stable";
       item.objectReference = HTMLTemplateURL
         .replace("STAGE", item.version)
         .replace("PCODE", item.productCode)
