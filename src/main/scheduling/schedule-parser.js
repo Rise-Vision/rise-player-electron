@@ -26,9 +26,9 @@ module.exports = {
   hasOnlyNoViewerURLItems(data = scheduleContent) {
     if (!module.exports.validateContent(data)) {return false;}
 
-    if (data.content.schedule.items.length > 1) {
-      return false;
-    }
+    // if (data.content.schedule.items.length > 1) {
+    //   return false;
+    // }
 
     const noViewerURLs = /(http(s)?:\/\/)?storage\.googleapis\.com\/risemedialibrary.+|(http(s)?:\/\/)?widgets\.risevision\.com\/.+/;
 
