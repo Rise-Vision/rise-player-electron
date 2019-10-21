@@ -36,7 +36,7 @@
     "test-no-coverage": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 20000 src/test/integration",
     "ci-integration": "xvfb-run node_modules/.bin/electron-mocha --exit -t 20000 src/test/integration",
-    "start": "./node_modules/.bin/electron ./src/main/index.js"
+    "start": "./node_modules/.bin/electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization ./src/main/index.js"
   },
   "useElectron": true
 }
