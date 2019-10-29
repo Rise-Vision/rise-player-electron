@@ -7,9 +7,10 @@ const inspect = require("util").inspect;
 const riseCacheLogger = require("../loggers/rise-cache-logger");
 
 let cache = null;
+let timer = null;
 
 function scheduleCacheCheck() {
-  setInterval(()=>{
+  timer = setInterval(()=>{
     isCacheRunning()
       .catch((err)=>{
         log.external("restarting cache", inspect(err));
@@ -73,5 +74,8 @@ module.exports = {
   },
   startWatchdog() {
     scheduleCacheCheck();
+  },
+  stop() {
+    clearInterval(timer);
   }
 };

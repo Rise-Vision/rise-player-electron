@@ -14,24 +14,26 @@ describe("Rise Cache Watchdog", ()=>{
   beforeEach(()=>{
     mock(riseCacheWatchdog, "getCheckInterval").returnWith(20);
     mock(childProcess, "fork").returnWith({
-      unref: simpleMock.stub(),
-      disconnect: simpleMock.stub()
+      on: simpleMock.stub(),
+      send: simpleMock.stub()
     });
   });
 
   afterEach(()=>{
     simpleMock.restore();
+    riseCacheWatchdog.stop();
   });
 
-  xit("starts Rise Cache", ()=>{
+  it("starts Rise Cache", ()=>{
     riseCacheWatchdog.launchCache();
 
-    assert(childProcess.fork.called);
-    assert(childProcess.fork.lastCall.returned.unref.called);
-    assert(childProcess.fork.lastCall.returned.disconnect.called);
+    assert.equal(childProcess.fork.called, true);
+    assert.equal(childProcess.fork.lastCall.returned.on.called, true);
+    assert.equal(childProcess.fork.lastCall.returned.on.lastCall.arg, "error");
+
   });
 
-  xit("periodically checks Rise Cache is still active", ()=>{
+  it("periodically checks Rise Cache is still active", ()=>{
     mock(network, "httpFetch").resolveWith(cacheOkResponse);
 
     riseCacheWatchdog.startWatchdog();
@@ -39,24 +41,25 @@ describe("Rise Cache Watchdog", ()=>{
     return new Promise((res)=>{
       setTimeout(()=>{
         assert.equal(network.httpFetch.callCount, 5);
-        assert.equal(network.httpFetch.lastCall.args[0], "http://localhost:9494/");
-        assert(!childProcess.fork.called);
+        assert.equal(network.httpFetch.lastCall.args[0], "http://127.0.0.1:9494/");
+        assert.equal(childProcess.fork.called, false);
         res();
-      }, 110);
+      }, 120);
     });
   });
 
-  xit("restarts Rise Cache once if the validation fails", ()=>{
+  it("restarts Rise Cache once if the validation fails", ()=>{
     mock(network, "httpFetch").rejectWith();
 
     riseCacheWatchdog.startWatchdog();
 
     return new Promise((res)=>{
       setTimeout(()=>{
-        assert(network.httpFetch.called);
-        assert(childProcess.fork.called);
+        assert.equal(network.httpFetch.called, true);
+        assert.equal(childProcess.fork.called, true);
+        assert.equal(childProcess.fork.lastCall.returned.send.lastCall.arg, "quit");
         res();
-      }, 110);
+      }, 120);
     });
   });
 });
