@@ -43,6 +43,10 @@ function startCache() {
     cache.on("message", (data) => {
       riseCacheLogger.log(data);
     });
+
+    cache.on("error", (err) => {
+      log.error(`error when killing rise cache v2: ${ inspect(err) }`, "killing rise cache v2");
+    });
   }
   catch (err) {
     cache = null;
@@ -62,7 +66,7 @@ module.exports = {
     startCache();
   },
   quitCache() {
-    if (cache) { 
+    if (cache) {
       log.external("killing rise cache");
       cache.send("quit");
     }
