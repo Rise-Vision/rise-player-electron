@@ -8,7 +8,7 @@ module.exports = {
     const restructuredData = JSON.parse(JSON.stringify(contentData));
 
     const HTMLTemplateURL = "https://widgets.risevision.com/STAGE/templates/PCODE/src/template.html?presentationId=PID";
-    const isBeta = commonConfig.isBetaLauncher();
+    const isStage = commonConfig.isStageEnvironment();
 
     restructuredData.content.schedule.items
     .filter(item=>(item.type === "presentation" && item.presentationType === "HTML Template"))
@@ -16,7 +16,7 @@ module.exports = {
       item.type = "url";
       item.presentationId = item.objectReference;
       item.productCode = getPCode(item.objectReference, contentData);
-      item.version = isBeta ? "beta" : "stable";
+      item.version = isStage ? "staging" : "stable";
       item.objectReference = HTMLTemplateURL
         .replace("STAGE", item.version)
         .replace("PCODE", item.productCode)
