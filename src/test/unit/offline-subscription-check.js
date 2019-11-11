@@ -28,6 +28,17 @@ describe("Offline Subscription Check", ()=>{
       assert(network.httpFetch.called);
       assert(jsonStub.called);
       assert(network.httpFetch.firstCall.args[0].includes("testid"));
+      assert(network.httpFetch.firstCall.args[0].includes("store-dot-rvaserver2.appspot.com"));
+    });
+  });
+
+  it("uses the stage URL is player is configured to stage", ()=>{
+    simple.mock(commonConfig, "isStageEnvironment").resolveWith(true);
+
+    return checker.isSubscribed()
+    .then(()=>{
+      assert(network.httpFetch.called);
+      assert(network.httpFetch.firstCall.args[0].includes("store-dot-rvacore-test.appspot.com"));
     });
   });
 

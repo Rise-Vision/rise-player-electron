@@ -1,14 +1,17 @@
 const {network} = require("rise-common-electron");
 const onlineDetection = require("../player/online-detection.js");
 const authHost = "store-dot-rvaserver2.appspot.com";
+const authHostStage = "store-dot-rvacore-test.appspot.com";
 const commonConfig = require("common-display-module");
 const productCode = "c4b368be86245bf9501baaa6e0b00df9719869fd";
-const authorizationUrl = `https://${authHost}/v1/widget/auth?id=DID&pc=${productCode}&startTrial=false`;
 const OFFLINE_SUBSCRIPTION_FILE = "../8f0bfd16129083c1ad67370c916be014";
 
 function remoteSubscriptionStatus() {
   const displayId = commonConfig.getDisplaySettingsSync().displayid;
   if (!displayId) {return false;}
+
+  const host = commonConfig.isStageEnvironment() ? authHostStage : authHost;
+  const authorizationUrl = `https://${host}/v1/widget/auth?id=DID&pc=${productCode}&startTrial=false`;
 
   return network.httpFetch(authorizationUrl.replace("DID", displayId))
   .then(resp=>resp.json())
