@@ -22,7 +22,7 @@
     "wtfnode": "^0.5.6"
   },
   "dependencies": {
-    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.3.1",
+    "common-display-module": "git://github.com/Rise-Vision/common-display-module.git#v3.3.2",
     "electron-proxy-agent": "git://github.com/Rise-Vision/node-electron-proxy-agent.git#v1.0.3",
     "moment-timezone": "^0.5.17",
     "primus": "^7.3.3",
