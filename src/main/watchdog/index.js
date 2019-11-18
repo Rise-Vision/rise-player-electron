@@ -34,7 +34,7 @@ function restartPlatform(component) {
          "cmd.exe" :
           path.join(scriptDir, "start.sh");
 
-  const args = isWindows() ? 
+  const args = isWindows() ?
          ["/c", path.join(scriptDir, "background.jse"), "start.bat"].concat(commonArgs) :
           commonArgs;
 
@@ -65,3 +65,5 @@ process.on("message", (contents)=>{
     });
   }
 });
+
+process.on("SIGPIPE", () => log.external("player watchdog received SIGPIPE"));

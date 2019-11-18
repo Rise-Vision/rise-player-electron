@@ -1,5 +1,6 @@
-const childProcess = require("child_process"),
-path = require("path");
+const childProcess = require("child_process");
+const inspect = require("util").inspect;
+const path = require("path");
 
 let watchdog;
 let watchdogPingInterval;
@@ -19,9 +20,7 @@ module.exports = {
   },
 
   send(message) {
-    try {
-      watchdog.send(message);
-    } catch (err) { }
+    watchdog.send(message);
   },
 
   // Set up mainProcess-watchdog communication
@@ -45,6 +44,10 @@ module.exports = {
         clearTimeout(watchdogResponseTimeout);
         watchdogResponseTimeout = null;
       }
+    });
+
+    watchdog.on("error", (err) => {
+      log.error(`error on watchdog process communication: ${ inspect(err) }`, "ping player watchdog");
     });
   },
 
