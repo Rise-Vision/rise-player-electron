@@ -17,6 +17,7 @@ module.exports = {
   start() {
     log.external("no-viewer mode");
     clearTimeout(timers.scheduleCheck);
+    playingItem = null;
 
     if (!scheduleParser.validateContent()) {
       logWithScheduleData("invalid schedule data");
