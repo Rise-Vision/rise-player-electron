@@ -113,7 +113,7 @@ module.exports = {
 
     viewerWindowBindings.sendToViewer({
       msg: "content-update",
-      newContent: rewritePresentationData(content, onlineDetection.isOnline())
+      newContent: rewritePresentationData(content, true)
     });
   },
   contentPath() {return contentPath;},

@@ -16,7 +16,7 @@ const scheduleParser = require("../scheduling/schedule-parser");
 const noViewerSchedulePlayer = require("../scheduling/schedule-player");
 const messaging = require("../player/messaging");
 
-const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
+const VIEWER_URL = "https://viewer-test.risevision.com/Viewer.html?";
 
 let BrowserWindow;
 let app;
@@ -116,9 +116,9 @@ function createViewerUrl() {
 
   let url = overrideUrl || VIEWER_URL;
 
-  if (!onlineDetection.isOnline()) {
-    url = "file://" + __dirname + "/localviewer/main/Viewer.html?";
-  }
+  // if (!onlineDetection.isOnline()) {
+  //   url = "file://" + __dirname + "/localviewer/main/Viewer.html?";
+  // }
 
   url = url.slice(-1) === "?" ? url : url+"?";
 
