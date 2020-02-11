@@ -33,11 +33,22 @@
   },
   "scripts": {
     "jshint": "jshint src",
-    "test": "jshint src && nyc node_modules/mocha/bin/_mocha -- --exit --recursive src/test/unit",
-    "test-no-coverage": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
+    "test": "jshint src && mocha -t 2000 --exit --recursive src/test/unit",
+    "coverage": "nyc npm run test",
+    "precoveralls": "npm run coverage",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "integration": "export ELECTRON_PATH=$PWD/node_modules/.bin/electron && node_modules/.bin/electron-mocha -t 20000 src/test/integration",
     "ci-integration": "xvfb-run node_modules/.bin/electron-mocha --exit -t 20000 src/test/integration",
     "start": "./node_modules/.bin/electron ./src/main/index.js"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "test/**"
+    ]
   },
   "useElectron": true
 }

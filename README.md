@@ -19,12 +19,6 @@ npm start
 npm run test
 ```
 
-or
-
-```
-npm run test-no-coverage
-```
-
 ### Integration Test
 ```
 npm run integration
@@ -41,4 +35,4 @@ npm run integration
 ```
 
 ### Additional info
-[Player Electron Onboarding](https://docs.google.com/document/d/1kEvlsFWUybsbJkYVbZGvIKVCG9eUffT72EieDFFlFnE/edit?usp=sharing) 
+[Player Electron Onboarding](https://docs.google.com/document/d/1kEvlsFWUybsbJkYVbZGvIKVCG9eUffT72EieDFFlFnE/edit?usp=sharing)
