@@ -1,4 +1,4 @@
-# Rise Player (Electron)
+# Rise Player (Electron) [![Coverage Status](https://coveralls.io/repos/github/Rise-Vision/rise-player-electron/badge.svg?branch=master)](https://coveralls.io/github/Rise-Vision/rise-player-electron?branch=master)
 
 This is a Display Module that is responsible for showing all of the playable content on the display.
 
