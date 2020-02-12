@@ -1,4 +1,4 @@
-# Rise Player (Electron)
+# Rise Player (Electron) [![Coverage Status](https://coveralls.io/repos/github/Rise-Vision/rise-player-electron/badge.svg?branch=master)](https://coveralls.io/github/Rise-Vision/rise-player-electron?branch=master)
 
 This is a Display Module that is responsible for showing all of the playable content on the display.
 
@@ -19,12 +19,6 @@ npm start
 npm run test
 ```
 
-or
-
-```
-npm run test-no-coverage
-```
-
 ### Integration Test
 ```
 npm run integration
@@ -41,4 +35,4 @@ npm run integration
 ```
 
 ### Additional info
-[Player Electron Onboarding](https://docs.google.com/document/d/1kEvlsFWUybsbJkYVbZGvIKVCG9eUffT72EieDFFlFnE/edit?usp=sharing) 
+[Player Electron Onboarding](https://docs.google.com/document/d/1kEvlsFWUybsbJkYVbZGvIKVCG9eUffT72EieDFFlFnE/edit?usp=sharing)
