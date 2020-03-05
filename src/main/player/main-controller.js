@@ -112,6 +112,8 @@ module.exports = {
       globalShortcut.register(accelerator, module.exports.quit);
       return globalShortcut.isRegistered(accelerator);
     }) || log.external("error", "could not register quit hotkey");
+
+    app.on('will-quit', () => globalShortcut.unregisterAll());
   },
 
   mainWindow
