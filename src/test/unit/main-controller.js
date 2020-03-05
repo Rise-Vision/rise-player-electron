@@ -135,6 +135,14 @@ describe("mainController", ()=>{
     });
   });
 
+  describe("bindQuitAccelerator", ()=>{
+    it("registers quit shortcuts", ()=>{
+      mainController.bindQuitAccelerator();
+
+      assert.equal(mocks.globalShortcut.register.called, true);
+    });
+  });
+
   describe("ready", ()=>{
     beforeEach(()=>{
       simple.mock(config, "setSystemInfo").returnWith();

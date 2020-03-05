@@ -109,9 +109,18 @@ module.exports = {
     const possibleKeys = ["Q", "K", "F4"];
     possibleKeys.some((key)=>{
       const accelerator = `CommandOrControl+Shift+${key}`;
-      globalShortcut.register(accelerator, module.exports.quit);
+      let quitCalled = false;
+      globalShortcut.register(accelerator, () => {
+        if (quitCalled) {
+          return;
+        }
+        quitCalled = true;
+        module.exports.quit();
+      });
       return globalShortcut.isRegistered(accelerator);
     }) || log.external("error", "could not register quit hotkey");
+
+    app.on('will-quit', () => globalShortcut.unregisterAll());
   },
 
   mainWindow
