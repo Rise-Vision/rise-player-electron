@@ -11,7 +11,7 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "coveralls": "^3.0.9",
-    "electron": "4.2.9",
+    "electron": "7.2.4",
     "electron-ipc-mock": "0.0.3",
     "electron-mocha": "^8.1.1",
     "fs-extra": "^5.0.0",
