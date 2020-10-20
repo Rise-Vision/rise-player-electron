@@ -9,6 +9,7 @@ const urlParams = "alt=media&ifGenerationNotMatch=GENERATION";
 const urlTemplate = `${apiEndpoint}/b/BUCKETNAME/o/FILEPATH?${urlParams}`;
 
 const RETRY_INTERVAL_MILLIS = 1000;
+const HOURLY_FETCH_LIMIT = 9;
 
 let networkFailure;
 
@@ -45,10 +46,14 @@ function getGeneration(gcsPath, localGCSData){
   return localGCSData[gcsPath] ? localGCSData[gcsPath].generation : "-1";
 }
 
-function updateLocalGCSData(generation, gcsPath, dataPromise, localGCSData){
+function updateLocalGCSData(generation, gcsPath, dataPromise, localGCSData, useThrottle){
   log.debug("updating local gcs data " + gcsPath );
+
+  let {lastFetch, lastFetchCount} = (localGCSData[gcsPath] || {});
+
   localGCSData[gcsPath] = {};
   localGCSData[gcsPath].generation = generation;
+  localGCSData[gcsPath].lastFetchCount = calculateLastFetchCount(lastFetch, lastFetchCount);
   localGCSData[gcsPath].lastFetch = (new Date()).getTime();
   return dataPromise.then((content)=>{
     let filePath = path.join(commonConfig.getInstallDir(), localGCSDataFileName);
@@ -61,11 +66,28 @@ function updateLocalGCSData(generation, gcsPath, dataPromise, localGCSData){
       log.external(`error updating gcs contents for ${gcsPath}`, require("util").inspect(err));
     });
   });
+
+  function calculateLastFetchCount(lastFetch, lastFetchCount) {
+    if (lastFetch === undefined || lastFetchCount == undefined) {return 1;}
+    if (!useThrottle) {return 1;}
+
+    return fetchedInLast60Mins(lastFetch) ? lastFetchCount + 1 : 1;
+  }
+}
+
+function fetchedInLast60Mins(lastFetch) {
+  if (lastFetch === undefined) {return false;}
+
+  return (new Date()).getTime() - lastFetch < 1000 * 60 * 60;
 }
 
 function shouldThrottle(gcsPath, localGCSData){
   if (!localGCSData[gcsPath]) {return false;}
-  return (new Date()).getTime() - localGCSData[gcsPath].lastFetch < 1000 * 60 * 60;
+
+  let {lastFetch, lastFetchCount} = localGCSData[gcsPath];
+  if (lastFetch === undefined || lastFetchCount == undefined) {return false;}
+
+  return fetchedInLast60Mins(lastFetch) && lastFetchCount >= HOURLY_FETCH_LIMIT;
 }
 
 function getLocalContent(gcsPath, localGCSData) {
@@ -108,7 +130,7 @@ module.exports = {
       })
       .then((data)=>{
         if (data.remote) {
-          return updateLocalGCSData(data.generation, gcsPath, data.remote, localGCSData)
+          return updateLocalGCSData(data.generation, gcsPath, data.remote, localGCSData, useThrottle)
           .then(()=>{
             return data.remote;
           });
