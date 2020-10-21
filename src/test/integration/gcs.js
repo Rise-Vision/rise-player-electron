@@ -72,6 +72,7 @@ describe("GCS", function() {
       [remotePath]: {
         "generation": "-1",
         "lastFetch": (new Date()).getTime(),
+        "lastFetchCount": 9,
         "content": {
           "test": fakeCommand
         }

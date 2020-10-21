@@ -14,7 +14,7 @@ rm -rf build-temp/viewer/localviewer/components
 mv build-temp/widgets build-temp/viewer/localviewer
 mv build-temp/components build-temp/viewer/localviewer
 rm -rf node_modules
-sudo npm install -g asar
+sudo npm install -g asar@v2.1.0
 npm install --production
 cp -r node_modules build-temp
 rm -rf build
