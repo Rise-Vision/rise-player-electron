@@ -16,7 +16,7 @@ const scheduleParser = require("../scheduling/schedule-parser");
 const noViewerSchedulePlayer = require("../scheduling/schedule-player");
 const messaging = require("../player/messaging");
 
-const VIEWER_URL = "https://viewer.risevision.com/Viewer.html?";
+const VIEWER_URL = "https://widgets.risevision.com/viewer/Viewer.html?";
 
 let BrowserWindow;
 let app;
